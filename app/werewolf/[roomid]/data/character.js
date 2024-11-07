@@ -43,7 +43,7 @@ const characterData = {
     },
     medium: {
       must: false,
-      targetGroup: "dead",
+      targetGroup: null,
       ability: {},
       detected: "good",
     },

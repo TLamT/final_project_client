@@ -36,8 +36,6 @@ export default function Night({
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
 
-  console.log(playersData);
-
   useEffect(() => {
     targetRef.current = target;
     actionRef.current = currAction; // Update ref whenever state changes
@@ -103,7 +101,7 @@ export default function Night({
     });
     socket.on("allNightAction", (nightTimeAction) => {
       nightTimeAction.forEach((actions) => {
-        handleNightAction(actions);
+        handleNightAction(actions, nightTimeAction);
       });
     });
   }, [socket]);
@@ -120,6 +118,79 @@ export default function Night({
   function handleDeadPlayerMessageSent() {
     socket.emit("deadPlayerChat", { name, roomId, message });
     setMessage("");
+  }
+
+  function handleNightAction(actions, nightTimeAction) {
+    if (actions.action === "kill") {
+      setPlayersData((prev) =>
+        prev.map((player, index) =>
+          index === actions.target ? { ...player, alive: false } : player
+        )
+      );
+    }
+    if (actions.action === "detect") {
+      // get the detected player name
+      const detectedName = playersData[actions.target].name;
+      // get the role good or bad
+      const detectedRole = playersData[actions.target].detected;
+      setDetectiveAbilityInfo((prev) => [
+        ...prev,
+        { name: detectedName, detected: detectedRole },
+      ]);
+    }
+    if (actions.action === "protect") {
+      if (playersData[actions.target].alive === false) {
+        alert("you successfully protected someone");
+      }
+      setPlayersData((prev) =>
+        prev.map((player, index) =>
+          index === actions.target ? { ...player, alive: true } : player
+        )
+      );
+    }
+    if (actions.action === "lookOut") {
+      const playerVisit = nightTimeAction.filter((player) => {
+        if (player.target === actions.target) return player.owner;
+      });
+      console.log(playerVisit);
+    }
+    if (actions.action === "scam") {
+      setPlayersData((prev) =>
+        prev.map((player, index) =>
+          index === actions.target ? { ...player, detected: "bad" } : player
+        )
+      );
+    }
+    if (actions.action === "remember") {
+      const targetRole = playersData[actions.target].role;
+      setPlayersData((prev) =>
+        prev.map((player, index) =>
+          index === actions.target ? { ...player, role: targetRole } : player
+        )
+      );
+      socket.emit("dayChat", {
+        roomId,
+        message: `an reminiscence have remember that he is ${targetRole}`,
+        name: "server",
+      });
+    }
+    if (actions.action === "convert") {
+      setPlayersData((prev) =>
+        prev.map((player, index) =>
+          index === actions.target ? { ...player, role: "vampire" } : player
+        )
+      );
+    }
+    if (actions.action === "vampireKill") {
+      const targetRole = playersData[actions.target].role;
+      if (targetRole === "vampire") {
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.target ? { ...player, alive: false } : player
+          )
+        );
+      }
+    }
   }
 
   return (
@@ -170,77 +241,4 @@ export default function Night({
       /> */}
     </div>
   );
-}
-
-function handleNightAction(actions) {
-  if (actions.action === "kill") {
-    setPlayersData((prev) =>
-      prev.map((player, index) =>
-        index === actions.target ? { ...player, alive: false } : player
-      )
-    );
-  }
-  if (actions.action === "detect") {
-    // get the detected player name
-    const detectedName = playersData[actions.target].name;
-    // get the role good or bad
-    const detectedRole = playersData[actions.target].detected;
-    setDetectiveAbilityInfo((prev) => [
-      ...prev,
-      { name: detectedName, detected: detectedRole },
-    ]);
-  }
-  if (actions.action === "protect") {
-    if (playersData[actions.target].alive === false) {
-      alert("you successfully protected someone");
-    }
-    setPlayersData((prev) =>
-      prev.map((player, index) =>
-        index === actions.target ? { ...player, alive: true } : player
-      )
-    );
-  }
-  if (actions.action === "lookOut") {
-    const playerVisit = nightTimeAction.filter((player) => {
-      if (player.target === actions.target) return player.owner;
-    });
-    console.log(playerVisit);
-  }
-  if (actions.action === "scam") {
-    setPlayersData((prev) =>
-      prev.map((player, index) =>
-        index === actions.target ? { ...player, detected: "bad" } : player
-      )
-    );
-  }
-  if (actions.action === "remember") {
-    const targetRole = playersData[actions.target].role;
-    setPlayersData((prev) =>
-      prev.map((player, index) =>
-        index === actions.target ? { ...player, role: targetRole } : player
-      )
-    );
-    socket.emit("dayChat", {
-      roomId,
-      message: `an reminiscence have remember that he is ${targetRole}`,
-      name: "server",
-    });
-  }
-  if (actions.action === "convert") {
-    setPlayersData((prev) =>
-      prev.map((player, index) =>
-        index === actions.target ? { ...player, role: "vampire" } : player
-      )
-    );
-  }
-  if (actions.action === "vampireKill") {
-    const targetRole = playersData[actions.target].role;
-    if (targetRole === "vampire") {
-      setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.target ? { ...player, alive: false } : player
-        )
-      );
-    }
-  }
 }

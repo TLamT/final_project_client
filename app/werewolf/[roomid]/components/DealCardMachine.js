@@ -102,7 +102,7 @@ const condition = {
 };
 
 export default function playerRoleList(playerCount) {
-  return ["reaper", "police", "detective", "cultist", "police", "joker"];
+  return ["reaper", "police", "cultist", "cultist", "police", "joker"];
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
 

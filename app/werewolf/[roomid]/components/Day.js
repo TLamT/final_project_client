@@ -152,6 +152,7 @@ export default function Day({
           Send
         </div>
       </div>
+      */}
       <div className="mt-4">
         {dayTimeChat.map((allDayMessage, index) => {
           return (
@@ -160,7 +161,7 @@ export default function Day({
             </div>
           );
         })}
-      </div> */}
+      </div>
 
       <div>
         {role === "detective" &&
