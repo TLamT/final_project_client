@@ -22,7 +22,12 @@ export function JoinRoom() {
 
   return (
     <>
-      <button onClick={handleJoinRoom}>加入房間</button>
+      <button
+        onClick={handleJoinRoom}
+        className="text-rose-800 hover:bg-rose-600  "
+      >
+        加入房間
+      </button>
     </>
   );
 }

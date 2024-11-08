@@ -1,29 +1,40 @@
 import fungPlayerData from "../data/fungPlayerData";
+
 const DeadPlayerList = ({ playersData, position }) => {
+  //查找自身身份
   let myPlayer = fungPlayerData.find(
     (player) => player.roleName === playersData[position].role
   );
   myPlayer = { ...myPlayer, ...playersData[position] };
-  const deadPlayer = playersData.filter((player) => !player.alive);
+  // 追憶者能選的目標
   let targetPlayer = playersData.map((player) => {
+    let canTarget = false;
     if (myPlayer.role === "reminiscence") {
-      let canTarget = deadPlayer;
+      canTarget = playersData.filter((player) => !player.alive);
       return { canTarget, ...player };
     }
+    return player;
   });
 
   return (
-    <div className="w-200px h-200px border-2 border-rose-600">
-      <div>Dead</div>
-      <ul>
-        {deadPlayer.map((player, index) => (
-          <li key={index}>{`Player: ${player.name} ${
-            player.canTarget && (
-              <button onClick={() => setTarget(index)}>target</button>
+    <div className="border-2 border-rose-600 m-8">
+      <div className="font-bold">Dead</div>
+      <div>
+        {targetPlayer.map((player, index) => {
+          return (
+            !player.alive && (
+              <div key={index} className="flex flex-row justify-center">
+                <div className="mr-4">{`${index + 1} ${player.name} `}</div>
+                <div>
+                  {player.role === "reminiscence" && (
+                    <button onClick={() => setTarget(index)}>target</button>
+                  )}
+                </div>
+              </div>
             )
-          }`}</li>
-        ))}
-      </ul>
+          );
+        })}
+      </div>
     </div>
   );
 };

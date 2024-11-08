@@ -30,7 +30,9 @@ export default function Page() {
         }}
       ></input>
       <div className="decoration-neutral-900">
-        <a href="./">返回</a>
+        <a href="./" className="">
+          返回
+        </a>
       </div>
     </div>
   );

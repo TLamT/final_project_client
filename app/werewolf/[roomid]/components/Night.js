@@ -6,8 +6,9 @@ import NightChatRoom from "./NightChatRoom";
 import AliveChatAndTarget from "./AliveChatAndTarget";
 import AliveChatAndTargetFung from "./AliveChatAndTargetFung";
 import fungPlayerData from "../data/fungPlayerData";
-import AlivePlayerList from "./AlivePlayList";
 import DeadPlayerList from "./DeadPlayerList";
+import WholeDayChatRoom from "./WholeDayChatRoom";
+
 export default function Night({
   socket,
   day,
@@ -30,6 +31,8 @@ export default function Night({
   setNights,
   setDetectiveAbilityInfo,
   setSentinelAbilityInfo,
+  cupidAbilityUsed,
+  deadPlayerMessageSent,
 }) {
   const [timer, setTimer] = useState(10);
   const [message, setMessage] = useState("");
@@ -99,7 +102,7 @@ export default function Night({
     socket.on("allVampireNightChat", (data) => {
       setVampireNightTimeChat(data);
     });
-    socket.on("allDeadPlayerChat", ({ data }) => {
+    socket.on("allDeadPlayerChat", (data) => {
       setDeadPlayerChat(data);
     });
     socket.on("allNightAction", (nightTimeAction) => {
@@ -118,18 +121,23 @@ export default function Night({
     socket.emit("vampireNightChat", { name, roomId, message });
     setMessage("");
   }
-  function handleDeadPlayerMessageSent() {
-    socket.emit("deadPlayerChat", { name, roomId, message });
-    setMessage("");
-  }
 
   function handleNightAction(actions, nightTimeAction) {
     if (actions.action === "kill") {
-      setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.target ? { ...player, alive: false } : player
-        )
-      );
+      if (playersData[actions.target].linked === true) {
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            player.linked === true ? { ...player, alive: false } : player
+          )
+        );
+      }
+      if (playersData[actions.target].linked === false) {
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.target ? { ...player, alive: false } : player
+          )
+        );
+      }
     }
     if (actions.action === "detect") {
       // get the detected player name
@@ -194,15 +202,25 @@ export default function Night({
     }
   }
 
+  function handleDeadPlayerMessageSent() {
+    socket.emit("deadPlayerChat", { name, roomId, message });
+    setMessage("");
+  }
+
   return (
     <div className="text-center mt-4 h-full">
       <div>{timer}</div>
       <div>Night {`${nights}`}</div>
       <div className="bg-gray-600 text-lg mt-4 mb-4">{role}</div>
-      {targetRef && currAction && (
-        <div>{`you decide to ${actionRef.current} ${target}`}</div>
-      )}
-      <div>---</div>
+      {
+        targetRef && currAction && !playersData[position].jailed && (
+          <div>{`you decide to ${actionRef.current} ${
+            target === null ? "no one" : playersData[target].name
+          }`}</div>
+        )
+        // || <div>---------</div>
+      }
+      {playersData[position].jailed && <div>you have been jailed</div>}
       <br />
       {Object.keys(characterData.neutral)[0] === role && (
         <NightChatRoom
@@ -220,33 +238,23 @@ export default function Night({
           handleMessageSent={handleMessageSent}
         />
       )}
-      {playersData[position].alive === false ||
-        (playersData[position].role === "medium" && (
-          <NightChatRoom
-            deadPlayerChat={deadPlayerChat}
-            message={message}
-            setMessage={setMessage}
-            handleMessageSent={handleDeadPlayerMessageSent}
-            role={role}
-          />
-        ))}
-      {/* <AliveChatAndTarget
-        playersData={playersData}
-        position={position}
-        setTarget={setTarget}
-      /> */}
-      <AlivePlayerList
+      {!playersData[position].alive && (
+        <WholeDayChatRoom
+          deadChat={deadPlayerChat}
+          message={message}
+          setMessage={setMessage}
+          handleMessageSent={handleDeadPlayerMessageSent}
+          role={role}
+        />
+      )}
+      <AliveChatAndTarget
         playersData={playersData}
         position={position}
         setTarget={setTarget}
         day={day}
+        cupidAbilityUsed={cupidAbilityUsed}
       />
       <DeadPlayerList playersData={playersData} position={position} />
-      {/* <AliveChatAndTargetFung
-        playersData={playersData}
-        position={position}
-        setTarget={setTarget}
-      /> */}
     </div>
   );
 }

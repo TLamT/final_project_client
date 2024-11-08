@@ -28,6 +28,7 @@ const characterData = {
       targetGroup: "all",
       ability: {},
       detected: "good",
+      img: "./image/police.jpg",
     },
     detective: {
       must: true,
@@ -61,7 +62,7 @@ const characterData = {
     },
     jailor: {
       must: false,
-      targetGroup: "all",
+      targetGroup: null,
       ability: {},
       detected: "good",
     },
@@ -119,7 +120,7 @@ const characterData = {
     },
     reminiscence: {
       must: false,
-      targetGroup: "dead",
+      targetGroup: null,
       ability: {},
       detected: "good",
     },

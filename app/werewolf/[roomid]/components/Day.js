@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import AlivePlayerList from "./AlivePlayList";
+import { useEffect, useState, useRef } from "react";
+import AliveChatAndTarget from "./AliveChatAndTarget";
 import DeadPlayerList from "./DeadPlayerList";
+import WholeDayChatRoom from "./WholeDayChatRoom";
+
 export default function Day({
   socket,
   roomId,
@@ -17,6 +19,7 @@ export default function Day({
   setRole,
   players,
   playersData,
+  setPlayersData,
   setPlayers,
   days,
   setDays,
@@ -24,13 +27,33 @@ export default function Day({
   position,
   sentinelAbilityInfo,
   day,
+  cupidAbilityUsed,
+  setCupidAbilityUsed,
+  deadPlayerMessageSent,
 }) {
-  const [timer, setTimer] = useState(5);
+  const [timer, setTimer] = useState(10);
   const [target, setTarget] = useState(null);
+  const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
-  const [isMediumViewingDayChat, setIsMediumViewingDayChat] = useState(true);
+  const [showWhichChat, setShowWhichChat] = useState(true);
+
+  const targetRef = useRef(target);
+  const actionRef = useRef(currAction);
 
   useEffect(() => {
+    targetRef.current = target;
+    actionRef.current = currAction; // Update ref whenever state changes
+  }, [target, currAction]);
+
+  const actions = {
+    cupid: "link with",
+    jailor: "jail",
+  };
+
+  const randomInterval = 9600 + Math.floor(Math.random() * 300);
+
+  useEffect(() => {
+    setCurrAction(actions[role]);
     if (role === "reminiscence" && role !== playersData[position].role) {
       socket.emit("dayChat", {
         roomId,
@@ -40,10 +63,20 @@ export default function Day({
     }
     setRole(playersData[position].role);
 
+    const action = setInterval(() => {
+      socket.emit("dayAction", {
+        days,
+        position,
+        roomId,
+        target: targetRef.current,
+        action: actionRef.current,
+      });
+    }, randomInterval);
+
     const dayTime = setInterval(() => {
       setDays((prev) => prev + 1);
       if (roomLeader) socket.emit("sendSetDay", { roomId, dayTime: false });
-    }, 5000);
+    }, 10000);
 
     const timer = setInterval(() => {
       setTimer((prev) => prev - 1);
@@ -52,9 +85,9 @@ export default function Day({
     socket.emit("resetNightAction", { roomId });
 
     handleMessageSent();
-    handleDeadPlayerSent();
 
     return () => {
+      clearInterval(action);
       clearInterval(dayTime);
       clearInterval(timer);
     };
@@ -67,8 +100,34 @@ export default function Day({
     socket.on("sendAllSetDay", ({ dayTime }) => {
       setDay(dayTime);
     });
-    socket.on("allDeadPlayerChat", ({ data }) => {
+    socket.on("allDeadPlayerChat", (data) => {
       setDeadPlayerChat(data);
+    });
+    socket.on("allDayAction", (dayTimeAction) => {
+      dayTimeAction.forEach((actions) => {
+        if (actions.action === "link with") {
+          setPlayersData((prev) =>
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, linked: true } : player
+            )
+          );
+          setPlayersData((prev) =>
+            prev.map((player, index) =>
+              index === actions.owner ? { ...player, linked: true } : player
+            )
+          );
+          if (playersData[position].role === "cupid") {
+            setCupidAbilityUsed(true);
+          }
+        }
+        if (actions.action === "jail") {
+          setPlayersData((prev) =>
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, jailed: true } : player
+            )
+          );
+        }
+      });
     });
   }, [socket]);
 
@@ -80,109 +139,80 @@ export default function Day({
     });
     setMessage("");
   }
-  function handleDeadPlayerSent() {
-    if (role !== "medium") {
-      socket.emit("deadPlayerChat", {
-        name: name,
-        message: message,
-        roomId: roomId,
-      });
-      setMessage;
-    }
-  }
-  const uniquedetectiveAbilityInfo = detectiveAbilityInfo.reduce(
-    (acc, current) => {
-      const x = acc.find((item) => item.id === current.id);
-      if (!x) {
-        acc.push(current);
-      }
-      return acc;
-    },
-    []
-  );
 
-  console.log(uniquedetectiveAbilityInfo);
-  const isAlive = playersData.find((player) => player.name === name)?.alive;
+  function handleDeadPlayerMessageSent() {
+    socket.emit("deadPlayerChat", { name, roomId, message });
+    setMessage("");
+  }
+
   return (
     <div className="text-center mt-4">
       <div>{timer}</div>
       <div>DAY {`${days}`}</div>
       <div className="bg-gray-600 text-lg mt-4 mb-4">{role}</div>
-      {role === "medium" && (
+      {(targetRef && currAction && (
+        <div>{`you decide to ${currAction} ${
+          target === null ? "no one" : playersData[target].name
+        }`}</div>
+      )) || <div>---------</div>}
+      {!playersData[position].alive && (
         <button
-          onClick={() => setIsMediumViewingDayChat(!isMediumViewingDayChat)}
+          onClick={() => setShowWhichChat((prev) => !prev)}
           className="toggle-chat-btn"
         >
-          SWITCH {isMediumViewingDayChat ? "Dead Player Chat" : "Day Chat"}
+          SWITCH {!showWhichChat ? "Dead Player Chat" : "Day Chat"}
         </button>
       )}
-      {isAlive || (role === "medium" && isMediumViewingDayChat) ? (
-        <div className="mt-10">
-          <input
-            value={message}
-            onChange={(ev) => setMessage(ev.target.value)}
-            className="border-2 border-cyan-300"
-          />
-          <div
-            onClick={() => {
-              isMediumViewingDayChat
-                ? handleMessageSent()
-                : handleDeadPlayerSent();
-            }}
-            className="cursor-pointer"
-          >
-            Send
+      {showWhichChat && (
+        <>
+          {playersData[position].alive ? (
+            <div className="mt-10">
+              <input
+                value={message}
+                onChange={(ev) => setMessage(ev.target.value)}
+                className="border-2 border-cyan-300"
+              />
+              <div
+                onClick={() => {
+                  handleMessageSent();
+                }}
+                className="cursor-pointer"
+              >
+                Send
+              </div>
+            </div>
+          ) : (
+            <div className="mt-10">Day-Chat You cannot send messages here.</div>
+          )}
+          <div className="mt-4">
+            {dayTimeChat.map((allDayMessage, index) => {
+              return (
+                <div key={index}>
+                  {allDayMessage.name}:{allDayMessage.message}
+                </div>
+              );
+            })}
           </div>
-        </div>
-      ) : (
-        <div className="mt-10">You cannot send messages here.</div>
+        </>
       )}
-      {(playersData.find((player) => player.name === name && !player.alive) ||
-        role === "medium") && (
-        <div className="dead-player-chat">
-          <h3>Dead Player Chat</h3>
-          <div>
-            {deadPlayerChat.map((msg, index) => (
-              <div key={index}>Anonymous: {msg.message}</div>
-            ))}
-          </div>
-        </div>
+      {!playersData[position].alive && !showWhichChat && (
+        <WholeDayChatRoom
+          deadChat={deadPlayerChat}
+          message={message}
+          setMessage={setMessage}
+          handleMessageSent={handleDeadPlayerMessageSent}
+          role={role}
+        />
       )}
-      <AlivePlayerList
+      <AliveChatAndTarget
         playersData={playersData}
         position={position}
         setTarget={setTarget}
         day={day}
+        cupidAbilityUsed={cupidAbilityUsed}
+        days={days}
       />
       <DeadPlayerList playersData={playersData} position={position} />
-      {/* <div className="mt-10">
-        <input
-          value={message}
-          onChange={(ev) => {
-            setMessage(ev.target.value);
-          }}
-          className="border-2 border-cyan-300"
-        ></input>
-        <div
-          onClick={() => {
-            handleMessageSent();
-            handleDeadPlayerSent();
-          }}
-          className="cursor-pointer"
-        >
-          Send
-        </div>
-      </div>
-      */}
-      <div className="mt-4">
-        {dayTimeChat.map((allDayMessage, index) => {
-          return (
-            <div key={index}>
-              {allDayMessage.name}:{allDayMessage.message}
-            </div>
-          );
-        })}
-      </div>
 
       <div>
         {!!detectiveAbilityInfo && role === "detective" && (

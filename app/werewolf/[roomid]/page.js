@@ -21,7 +21,7 @@ export default function () {
   // check player exist and current name
   const [name, setName] = useState("");
   const [players, setPlayers] = useState([]);
-  const [playersData, setPlayersData] = useState(null);
+  const [playersData, setPlayersData] = useState([]);
   const roomLeader = players[0]?.id === email;
   // day and night data
   const [gameStart, setGameStart] = useState(false);
@@ -30,6 +30,7 @@ export default function () {
   const [deadPlayerChat, setDeadPlayerChat] = useState([]);
   const [detectiveAbilityInfo, setDetectiveAbilityInfo] = useState([]);
   const [sentinelAbilityInfo, setSentinelAbilityInfo] = useState([]);
+  const [cupidAbilityUsed, setCupidAbilityUsed] = useState(false);
   // day data
   const [days, setDays] = useState(1);
   const [dayTimeChat, setDayTimeChat] = useState([]);
@@ -37,8 +38,32 @@ export default function () {
   const [nights, setNights] = useState(1);
   const [nightTimeChat, setNightTimeChat] = useState([]);
   const [vampireNightTimeChat, setVampireNightTimeChat] = useState([]);
-
+  const [reaperExist, setReaperExist] = useState(true);
   const position = players.findIndex((x) => x.id === email);
+
+  console.log(gameStart);
+  console.log(playersData);
+  console.log(fungPlayerData);
+  const assignNewReaper = () => {
+    if (gameStart) {
+      const witchCharacter = fungPlayerData.filter(
+        (player) => player.faction === "witch"
+      );
+      // playerData.map((e)=>e.r)
+      console.log(witchCharacter);
+      const originReaper = playersData.find(
+        (player) => player.role === "reaper"
+      );
+      const witchRoleWithoutOriginReaper = playersData.filter(
+        (player) => player.role === "reaper"
+      );
+      console.log(witchRoleWithoutOriginReaper);
+      if (!originReaper.alive) {
+      }
+      console.log(originReaper);
+    }
+  };
+  assignNewReaper();
 
   useEffect(() => {
     const cookieName = cookies.get("userName");
@@ -77,13 +102,17 @@ export default function () {
     });
 
     roles = players.map((playerData, index) => {
-      return { ...playerData, role: roles[index], detected: goodBad[index] };
+      return {
+        ...playerData,
+        role: roles[index],
+        detected: goodBad[index],
+        linked: false,
+        jailed: false,
+      };
     });
 
     setPlayersData(roles);
   }, [players]);
-
-  console.log(playersData);
 
   function handleGameStart() {
     socket.emit("allRoleAssign", { roomId: roomid, data: playersData });
@@ -142,6 +171,7 @@ export default function () {
       setRole={setRole}
       players={players}
       playersData={playersData}
+      setPlayersData={setPlayersData}
       setPlayers={setPlayers}
       days={days}
       setDays={setDays}
@@ -149,6 +179,8 @@ export default function () {
       position={position}
       sentinelAbilityInfo={sentinelAbilityInfo}
       day={day}
+      cupidAbilityUsed={cupidAbilityUsed}
+      setCupidAbilityUsed={setCupidAbilityUsed}
     />
   ) : (
     <Night
@@ -174,6 +206,7 @@ export default function () {
       setDetectiveAbilityInfo={setDetectiveAbilityInfo}
       setSentinelAbilityInfo={setSentinelAbilityInfo}
       day={day}
+      cupidAbilityUsed={cupidAbilityUsed}
     />
   );
 }
