@@ -27,8 +27,9 @@ export default function () {
   const [gameStart, setGameStart] = useState(false);
   const [day, setDay] = useState(true);
   const [role, setRole] = useState("");
-  const [detectiveAbilityInfo, setDetectiveAbilityInfo] = useState([]);
   const [deadPlayerChat, setDeadPlayerChat] = useState([]);
+  const [detectiveAbilityInfo, setDetectiveAbilityInfo] = useState([]);
+  const [sentinelAbilityInfo, setSentinelAbilityInfo] = useState([]);
   // day data
   const [days, setDays] = useState(1);
   const [dayTimeChat, setDayTimeChat] = useState([]);
@@ -138,18 +139,23 @@ export default function () {
       deadPlayerChat={deadPlayerChat}
       setDeadPlayerChat={setDeadPlayerChat}
       role={role}
+      setRole={setRole}
       players={players}
       playersData={playersData}
       setPlayers={setPlayers}
       days={days}
       setDays={setDays}
       detectiveAbilityInfo={detectiveAbilityInfo}
+      position={position}
+      sentinelAbilityInfo={sentinelAbilityInfo}
+      day={day}
     />
   ) : (
     <Night
       socket={socket}
       roomId={roomid}
       roomLeader={roomLeader}
+      days={days}
       setDay={setDay}
       name={name}
       nightTimeChat={nightTimeChat}
@@ -166,6 +172,8 @@ export default function () {
       nights={nights}
       setNights={setNights}
       setDetectiveAbilityInfo={setDetectiveAbilityInfo}
+      setSentinelAbilityInfo={setSentinelAbilityInfo}
+      day={day}
     />
   );
 }

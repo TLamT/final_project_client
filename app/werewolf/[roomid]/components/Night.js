@@ -6,9 +6,11 @@ import NightChatRoom from "./NightChatRoom";
 import AliveChatAndTarget from "./AliveChatAndTarget";
 import AliveChatAndTargetFung from "./AliveChatAndTargetFung";
 import fungPlayerData from "../data/fungPlayerData";
-
+import AlivePlayerList from "./AlivePlayList";
+import DeadPlayerList from "./DeadPlayerList";
 export default function Night({
   socket,
+  day,
   setDay,
   roomLeader,
   name,
@@ -27,6 +29,7 @@ export default function Night({
   nights,
   setNights,
   setDetectiveAbilityInfo,
+  setSentinelAbilityInfo,
 }) {
   const [timer, setTimer] = useState(10);
   const [message, setMessage] = useState("");
@@ -133,10 +136,7 @@ export default function Night({
       const detectedName = playersData[actions.target].name;
       // get the role good or bad
       const detectedRole = playersData[actions.target].detected;
-      setDetectiveAbilityInfo((prev) => [
-        ...prev,
-        { name: detectedName, detected: detectedRole },
-      ]);
+      setDetectiveAbilityInfo({ name: detectedName, detected: detectedRole });
     }
     if (actions.action === "protect") {
       if (playersData[actions.target].alive === false) {
@@ -150,36 +150,37 @@ export default function Night({
     }
     if (actions.action === "lookOut") {
       const playerVisit = nightTimeAction.filter((player) => {
-        if (player.target === actions.target) return player.owner;
+        return player.target === actions.target;
       });
-      console.log(playerVisit);
+      setSentinelAbilityInfo(playerVisit);
     }
     if (actions.action === "scam") {
-      setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.target ? { ...player, detected: "bad" } : player
-        )
-      );
+      setDetectiveAbilityInfo((prev) => ({ ...prev, detected: "bad" }));
     }
     if (actions.action === "remember") {
       const targetRole = playersData[actions.target].role;
       setPlayersData((prev) =>
         prev.map((player, index) =>
-          index === actions.target ? { ...player, role: targetRole } : player
+          index === actions.owner ? { ...player, role: targetRole } : player
         )
       );
-      socket.emit("dayChat", {
-        roomId,
-        message: `an reminiscence have remember that he is ${targetRole}`,
-        name: "server",
-      });
     }
     if (actions.action === "convert") {
-      setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.target ? { ...player, role: "vampire" } : player
-        )
-      );
+      const targetRole = playersData[actions.target].role;
+      if (targetRole !== "vampireHunter") {
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.target ? { ...player, role: "vampire" } : player
+          )
+        );
+      }
+      if (targetRole === "vampireHunter") {
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.owner ? { ...player, alive: false } : player
+          )
+        );
+      }
     }
     if (actions.action === "vampireKill") {
       const targetRole = playersData[actions.target].role;
@@ -229,11 +230,18 @@ export default function Night({
             role={role}
           />
         ))}
-      <AliveChatAndTarget
+      {/* <AliveChatAndTarget
         playersData={playersData}
         position={position}
         setTarget={setTarget}
+      /> */}
+      <AlivePlayerList
+        playersData={playersData}
+        position={position}
+        setTarget={setTarget}
+        day={day}
       />
+      <DeadPlayerList playersData={playersData} position={position} />
       {/* <AliveChatAndTargetFung
         playersData={playersData}
         position={position}

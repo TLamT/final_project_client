@@ -49,7 +49,7 @@ const characterData = {
     },
     cupid: {
       must: false,
-      targetGroup: "all",
+      targetGroup: null,
       ability: {},
       detected: "good",
     },
@@ -67,7 +67,7 @@ const characterData = {
     },
     vampireHunter: {
       must: false,
-      targetGroup: "all",
+      targetGroup: null,
       ability: {},
       detected: "good",
     },
