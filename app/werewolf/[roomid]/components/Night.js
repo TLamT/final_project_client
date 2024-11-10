@@ -33,19 +33,27 @@ export default function Night({
   setSentinelAbilityInfo,
   cupidAbilityUsed,
   deadPlayerMessageSent,
+  setDayTimeChat,
 }) {
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(1);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
+  const [twistedFateTarget, setTwistedFateTarget] = useState(null);
+  const [twistedFateFail, setTwistedFateFail] = useState(false);
 
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
+  const twistedFateTargetRef = useRef(twistedFateTarget);
+  const twistedFateDropDownList = fungPlayerData.filter(
+    (role) => role.faction !== "witch" && role.roleName !== "detective"
+  );
 
   useEffect(() => {
     targetRef.current = target;
     actionRef.current = currAction; // Update ref whenever state changes
-  }, [target, currAction]);
+    twistedFateTargetRef.current = twistedFateTarget;
+  }, [target, currAction, twistedFateTarget]);
 
   const actions = {
     reaper: "kill",
@@ -57,9 +65,10 @@ export default function Night({
     reminiscence: "remember",
     vampire: "convert",
     vampireHunter: "vampireKill",
+    twistedFate: "destiny",
   };
 
-  const randomInterval = 9600 + Math.floor(Math.random() * 300);
+  const randomInterval = 600 + Math.floor(Math.random() * 300);
 
   useEffect(() => {
     setCurrAction(actions[role]);
@@ -71,19 +80,23 @@ export default function Night({
         roomId,
         target: targetRef.current,
         action: actionRef.current,
+        twistedTarget: twistedFateTargetRef.current,
       });
     }, randomInterval);
 
     const nightTime = setInterval(() => {
       setNights((prev) => prev + 1);
       socket.emit("sendSetDay", { roomId, dayTime: true });
-    }, 10000);
+    }, 1000);
 
     const timer = setInterval(() => {
       setTimer((prev) => prev - 1);
     }, 1000);
 
     handleMessageSent();
+
+    socket.emit("clearVotes", roomId);
+    setPlayersData((prev) => prev.map((player) => ({ ...player, vote: 0 })));
 
     return () => {
       clearInterval(action);
@@ -109,6 +122,9 @@ export default function Night({
       nightTimeAction.forEach((actions) => {
         handleNightAction(actions, nightTimeAction);
       });
+    });
+    socket.on("allDayChat", (data) => {
+      setDayTimeChat(data);
     });
   }, [socket]);
 
@@ -200,6 +216,28 @@ export default function Night({
         );
       }
     }
+    if (actions.action === "destiny") {
+      if (actions.twistedTarget === playersData[actions.target].role) {
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.target ? { ...player, alive: false } : player
+          )
+        );
+      }
+      if (roomLeader && !twistedFateFail) {
+        setTwistedFateFail(true);
+        socket.emit("dayChat", {
+          name: "server",
+          message: `${
+            playersData[actions.owner].name
+          } is twistedFate and is trying to kill ${
+            playersData[actions.target].name
+          }`,
+          roomId: roomId,
+          repeat: "no",
+        });
+      }
+    }
   }
 
   function handleDeadPlayerMessageSent() {
@@ -208,53 +246,81 @@ export default function Night({
   }
 
   return (
-    <div className="text-center mt-4 h-full">
+    <div className="flex flex-col w-full h-screen">
       <div>{timer}</div>
       <div>Night {`${nights}`}</div>
-      <div className="bg-gray-600 text-lg mt-4 mb-4">{role}</div>
-      {
-        targetRef && currAction && !playersData[position].jailed && (
-          <div>{`you decide to ${actionRef.current} ${
-            target === null ? "no one" : playersData[target].name
-          }`}</div>
-        )
-        // || <div>---------</div>
-      }
-      {playersData[position].jailed && <div>you have been jailed</div>}
-      <br />
-      {Object.keys(characterData.neutral)[0] === role && (
-        <NightChatRoom
-          nightTimeChat={vampireNightTimeChat}
-          message={message}
-          setMessage={setMessage}
-          handleMessageSent={handleVampireMessageSent}
-        />
-      )}
-      {Object.keys(characterData.witch).includes(role) && (
-        <NightChatRoom
-          nightTimeChat={nightTimeChat}
-          message={message}
-          setMessage={setMessage}
-          handleMessageSent={handleMessageSent}
-        />
-      )}
-      {!playersData[position].alive && (
-        <WholeDayChatRoom
-          deadChat={deadPlayerChat}
-          message={message}
-          setMessage={setMessage}
-          handleMessageSent={handleDeadPlayerMessageSent}
-          role={role}
-        />
-      )}
-      <AliveChatAndTarget
-        playersData={playersData}
-        position={position}
-        setTarget={setTarget}
-        day={day}
-        cupidAbilityUsed={cupidAbilityUsed}
-      />
-      <DeadPlayerList playersData={playersData} position={position} />
+      <div className="mainContainer flex flex-row justify-between">
+        <div className="border-2 border-red-300 w-1/4">
+          <div className="h-1/2">
+            <DeadPlayerList playersData={playersData} position={position} />
+          </div>
+          <div className="h-1/2 border-2 border-red-300">
+            <div className="flex flex-col justify-between items-center h-full w-full">
+              {Object.keys(characterData.neutral)[0] === role && (
+                <NightChatRoom
+                  nightTimeChat={vampireNightTimeChat}
+                  message={message}
+                  setMessage={setMessage}
+                  handleMessageSent={handleVampireMessageSent}
+                />
+              )}
+              {Object.keys(characterData.witch).includes(role) && (
+                <NightChatRoom
+                  nightTimeChat={nightTimeChat}
+                  message={message}
+                  setMessage={setMessage}
+                  handleMessageSent={handleMessageSent}
+                  playersData={playersData}
+                  position={position}
+                />
+              )}
+              {!playersData[position].alive && (
+                <WholeDayChatRoom
+                  deadChat={deadPlayerChat}
+                  message={message}
+                  setMessage={setMessage}
+                  handleMessageSent={handleDeadPlayerMessageSent}
+                  role={role}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="border-2 border-red-300 w-1/2">
+          {playersData[position].role === "twistedFate" && (
+            <div>
+              <select
+                value={twistedFateTarget}
+                onChange={(ev) => setTwistedFateTarget(ev.target.value)}
+              >
+                {twistedFateDropDownList.map((role) => (
+                  <option value={role.roleName}>{role.roleName}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          {targetRef && currAction && !playersData[position].jailed && (
+            <div>{`you decide to ${actionRef.current} ${
+              target === null ? "no one" : playersData[target].name
+            }`}</div>
+          )}
+          {playersData[position].jailed && <div>you have been jailed</div>}
+        </div>
+        <div className="border-2 border-red-300 w-1/4 flex flex-col justify-between">
+          <div className="bg-gray-600 text-lg mt-4 mb-4 text-center">
+            {role}
+          </div>
+          <div className="h-1/2">
+            <AliveChatAndTarget
+              playersData={playersData}
+              position={position}
+              setTarget={setTarget}
+              day={day}
+              cupidAbilityUsed={cupidAbilityUsed}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

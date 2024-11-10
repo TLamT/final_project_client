@@ -17,8 +17,8 @@ const DeadPlayerList = ({ playersData, position }) => {
   });
 
   return (
-    <div className="border-2 border-rose-600 m-8">
-      <div className="font-bold">Dead</div>
+    <div>
+      <div className="font-bold text-center">Dead</div>
       <div>
         {targetPlayer.map((player, index) => {
           return (

@@ -8,7 +8,7 @@ import Day from "./components/Day";
 import Night from "./components/Night";
 import playerRoleList from "./components/DealCardMachine";
 import fungPlayerData from "./data/fungPlayerData";
-
+import characterData from "./data/character";
 const isSSR = typeof window === "undefined";
 
 export default function () {
@@ -38,32 +38,42 @@ export default function () {
   const [nights, setNights] = useState(1);
   const [nightTimeChat, setNightTimeChat] = useState([]);
   const [vampireNightTimeChat, setVampireNightTimeChat] = useState([]);
-  const [reaperExist, setReaperExist] = useState(true);
   const position = players.findIndex((x) => x.id === email);
-
-  console.log(gameStart);
-  console.log(playersData);
-  console.log(fungPlayerData);
   const assignNewReaper = () => {
+    // 當遊戲開始後才進行
     if (gameStart) {
-      const witchCharacter = fungPlayerData.filter(
-        (player) => player.faction === "witch"
-      );
-      // playerData.map((e)=>e.r)
-      console.log(witchCharacter);
       const originReaper = playersData.find(
         (player) => player.role === "reaper"
       );
-      const witchRoleWithoutOriginReaper = playersData.filter(
-        (player) => player.role === "reaper"
-      );
-      console.log(witchRoleWithoutOriginReaper);
-      if (!originReaper.alive) {
+      // 設定當reaper死後才進行
+      if (!originReaper?.alive) {
+        // 係現有既玩家篩選反派出來
+        const witchCharacterWithoutReaper = playersData.filter(
+          (player) =>
+            player.role === "cultist" ||
+            player.role === "scammer" ||
+            player.role === "twistedFate"
+        );
+        // 當剩下的反派角色數>1 時才進行(不包括reaper)
+        if (witchCharacterWithoutReaper.length > 0) {
+          const randomIndex = Math.floor(
+            Math.random() * witchCharacterWithoutReaper.length
+          );
+          //隨機抽取一個現有反派成為reaper
+          const newReaper = witchCharacterWithoutReaper[randomIndex];
+
+          const newReaperIndex = playersData.findIndex(
+            (player) => player.role === newReaper.role
+          );
+
+          playersData[newReaperIndex].role = "reaper";
+        }
       }
-      console.log(originReaper);
     }
   };
   assignNewReaper();
+
+  // console.log("playersData", playersData);
 
   useEffect(() => {
     const cookieName = cookies.get("userName");
@@ -108,6 +118,7 @@ export default function () {
         detected: goodBad[index],
         linked: false,
         jailed: false,
+        vote: 0,
       };
     });
 
@@ -207,6 +218,7 @@ export default function () {
       setSentinelAbilityInfo={setSentinelAbilityInfo}
       day={day}
       cupidAbilityUsed={cupidAbilityUsed}
+      setDayTimeChat={setDayTimeChat}
     />
   );
 }

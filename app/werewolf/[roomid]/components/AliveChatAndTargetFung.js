@@ -40,7 +40,6 @@ const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
       canTarget,
     };
   });
-
   return (
     <ul>
       {targetList.map((player, index) => (

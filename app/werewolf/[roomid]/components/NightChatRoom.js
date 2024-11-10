@@ -4,9 +4,26 @@ function NightChatRoom({
   setMessage,
   handleMessageSent,
   role,
+  playersData,
+  position,
 }) {
+  const isAlive = playersData[position]?.alive;
   return (
-    <div>
+    <>
+      {isAlive ? (
+        <div className="mt-4 border-2 border-blue-300 w-full h-3/4">
+          {nightTimeChat.map((allNightMessage, index) => (
+            <div key={index}>
+              {allNightMessage.name}: {allNightMessage.message}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-4 text-red-500">
+          You cannot access the witch chat as a dead player.
+        </div>
+      )}
+
       <input
         value={message}
         onChange={(ev) => setMessage(ev.target.value)}
@@ -25,16 +42,7 @@ function NightChatRoom({
       >
         Send
       </div>
-      <div className="mt-4">
-        {nightTimeChat.map((allNightMessage, index) => {
-          return (
-            <div key={index}>
-              {allNightMessage.name}:{allNightMessage.message}
-            </div>
-          );
-        })}
-      </div>
-    </div>
+    </>
   );
 }
 

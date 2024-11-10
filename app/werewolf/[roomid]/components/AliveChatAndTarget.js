@@ -7,6 +7,7 @@ const AliveChatAndTarget = ({
   day,
   cupidAbilityUsed,
   days,
+  handleVote,
 }) => {
   let myPlayer = fungPlayerData.find(
     (player) => player.roleName === playersData[position].role
@@ -20,8 +21,7 @@ const AliveChatAndTarget = ({
   // not ok => dont use if else
 
   //查找所有已死既玩家
-  // const deadPlayer = playersData.filter((player) => !player.alive);
-  // console.log("a", deadPlayer);
+
   //設定可睇到target既玩家
   const targetPlayer = playersData.map((player) => {
     let canTarget = false;
@@ -54,16 +54,14 @@ const AliveChatAndTarget = ({
 
   // retern 番 player既資料同埋canTarget, 再加上係壞人就會show番佢地既角色
 
-  {
-  }
   return (
-    <div className="border-2 border-rose-600 m-8">
+    <div className="border-2 border-rose-600 h-full">
       <div className="font-bold">Alive</div>
       {targetPlayer.map(
         (player, index) =>
           player.alive && (
             <div key={index}>
-              <div className="flex flex-row items-center justify-center w-200px h-200px ">
+              <div className="flex flex-row">
                 <div className="mr-2">{`${index + 1} ${player.name} `}</div>
                 {player.showRole && <span>{`[${player.role}]`}</span>}
                 {player.canTarget &&
@@ -72,7 +70,10 @@ const AliveChatAndTarget = ({
                   cupidAbilityUsed === false && (
                     <button onClick={() => setTarget(index)}>target</button>
                   )}
-                {days > 1 && player.alive && <button>Vote</button>}
+                {days > 1 && player.alive && (
+                  <button onClick={() => handleVote(index)}>Vote</button>
+                )}
+                {days > 1 && day && `${player.vote}`}
               </div>
             </div>
           )

@@ -24,9 +24,7 @@ function WholeDayChatRoom({
       </button>
       <div className="mt-4">
         {deadChat.map((allDeadMessage, index) => (
-          <div key={index}>
-            {allDeadMessage.name}: {allDeadMessage.message}
-          </div>
+          <div key={index}>Unknown: {allDeadMessage.message}</div>
         ))}
       </div>
     </div>
