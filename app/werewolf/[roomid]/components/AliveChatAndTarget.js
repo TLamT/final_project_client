@@ -70,9 +70,17 @@ const AliveChatAndTarget = ({
                   cupidAbilityUsed === false && (
                     <button onClick={() => setTarget(index)}>target</button>
                   )}
-                {days > 1 && player.alive && (
-                  <button onClick={() => handleVote(index)}>Vote</button>
-                )}
+                {playersData[position].role === "joker" &&
+                  playersData[position].votedOut === true && (
+                    <button onClick={() => setTarget(index)}>target</button>
+                  )}
+                {days > 1 &&
+                  day &&
+                  player.alive === true &&
+                  playersData[position].alive && (
+                    <button onClick={() => handleVote(index)}>Vote</button>
+                  )}
+
                 {days > 1 && day && `${player.vote}`}
               </div>
             </div>

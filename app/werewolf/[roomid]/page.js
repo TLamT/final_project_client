@@ -31,6 +31,8 @@ export default function () {
   const [detectiveAbilityInfo, setDetectiveAbilityInfo] = useState([]);
   const [sentinelAbilityInfo, setSentinelAbilityInfo] = useState([]);
   const [cupidAbilityUsed, setCupidAbilityUsed] = useState(false);
+  const [gameEnd, setGameEnd] = useState(false);
+  const [gameEndMessage, setGameEndMessage] = useState([]);
   // day data
   const [days, setDays] = useState(1);
   const [dayTimeChat, setDayTimeChat] = useState([]);
@@ -39,6 +41,9 @@ export default function () {
   const [nightTimeChat, setNightTimeChat] = useState([]);
   const [vampireNightTimeChat, setVampireNightTimeChat] = useState([]);
   const position = players.findIndex((x) => x.id === email);
+  //Conspirator Skill
+  const [chooseSomeone, setChooseSomeone] = useState("");
+
   const assignNewReaper = () => {
     // 當遊戲開始後才進行
     if (gameStart) {
@@ -71,10 +76,95 @@ export default function () {
       }
     }
   };
-  assignNewReaper();
 
-  // console.log("playersData", playersData);
+  useEffect(() => {
+    assignNewReaper();
+    if (gameStart) {
+      checkWon();
+    }
+  }, [playersData]);
 
+  const checkWon = () => {
+    const townArr = [...Object.keys(characterData.town)];
+    const witchArr = [...Object.keys(characterData.witch)];
+    const currTown = playersData.filter(
+      (player) => townArr.includes(player.role) && player.alive === true
+    );
+    const currWitch = playersData.filter(
+      (player) => witchArr.includes(player.role) && player.alive === true
+    );
+    const currVampire = playersData.filter(
+      (player) => player.role === "vampire"
+    );
+
+    if (currWitch.length === 0 && currVampire.length === 0) {
+      setGameEndMessage((prev) => [...prev, "town win"]);
+      setGameEnd(true);
+    }
+
+    if (currTown.length === 0 && currVampire.length === 0) {
+      setGameEndMessage((prev) => [...prev, "witch win"]);
+      setGameEnd(true);
+    }
+
+    if (
+      currVampire.length > 0 &&
+      currWitch.length === 0 &&
+      currTown.length === 0
+    ) {
+      setGameEndMessage((prev) => [...prev, "vampire win"]);
+      setGameEnd(true);
+    }
+
+    if (
+      currTown.length === 0 &&
+      currWitch.length === 0 &&
+      currVampire.length === 0
+    ) {
+      setGameEndMessage((prev) => [...prev, "draw"]);
+      setGameEnd(true);
+    }
+
+    playersData.map((player) => {
+      if (player.role === "joker" && player.votedOut === true) {
+        setGameEndMessage((prev) => [
+          ...prev,
+          `${player.name} has won as joker`,
+        ]);
+      }
+      if (
+        player.role === "conspirator" &&
+        playersData[chooseSomeone]?.votedOut === true
+      ) {
+        setGameEndMessage((prev) => [
+          ...prev,
+          `${player.name} has achieved their goal and wins!`,
+        ]);
+      }
+    });
+
+    // console.log(currWitch);
+    // if (currWitch === 0) {
+    //   return alert("Town has been Win!!!");
+    // } else if (currWitch > currTown) {
+    //   return alert("Witch has been Win!!!");
+    // } else if ((currTown === 0) & (currWitch === 0)) {
+    //   return alert("Vampire has been Win!!!");
+    // } else if (
+    //   playersData.find((player) => player.role === "joker")?.alive === false
+    // ) {
+    //   return alert("joker:I am the bigger Winner, Loser... HaHaHa");
+    // }
+    // const conspirator = playersData.find(
+    //   (player) => player.role === "Conspirator" && player.alive
+    // );
+    // const currAliveTown = currTown.filter((player) => player.alive);
+
+    // if (conspirator && currAliveTown.length === 0 && currWitch.length > 0) {
+    //   alert("Conspirator has achieved their goal and wins!");
+    // }
+    //
+  };
   useEffect(() => {
     const cookieName = cookies.get("userName");
     if (cookieName) {
@@ -119,8 +209,18 @@ export default function () {
         linked: false,
         jailed: false,
         vote: 0,
+        votedOut: false,
       };
     });
+
+    let indexArr = [];
+    playersData.forEach((player, index) => {
+      player.role === "conspirator" ? null : indexArr.push(index);
+    });
+    if (indexArr > 0) {
+      const randomIndex = Math.floor(Math.random() * indexArr.length);
+      setChooseSomeone(indexArr[randomIndex]);
+    }
 
     setPlayersData(roles);
   }, [players]);
@@ -135,103 +235,99 @@ export default function () {
     router.push(`/werewolf`);
   }
 
-  return !gameStart ? (
-    <div className="flex flex-col justify-center items-center">
-      <div>
-        <div className="border-solid border-2 border-indigo-600">
-          {`房間ID: ${roomid}`}
+  return !gameEnd ? (
+    !gameStart ? (
+      <div className="flex flex-col justify-center items-center">
+        <div>
+          <div className="border-solid border-2 border-indigo-600">
+            {`房間ID: ${roomid}`}
+          </div>
+        </div>
+        <div>Current name: {name}</div>
+
+        <div>
+          Player:
+          {players.map((info) => {
+            return (
+              <div className="ml-2" key={info.id}>
+                {info.name}
+              </div>
+            );
+          })}
+        </div>
+
+        {roomLeader && (
+          <div onClick={() => handleGameStart()} className="cursor-pointer">
+            Start Game
+          </div>
+        )}
+
+        {typeof playersData === "string" && <div>{playersData}</div>}
+
+        <div onClick={handleLogout} className="cursor-pointer">
+          Leave Room
         </div>
       </div>
-      <div>Current name: {name}</div>
-
-      <div>
-        Player:
-        {players.map((info) => {
-          return (
-            <div className="ml-2" key={info.id}>
-              {info.name}
-            </div>
-          );
-        })}
-      </div>
-
-      {roomLeader && (
-        <div onClick={() => handleGameStart()} className="cursor-pointer">
-          Start Game
-        </div>
-      )}
-
-      {typeof playersData === "string" && <div>{playersData}</div>}
-
-      <div onClick={handleLogout} className="cursor-pointer">
-        Leave Room
-      </div>
-    </div>
-  ) : day ? (
-    <Day
-      socket={socket}
-      roomId={roomid}
-      roomLeader={roomLeader}
-      setDay={setDay}
-      name={name}
-      dayTimeChat={dayTimeChat}
-      setDayTimeChat={setDayTimeChat}
-      deadPlayerChat={deadPlayerChat}
-      setDeadPlayerChat={setDeadPlayerChat}
-      role={role}
-      setRole={setRole}
-      players={players}
-      playersData={playersData}
-      setPlayersData={setPlayersData}
-      setPlayers={setPlayers}
-      days={days}
-      setDays={setDays}
-      detectiveAbilityInfo={detectiveAbilityInfo}
-      position={position}
-      sentinelAbilityInfo={sentinelAbilityInfo}
-      day={day}
-      cupidAbilityUsed={cupidAbilityUsed}
-      setCupidAbilityUsed={setCupidAbilityUsed}
-    />
+    ) : day ? (
+      <Day
+        socket={socket}
+        roomId={roomid}
+        roomLeader={roomLeader}
+        setDay={setDay}
+        name={name}
+        dayTimeChat={dayTimeChat}
+        setDayTimeChat={setDayTimeChat}
+        deadPlayerChat={deadPlayerChat}
+        setDeadPlayerChat={setDeadPlayerChat}
+        role={role}
+        setRole={setRole}
+        players={players}
+        playersData={playersData}
+        setPlayersData={setPlayersData}
+        setPlayers={setPlayers}
+        days={days}
+        setDays={setDays}
+        detectiveAbilityInfo={detectiveAbilityInfo}
+        position={position}
+        sentinelAbilityInfo={sentinelAbilityInfo}
+        day={day}
+        cupidAbilityUsed={cupidAbilityUsed}
+        setCupidAbilityUsed={setCupidAbilityUsed}
+        chooseSomeone={chooseSomeone}
+      />
+    ) : (
+      <Night
+        socket={socket}
+        roomId={roomid}
+        roomLeader={roomLeader}
+        days={days}
+        setDay={setDay}
+        name={name}
+        nightTimeChat={nightTimeChat}
+        setNightTimeChat={setNightTimeChat}
+        vampireNightTimeChat={vampireNightTimeChat}
+        setVampireNightTimeChat={setVampireNightTimeChat}
+        deadPlayerChat={deadPlayerChat}
+        setDeadPlayerChat={setDeadPlayerChat}
+        role={role}
+        players={players}
+        position={position}
+        playersData={playersData}
+        setPlayersData={setPlayersData}
+        nights={nights}
+        setNights={setNights}
+        setDetectiveAbilityInfo={setDetectiveAbilityInfo}
+        setSentinelAbilityInfo={setSentinelAbilityInfo}
+        day={day}
+        cupidAbilityUsed={cupidAbilityUsed}
+        setDayTimeChat={setDayTimeChat}
+      />
+    )
   ) : (
-    <Night
-      socket={socket}
-      roomId={roomid}
-      roomLeader={roomLeader}
-      days={days}
-      setDay={setDay}
-      name={name}
-      nightTimeChat={nightTimeChat}
-      setNightTimeChat={setNightTimeChat}
-      vampireNightTimeChat={vampireNightTimeChat}
-      setVampireNightTimeChat={setVampireNightTimeChat}
-      deadPlayerChat={deadPlayerChat}
-      setDeadPlayerChat={setDeadPlayerChat}
-      role={role}
-      players={players}
-      position={position}
-      playersData={playersData}
-      setPlayersData={setPlayersData}
-      nights={nights}
-      setNights={setNights}
-      setDetectiveAbilityInfo={setDetectiveAbilityInfo}
-      setSentinelAbilityInfo={setSentinelAbilityInfo}
-      day={day}
-      cupidAbilityUsed={cupidAbilityUsed}
-      setDayTimeChat={setDayTimeChat}
-    />
+    <div className="flex flex-col justify-center items-center">
+      {gameEndMessage.map((message, index) => {
+        return <div key={index}>{message}</div>;
+      })}
+    </div>
   );
 }
-
-// const [abc, dispatch] = useReducer(abcReducer, { a: 1, b: 2, c: 3 });
-
-// function abcReducer(abc, action) {
-//   switch (action.type) {
-//     case "addA":
-//       return { ...abc, a: a++ };
-//     case "addB":
-//       return { ...abc, b: b++ };
-//     default:
-//       return abc;
-//   }
-// }

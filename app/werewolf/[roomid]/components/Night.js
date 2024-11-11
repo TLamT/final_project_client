@@ -35,12 +35,14 @@ export default function Night({
   deadPlayerMessageSent,
   setDayTimeChat,
 }) {
-  const [timer, setTimer] = useState(1);
+  const [timer, setTimer] = useState(30);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [twistedFateTarget, setTwistedFateTarget] = useState(null);
   const [twistedFateFail, setTwistedFateFail] = useState(false);
+  const [fade, setFade] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
@@ -48,6 +50,43 @@ export default function Night({
   const twistedFateDropDownList = fungPlayerData.filter(
     (role) => role.faction !== "witch" && role.roleName !== "detective"
   );
+
+  useEffect(() => {
+    setFade(true);
+    setCurrAction(actions[role]);
+
+    const action = setInterval(() => {
+      socket.emit("nightAction", {
+        nights,
+        position,
+        roomId,
+        target: targetRef.current,
+        action: actionRef.current,
+        twistedTarget: twistedFateTargetRef.current,
+      });
+    }, randomInterval);
+
+    const nightTime = setInterval(() => {
+      setFadeOut(true);
+      setNights((prev) => prev + 1);
+      socket.emit("sendSetDay", { roomId, dayTime: true });
+    }, 30000);
+
+    const timer = setInterval(() => {
+      setTimer((prev) => prev - 1);
+    }, 1000);
+
+    handleMessageSent();
+
+    socket.emit("clearVotes", roomId);
+    setPlayersData((prev) => prev.map((player) => ({ ...player, vote: 0 })));
+
+    return () => {
+      clearInterval(action);
+      clearInterval(nightTime);
+      clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     targetRef.current = target;
@@ -66,44 +105,10 @@ export default function Night({
     vampire: "convert",
     vampireHunter: "vampireKill",
     twistedFate: "destiny",
+    joker: "kill",
   };
 
-  const randomInterval = 600 + Math.floor(Math.random() * 300);
-
-  useEffect(() => {
-    setCurrAction(actions[role]);
-
-    const action = setInterval(() => {
-      socket.emit("nightAction", {
-        nights,
-        position,
-        roomId,
-        target: targetRef.current,
-        action: actionRef.current,
-        twistedTarget: twistedFateTargetRef.current,
-      });
-    }, randomInterval);
-
-    const nightTime = setInterval(() => {
-      setNights((prev) => prev + 1);
-      socket.emit("sendSetDay", { roomId, dayTime: true });
-    }, 1000);
-
-    const timer = setInterval(() => {
-      setTimer((prev) => prev - 1);
-    }, 1000);
-
-    handleMessageSent();
-
-    socket.emit("clearVotes", roomId);
-    setPlayersData((prev) => prev.map((player) => ({ ...player, vote: 0 })));
-
-    return () => {
-      clearInterval(action);
-      clearInterval(nightTime);
-      clearInterval(timer);
-    };
-  }, []);
+  const randomInterval = 29600 + Math.floor(Math.random() * 300);
 
   useEffect(() => {
     socket.on("allNightChat", (data) => {
@@ -142,8 +147,13 @@ export default function Night({
     if (actions.action === "kill") {
       if (playersData[actions.target].linked === true) {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
+          prev.map((player) =>
             player.linked === true ? { ...player, alive: false } : player
+          )
+        );
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.owner ? { ...player, votedOut: false } : player
           )
         );
       }
@@ -151,6 +161,11 @@ export default function Night({
         setPlayersData((prev) =>
           prev.map((player, index) =>
             index === actions.target ? { ...player, alive: false } : player
+          )
+        );
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.owner ? { ...player, votedOut: false } : player
           )
         );
       }
@@ -164,7 +179,7 @@ export default function Night({
     }
     if (actions.action === "protect") {
       if (playersData[actions.target].alive === false) {
-        alert("you successfully protected someone");
+        console.log("you successfully protected someone");
       }
       setPlayersData((prev) =>
         prev.map((player, index) =>
@@ -190,13 +205,23 @@ export default function Night({
       );
     }
     if (actions.action === "convert") {
+      const witch = Object.keys(characterData.witch);
       const targetRole = playersData[actions.target].role;
       if (targetRole !== "vampireHunter") {
-        setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.target ? { ...player, role: "vampire" } : player
-          )
-        );
+        if (witch.includes(targetRole)) {
+          setPlayersData((prev) =>
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, alive: false } : player
+            )
+          );
+        }
+        if (!witch.includes(targetRole)) {
+          setPlayersData((prev) =>
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, role: "vampire" } : player
+            )
+          );
+        }
       }
       if (targetRole === "vampireHunter") {
         setPlayersData((prev) =>
@@ -246,10 +271,18 @@ export default function Night({
   }
 
   return (
-    <div className="flex flex-col w-full h-screen">
+    <div
+      className={`flex flex-col w-screen h-screen text-white transition-all duration-300 ease-out ${
+        fadeOut ? "bg-white" : fade ? "bg-gray-700" : "bg-white"
+      }`}
+    >
       <div>{timer}</div>
       <div>Night {`${nights}`}</div>
-      <div className="mainContainer flex flex-row justify-between">
+      <div
+        className={`mainContainer flex flex-row justify-between transition-opacity duration-500 ${
+          fade ? "opacity-100" : "opacity-0"
+        }`}
+      >
         <div className="border-2 border-red-300 w-1/4">
           <div className="h-1/2">
             <DeadPlayerList playersData={playersData} position={position} />
@@ -262,6 +295,9 @@ export default function Night({
                   message={message}
                   setMessage={setMessage}
                   handleMessageSent={handleVampireMessageSent}
+                  playersData={playersData}
+                  position={position}
+                  role={role}
                 />
               )}
               {Object.keys(characterData.witch).includes(role) && (
@@ -272,6 +308,7 @@ export default function Night({
                   handleMessageSent={handleMessageSent}
                   playersData={playersData}
                   position={position}
+                  role={role}
                 />
               )}
               {!playersData[position].alive && (
@@ -299,11 +336,20 @@ export default function Night({
               </select>
             </div>
           )}
-          {targetRef && currAction && !playersData[position].jailed && (
-            <div>{`you decide to ${actionRef.current} ${
-              target === null ? "no one" : playersData[target].name
-            }`}</div>
-          )}
+          {targetRef &&
+            currAction &&
+            !playersData[position].jailed &&
+            playersData[position].role !== "joker" && (
+              <div>{`you decide to ${actionRef.current} ${
+                target === null ? "no one" : playersData[target].name
+              }`}</div>
+            )}
+          {playersData[position].role === "joker" &&
+            playersData[position].votedOut === true && (
+              <div>{`you decide to ${actionRef.current} ${
+                target === null ? "no one" : playersData[target].name
+              }`}</div>
+            )}
           {playersData[position].jailed && <div>you have been jailed</div>}
         </div>
         <div className="border-2 border-red-300 w-1/4 flex flex-col justify-between">

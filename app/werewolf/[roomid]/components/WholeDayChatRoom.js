@@ -10,7 +10,7 @@ function WholeDayChatRoom({
       <input
         value={message}
         onChange={(ev) => setMessage(ev.target.value)}
-        className="border-2 border-cyan-300"
+        className="border-2 border-cyan-300 bg-gray-700"
         disabled={role === "medium"} // Disable input for medium role
       />
       <button
@@ -22,7 +22,7 @@ function WholeDayChatRoom({
       >
         Send
       </button>
-      <div className="mt-4">
+      <div className="mt-4 overflow-y-scroll">
         {deadChat.map((allDeadMessage, index) => (
           <div key={index}>Unknown: {allDeadMessage.message}</div>
         ))}

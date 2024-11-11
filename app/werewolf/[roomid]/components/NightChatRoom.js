@@ -7,11 +7,10 @@ function NightChatRoom({
   playersData,
   position,
 }) {
-  const isAlive = playersData[position]?.alive;
   return (
     <>
-      {isAlive ? (
-        <div className="mt-4 border-2 border-blue-300 w-full h-3/4">
+      {playersData[position].alive ? (
+        <div className="mt-4 border-2 border-blue-300 w-full h-3/4 overflow-y-scroll">
           {nightTimeChat.map((allNightMessage, index) => (
             <div key={index}>
               {allNightMessage.name}: {allNightMessage.message}
@@ -27,7 +26,7 @@ function NightChatRoom({
       <input
         value={message}
         onChange={(ev) => setMessage(ev.target.value)}
-        className="border-2 border-cyan-300"
+        className="border-2 border-cyan-300 bg-gray-700"
         disabled={role === "medium"}
       />
       <div

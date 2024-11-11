@@ -5,3 +5,7 @@
 .mainContainer {
   height: 880px;
 }
+
+#inputBox {
+  background-color: grey;
+}

@@ -102,12 +102,12 @@ const condition = {
 };
 
 export default function playerRoleList(playerCount) {
-  return ["police", "reaper", "defender", "cupid", "jailor", "joker"];
+  return [vampire, vampireHunter, defender];
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
 
   const conditions = condition[playerCount];
-  const excludeVampire = 10;
+  const excludeVampire = 2;
 
   let townSelected = [];
   let witchSelected = [];

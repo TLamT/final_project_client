@@ -30,34 +30,28 @@ export default function Day({
   cupidAbilityUsed,
   setCupidAbilityUsed,
   deadPlayerMessageSent,
+  chooseSomeone,
 }) {
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(30);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
   const [showWhichChat, setShowWhichChat] = useState(true);
   const [personal, setPersonal] = useState(null);
+  const [highestVotePlayers, setHighestVotePlayer] = useState(null);
+  const [fade, setFade] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
+
+  // console.log("personal:", personal);
+  // console.log("playersData", playersData);
 
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
-
-  const alivePlayerId = playersData
-    .filter((player) => player.alive)
-    .map((player) => player.id);
+  const playerDataRef = useRef(playersData);
 
   useEffect(() => {
-    targetRef.current = target;
-    actionRef.current = currAction; // Update ref whenever state changes
-  }, [target, currAction]);
+    setFade(true);
 
-  const actions = {
-    cupid: "link with",
-    jailor: "jail",
-  };
-
-  const randomInterval = timer * 1000 + Math.floor(Math.random() * 300);
-
-  useEffect(() => {
     setCurrAction(actions[role]);
     if (role === "reminiscence" && role !== playersData[position].role) {
       socket.emit("dayChat", {
@@ -81,11 +75,16 @@ export default function Day({
     const dayTime = setInterval(() => {
       //(same votes:no one die)
       // find who have the most vote
-      // const highestVotes = Math.max(...);
+      if (days > 1) {
+        calculateHighestVoted();
+      }
+
+      // Trigger fade-out effect before ending the day
+      setFadeOut(true);
 
       setDays((prev) => prev + 1);
       if (roomLeader) socket.emit("sendSetDay", { roomId, dayTime: false });
-    }, 10000);
+    }, 30000);
 
     const timer = setInterval(() => {
       setTimer((prev) => prev - 1);
@@ -101,6 +100,69 @@ export default function Day({
       clearInterval(timer);
     };
   }, []);
+
+  const alivePlayerId = playersData
+    .filter((player) => player.alive)
+    .map((player) => player.id);
+
+  useEffect(() => {
+    targetRef.current = target;
+    actionRef.current = currAction; // Update ref whenever state changes
+    playerDataRef.current = playersData;
+  }, [target, currAction, playersData]);
+
+  const actions = {
+    cupid: "link with",
+    jailor: "jail",
+  };
+
+  const randomInterval = 29600 + Math.floor(Math.random() * 300);
+
+  const calculateHighestVoted = () => {
+    const playersVote = playerDataRef.current.map((player) => player.vote);
+    const maxVotes = Math.max(...playersVote);
+    // console.log("maxVotes", maxVotes);
+    const highestVotePlayers = playerDataRef.current.filter(
+      (player) => player.vote === maxVotes
+    );
+    if (highestVotePlayers.length === 1) {
+      const votedOutPlayer = highestVotePlayers[0];
+      console.log("votedOutPlayer1", votedOutPlayer);
+      setHighestVotePlayer(votedOutPlayer);
+
+      //emit vote out message to system chat
+      if (roomLeader) {
+        socket.emit("dayChat", {
+          name: "server",
+          message: `${votedOutPlayer.name} has been voted out.`,
+          roomId: roomId,
+          repeat: "no",
+        });
+      }
+      setPlayersData((preData) =>
+        preData.map((player) =>
+          player.id === votedOutPlayer.id
+            ? { ...player, alive: false, vote: 0, votedOut: true }
+            : { ...player, vote: 0 }
+        )
+      );
+      // console.log("preData", preData);
+    } else {
+      setHighestVotePlayer("It's a tie! No one is eliminated.");
+      //emit tie message to system chat
+      if (roomLeader) {
+        socket.emit("dayChat", {
+          name: "server",
+          message: `It's a tie! No one is eliminated.`,
+          roomId: roomId,
+          repeat: "no",
+        });
+      }
+      setPlayersData((preData) =>
+        preData.map((player) => ({ ...player, vote: 0 }))
+      );
+    }
+  };
 
   useEffect(() => {
     socket.on("allDayChat", (data) => {
@@ -125,16 +187,6 @@ export default function Day({
           )
         );
       });
-
-      // players.forEach((playerIndex) => {
-      //   setPlayersData((prev) =>
-      //     prev.map((player, index) =>
-      //       index === +playerIndex
-      //         ? { ...player, vote: voteCounts[playerIndex] }
-      //         : { ...player, vote: 0 }
-      //     )
-      //   );
-      // });
     });
     socket.on("allDayAction", (dayTimeAction) => {
       dayTimeAction.forEach((actions) => {
@@ -193,11 +245,49 @@ export default function Day({
     }
   }
 
+  const CircleWithItems = ({ items, radius }) => {
+    const centerX = 400; // X coordinate of the circle center
+    const centerY = 400; // Y coordinate of the circle center
+
+    return (
+      <svg width="800" height="800">
+        <circle cx={centerX} cy={centerY} r={radius} fill="lightblue" />
+        {items.map((item, index) => {
+          const angle = (index / items.length) * 2 * Math.PI; // angle in radians
+          const x = centerX + radius * Math.cos(angle); // X position
+          const y = centerY + radius * Math.sin(angle); // Y position
+
+          return (
+            <g key={index} transform={`translate(${x}, ${y})`}>
+              <text x="0" y="60" textAnchor="middle" dominantBaseline="middle">
+                {item}
+              </text>
+              <image
+                href="https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"
+                width="100"
+                height="100"
+                x="-50" // Center the image
+                y="-50" // Center the image
+              />
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
   return (
-    <div className="flex flex-col w-full h-screen	">
+    <div
+      className={`flex flex-col w-screen h-screen transition-all duration-300 ease-in	
+         ${fadeOut ? "bg-gray-700" : fade ? "bg-white" : "bg-gray-700"}`}
+    >
       <div>{timer}</div>
-      <div>DAY {`${days}`}</div>{" "}
-      <div className="mainContainer flex flex-row justify-between">
+      <div>DAY {`${days}`}</div>
+      <div
+        className={`mainContainer flex flex-row justify-between 
+          transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}
+        `}
+      >
         {/* left component */}
         <div className="border-2 border-red-300 w-1/4">
           <div className="h-1/2">
@@ -213,7 +303,7 @@ export default function Day({
               </div>
             )}
             <div className="flex flex-col justify-between items-center h-full">
-              <div className="mt-4 border-2 border-blue-300 w-full h-3/4">
+              <div className="mt-4 border-2 border-blue-300 w-full h-3/4 overflow-y-scroll">
                 {dayTimeChat.map((allDayMessage, index) => (
                   <div key={index}>
                     {allDayMessage.name}: {allDayMessage.message}
@@ -249,7 +339,7 @@ export default function Day({
           </div>
         </div>
         {/* middle component*/}
-        <div className="border-2 border-red-300 w-1/2">
+        <div className="border-2 border-red-300 w-1/2 flex flex-col justify-center items-center">
           <div>
             {targetRef && currAction && (
               <div>{`you decide to ${currAction} ${
@@ -271,10 +361,21 @@ export default function Day({
               })}
           </div>
           <div>
+            {role === "conspirator" && (
+              <div>{`you target is ${playersData[chooseSomeone].name}`}</div>
+            )}
+          </div>
+          <div>
             {days > 1 &&
               `You have voted ${
                 personal !== null ? playersData[personal].name : "no one"
               }`}
+          </div>
+          <div>
+            <CircleWithItems
+              items={playersData.map((x) => x.name)}
+              radius={320}
+            />
           </div>
         </div>
         {/* right component */}
@@ -284,7 +385,7 @@ export default function Day({
           </div>
           <div className="h-1/2">
             <AliveChatAndTarget
-              playersData={playersData}
+              playersData={playerDataRef.current}
               position={position}
               setTarget={setTarget}
               day={day}
