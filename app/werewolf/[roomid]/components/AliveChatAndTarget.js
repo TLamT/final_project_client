@@ -21,18 +21,24 @@ const AliveChatAndTarget = ({
   // not ok => dont use if else
 
   //查找所有已死既玩家
-
+  const deadPlayer = playersData.filter((player) => player.alive);
   //設定可睇到target既玩家
   const targetPlayer = playersData.map((player) => {
     let canTarget = false;
-
+    console.log(deadPlayer.map((player) => player.name));
     if (!day) {
       if (myPlayer.targetGroup === "all") {
         canTarget = player.role !== myPlayer.roleName;
       } else if (myPlayer.targetGroup === "nonWitch") {
         canTarget =
           fungPlayerData.find((role) => role.roleName === player.role)
-            .faction !== "witch";
+            ?.faction !== "witch";
+      } else if (myPlayer.role === "reminsence") {
+        canTarget = deadPlayer;
+      } else if (myPlayer.targetGroup === "nonWitch") {
+        canTarget =
+          fungPlayerData.find((role) => role.roleName === player.role)
+            ?.faction !== "witch";
       }
       // else if (myPlayer.targetGroup === "dead") {
       //   canTarget = deadPlayer;
@@ -47,7 +53,7 @@ const AliveChatAndTarget = ({
       canTarget,
       showRole:
         myPlayer.faction === "witch" &&
-        fungPlayerData.find((e) => e.roleName === player.role).faction ===
+        fungPlayerData.find((e) => e.roleName === player.role)?.faction ===
           "witch",
     };
   });
@@ -67,11 +73,18 @@ const AliveChatAndTarget = ({
                 {player.canTarget &&
                   !playersData[position].jailed &&
                   playersData[position].alive &&
-                  cupidAbilityUsed === false && (
+                  cupidAbilityUsed === false &&
+                  playersData[position].role !== "reminsence" && (
                     <button onClick={() => setTarget(index)}>target</button>
                   )}
                 {playersData[position].role === "joker" &&
                   playersData[position].votedOut === true && (
+                    <button onClick={() => setTarget(index)}>target</button>
+                  )}
+
+                {playersData[position].role === "vampireHunter" &&
+                  playersData[position].alive &&
+                  !day && (
                     <button onClick={() => setTarget(index)}>target</button>
                   )}
                 {days > 1 &&

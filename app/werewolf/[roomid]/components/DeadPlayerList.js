@@ -1,6 +1,6 @@
 import fungPlayerData from "../data/fungPlayerData";
 
-const DeadPlayerList = ({ playersData, position }) => {
+const DeadPlayerList = ({ playersData, position, day, setTarget }) => {
   //查找自身身份
   let myPlayer = fungPlayerData.find(
     (player) => player.roleName === playersData[position].role
@@ -9,6 +9,7 @@ const DeadPlayerList = ({ playersData, position }) => {
   // 追憶者能選的目標
   let targetPlayer = playersData.map((player) => {
     let canTarget = false;
+
     if (myPlayer.role === "reminiscence") {
       canTarget = playersData.filter((player) => !player.alive);
       return { canTarget, ...player };
@@ -26,9 +27,11 @@ const DeadPlayerList = ({ playersData, position }) => {
               <div key={index} className="flex flex-row justify-center">
                 <div className="mr-4">{`${index + 1} ${player.name} `}</div>
                 <div>
-                  {player.role === "reminiscence" && (
-                    <button onClick={() => setTarget(index)}>target</button>
-                  )}
+                  {playersData[position].role === "reminiscence" &&
+                    !day &&
+                    playersData[position].alive && (
+                      <button onClick={() => setTarget(index)}>target</button>
+                    )}
                 </div>
               </div>
             )

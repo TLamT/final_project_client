@@ -34,6 +34,7 @@ export default function Night({
   cupidAbilityUsed,
   deadPlayerMessageSent,
   setDayTimeChat,
+  setPlayerDiedLastNight,
 }) {
   const [timer, setTimer] = useState(30);
   const [message, setMessage] = useState("");
@@ -52,8 +53,11 @@ export default function Night({
   );
 
   useEffect(() => {
+    setTimer(10);
     setFade(true);
     setCurrAction(actions[role]);
+
+    socket.emit("resetDayAction", { roomId });
 
     const action = setInterval(() => {
       socket.emit("nightAction", {
@@ -64,15 +68,15 @@ export default function Night({
         action: actionRef.current,
         twistedTarget: twistedFateTargetRef.current,
       });
-    }, randomInterval);
+    }, 10000);
 
     const nightTime = setInterval(() => {
       setFadeOut(true);
       setNights((prev) => prev + 1);
       socket.emit("sendSetDay", { roomId, dayTime: true });
-    }, 30000);
+    }, 11000);
 
-    const timer = setInterval(() => {
+    const clockTimer = setInterval(() => {
       setTimer((prev) => prev - 1);
     }, 1000);
 
@@ -84,7 +88,7 @@ export default function Night({
     return () => {
       clearInterval(action);
       clearInterval(nightTime);
-      clearInterval(timer);
+      clearInterval(clockTimer);
     };
   }, []);
 
@@ -107,8 +111,6 @@ export default function Night({
     twistedFate: "destiny",
     joker: "kill",
   };
-
-  const randomInterval = 29600 + Math.floor(Math.random() * 300);
 
   useEffect(() => {
     socket.on("allNightChat", (data) => {
@@ -156,6 +158,7 @@ export default function Night({
             index === actions.owner ? { ...player, votedOut: false } : player
           )
         );
+        setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       }
       if (playersData[actions.target].linked === false) {
         setPlayersData((prev) =>
@@ -168,6 +171,7 @@ export default function Night({
             index === actions.owner ? { ...player, votedOut: false } : player
           )
         );
+        setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       }
     }
     if (actions.action === "detect") {
@@ -177,6 +181,7 @@ export default function Night({
       const detectedRole = playersData[actions.target].detected;
       setDetectiveAbilityInfo({ name: detectedName, detected: detectedRole });
     }
+
     if (actions.action === "protect") {
       if (playersData[actions.target].alive === false) {
         console.log("you successfully protected someone");
@@ -233,6 +238,7 @@ export default function Night({
     }
     if (actions.action === "vampireKill") {
       const targetRole = playersData[actions.target].role;
+
       if (targetRole === "vampire") {
         setPlayersData((prev) =>
           prev.map((player, index) =>
@@ -248,8 +254,7 @@ export default function Night({
             index === actions.target ? { ...player, alive: false } : player
           )
         );
-      }
-      if (roomLeader && !twistedFateFail) {
+      } else {
         setTwistedFateFail(true);
         socket.emit("dayChat", {
           name: "server",
@@ -279,13 +284,18 @@ export default function Night({
       <div>{timer}</div>
       <div>Night {`${nights}`}</div>
       <div
-        className={`mainContainer flex flex-row justify-between transition-opacity duration-500 ${
+        className={`mainContainer flex flex-row justify-between transition-opacity duration-300 ${
           fade ? "opacity-100" : "opacity-0"
         }`}
       >
         <div className="border-2 border-red-300 w-1/4">
           <div className="h-1/2">
-            <DeadPlayerList playersData={playersData} position={position} />
+            <DeadPlayerList
+              setTarget={setTarget}
+              playersData={playersData}
+              position={position}
+              day={day}
+            />
           </div>
           <div className="h-1/2 border-2 border-red-300">
             <div className="flex flex-col justify-between items-center h-full w-full">
@@ -318,6 +328,19 @@ export default function Night({
                   setMessage={setMessage}
                   handleMessageSent={handleDeadPlayerMessageSent}
                   role={role}
+                  playersData={playersData}
+                  position={position}
+                />
+              )}
+              {role === "medium" && playersData[position].alive && (
+                <WholeDayChatRoom
+                  deadChat={deadPlayerChat}
+                  message={message}
+                  setMessage={setMessage}
+                  handleMessageSent={handleDeadPlayerMessageSent}
+                  role={role}
+                  playersData={playersData}
+                  position={position}
                 />
               )}
             </div>
@@ -329,9 +352,17 @@ export default function Night({
               <select
                 value={twistedFateTarget}
                 onChange={(ev) => setTwistedFateTarget(ev.target.value)}
+                className="bg-gray-700"
               >
+                <option className="bg-gray-700">Select a Role</option>
                 {twistedFateDropDownList.map((role) => (
-                  <option value={role.roleName}>{role.roleName}</option>
+                  <option
+                    value={role.roleName}
+                    key={role.roleName}
+                    className="bg-gray-700"
+                  >
+                    {role.roleName}
+                  </option>
                 ))}
               </select>
             </div>

@@ -33,6 +33,7 @@ export default function () {
   const [cupidAbilityUsed, setCupidAbilityUsed] = useState(false);
   const [gameEnd, setGameEnd] = useState(false);
   const [gameEndMessage, setGameEndMessage] = useState([]);
+  const [playerDiedLastNight, setPlayerDiedLastNight] = useState([]);
   // day data
   const [days, setDays] = useState(1);
   const [dayTimeChat, setDayTimeChat] = useState([]);
@@ -42,7 +43,7 @@ export default function () {
   const [vampireNightTimeChat, setVampireNightTimeChat] = useState([]);
   const position = players.findIndex((x) => x.id === email);
   //Conspirator Skill
-  const [chooseSomeone, setChooseSomeone] = useState("");
+  const [chooseSomeone, setChooseSomeone] = useState(null);
 
   const assignNewReaper = () => {
     // 當遊戲開始後才進行
@@ -78,9 +79,9 @@ export default function () {
   };
 
   useEffect(() => {
-    assignNewReaper();
     if (gameStart) {
-      checkWon();
+      assignNewReaper();
+      // checkWon();
     }
   }, [playersData]);
 
@@ -198,7 +199,7 @@ export default function () {
     let roles = playerRoleList(players.length);
 
     const goodBad = roles.map((role) => {
-      return fungPlayerData.find((char) => char.roleName === role).detected;
+      return fungPlayerData.find((char) => char.roleName === role)?.detected;
     });
 
     roles = players.map((playerData, index) => {
@@ -217,10 +218,8 @@ export default function () {
     playersData.forEach((player, index) => {
       player.role === "conspirator" ? null : indexArr.push(index);
     });
-    if (indexArr > 0) {
-      const randomIndex = Math.floor(Math.random() * indexArr.length);
-      setChooseSomeone(indexArr[randomIndex]);
-    }
+    const randomIndex = Math.floor(Math.random() * indexArr.length);
+    setChooseSomeone(indexArr[randomIndex]);
 
     setPlayersData(roles);
   }, [players]);
@@ -264,7 +263,10 @@ export default function () {
 
         {typeof playersData === "string" && <div>{playersData}</div>}
 
-        <div onClick={handleLogout} className="cursor-pointer">
+        <div
+          onClick={handleLogout}
+          className="cursor-pointer border border-black"
+        >
           Leave Room
         </div>
       </div>
@@ -294,6 +296,7 @@ export default function () {
         cupidAbilityUsed={cupidAbilityUsed}
         setCupidAbilityUsed={setCupidAbilityUsed}
         chooseSomeone={chooseSomeone}
+        playerDiedLastNight={playerDiedLastNight}
       />
     ) : (
       <Night
@@ -321,6 +324,7 @@ export default function () {
         day={day}
         cupidAbilityUsed={cupidAbilityUsed}
         setDayTimeChat={setDayTimeChat}
+        setPlayerDiedLastNight={setPlayerDiedLastNight}
       />
     )
   ) : (

@@ -31,6 +31,7 @@ export default function Day({
   setCupidAbilityUsed,
   deadPlayerMessageSent,
   chooseSomeone,
+  playerDiedLastNight,
 }) {
   const [timer, setTimer] = useState(30);
   const [target, setTarget] = useState(null);
@@ -49,8 +50,15 @@ export default function Day({
   const actionRef = useRef(currAction);
   const playerDataRef = useRef(playersData);
 
+  console.log(playersData);
+
   useEffect(() => {
+    setTimer(10);
     setFade(true);
+
+    setPlayersData((prev) =>
+      prev.map((player) => ({ ...player, jailed: false }))
+    );
 
     setCurrAction(actions[role]);
     if (role === "reminiscence" && role !== playersData[position].role) {
@@ -70,9 +78,11 @@ export default function Day({
         target: targetRef.current,
         action: actionRef.current,
       });
-    }, randomInterval);
+      setFadeOut(true);
+    }, 10000);
 
     const dayTime = setInterval(() => {
+      console.log(playerDiedLastNight);
       //(same votes:no one die)
       // find who have the most vote
       if (days > 1) {
@@ -80,14 +90,18 @@ export default function Day({
       }
 
       // Trigger fade-out effect before ending the day
-      setFadeOut(true);
 
       setDays((prev) => prev + 1);
       if (roomLeader) socket.emit("sendSetDay", { roomId, dayTime: false });
-    }, 30000);
+    }, 11000);
 
-    const timer = setInterval(() => {
-      setTimer((prev) => prev - 1);
+    const clockTimer = setInterval(() => {
+      setTimer((prev) => {
+        if (prev < 1) {
+          return;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     socket.emit("resetNightAction", { roomId });
@@ -97,7 +111,7 @@ export default function Day({
     return () => {
       clearInterval(action);
       clearInterval(dayTime);
-      clearInterval(timer);
+      clearInterval(clockTimer);
     };
   }, []);
 
@@ -115,8 +129,6 @@ export default function Day({
     cupid: "link with",
     jailor: "jail",
   };
-
-  const randomInterval = 29600 + Math.floor(Math.random() * 300);
 
   const calculateHighestVoted = () => {
     const playersVote = playerDataRef.current.map((player) => player.vote);
@@ -246,11 +258,11 @@ export default function Day({
   }
 
   const CircleWithItems = ({ items, radius }) => {
-    const centerX = 400; // X coordinate of the circle center
-    const centerY = 400; // Y coordinate of the circle center
+    const centerX = 300; // X coordinate of the circle center
+    const centerY = 300; // Y coordinate of the circle center
 
     return (
-      <svg width="800" height="800">
+      <svg width="600" height="600">
         <circle cx={centerX} cy={centerY} r={radius} fill="lightblue" />
         {items.map((item, index) => {
           const angle = (index / items.length) * 2 * Math.PI; // angle in radians
@@ -278,20 +290,25 @@ export default function Day({
 
   return (
     <div
-      className={`flex flex-col w-screen h-screen transition-all duration-300 ease-in	
+      className={`flex flex-col w-screen h-screen transition-all duration-1000 ease-in	
          ${fadeOut ? "bg-gray-700" : fade ? "bg-white" : "bg-gray-700"}`}
     >
       <div>{timer}</div>
       <div>DAY {`${days}`}</div>
       <div
         className={`mainContainer flex flex-row justify-between 
-          transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}
+          transition-opacity duration-1000 ${fade ? "opacity-100" : "opacity-0"}
         `}
       >
         {/* left component */}
         <div className="border-2 border-red-300 w-1/4">
           <div className="h-1/2">
-            <DeadPlayerList playersData={playersData} position={position} />
+            <DeadPlayerList
+              playersData={playersData}
+              position={position}
+              day={day}
+              setTarget={setTarget}
+            />
           </div>
           <div className="h-1/2 border-2 border-red-300">
             {!playersData[position].alive && (
@@ -348,7 +365,7 @@ export default function Day({
             )}
           </div>
           <div>
-            {!!detectiveAbilityInfo && role === "detective" && (
+            {!!detectiveAbilityInfo.name && role === "detective" && (
               <div>{`${detectiveAbilityInfo.name} is ${detectiveAbilityInfo.detected}`}</div>
             )}
           </div>
@@ -362,7 +379,7 @@ export default function Day({
           </div>
           <div>
             {role === "conspirator" && (
-              <div>{`you target is ${playersData[chooseSomeone].name}`}</div>
+              <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>
             )}
           </div>
           <div>
@@ -374,7 +391,7 @@ export default function Day({
           <div>
             <CircleWithItems
               items={playersData.map((x) => x.name)}
-              radius={320}
+              radius={240}
             />
           </div>
         </div>

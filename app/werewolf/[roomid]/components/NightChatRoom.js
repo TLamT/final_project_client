@@ -3,7 +3,7 @@ function NightChatRoom({
   message,
   setMessage,
   handleMessageSent,
-  role,
+  // role,
   playersData,
   position,
 }) {
@@ -19,7 +19,7 @@ function NightChatRoom({
         </div>
       ) : (
         <div className="mt-4 text-red-500">
-          You cannot access the witch chat as a dead player.
+          You cannot access the chat as a dead player.
         </div>
       )}
 
@@ -27,17 +27,11 @@ function NightChatRoom({
         value={message}
         onChange={(ev) => setMessage(ev.target.value)}
         className="border-2 border-cyan-300 bg-gray-700"
-        disabled={role === "medium"}
       />
       <div
         onClick={() => {
-          if (role !== "medium") {
-            handleMessageSent();
-          }
+          handleMessageSent();
         }}
-        className={`cursor-pointer ${
-          role === "medium" ? "opacity-50 cursor-not-allowed" : ""
-        }`}
       >
         Send
       </div>

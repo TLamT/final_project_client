@@ -29,6 +29,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/police.jpg",
+      actionOrder: 2,
     },
     detective: {
       must: true,
@@ -36,6 +37,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/Detective.jpg",
+      actionOrder: 4,
     },
     defender: {
       must: false,
@@ -43,6 +45,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/Defender.jpg",
+      actionOrder: 1,
     },
     medium: {
       must: false,
@@ -50,6 +53,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "",
+      actionOrder: null,
     },
     cupid: {
       must: false,
@@ -57,6 +61,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/cupid.jpg",
+      actionOrder: 1,
     },
     sentinel: {
       must: false,
@@ -64,6 +69,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/Sentinel.jpg",
+      actionOrder: 5,
     },
     jailor: {
       must: false,
@@ -71,12 +77,14 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/jailer.jpg",
+      actionOrder: 1,
     },
     vampireHunter: {
       must: false,
       targetGroup: null,
       ability: {},
       detected: "good",
+      actionOrder: 2,
     },
   },
   witch: {
@@ -86,13 +94,15 @@ const characterData = {
       ability: {},
       detected: "bad",
       img: "./image/Reaper.jpg",
+      actionOrder: 2,
     },
     cultist: {
       must: false,
       targetGroup: null,
       ability: null,
-      detected: "bad",
+      detected: "good",
       img: "cultist.jpg",
+      actionOrder: null,
     },
     scammer: {
       must: false,
@@ -100,6 +110,7 @@ const characterData = {
       ability: {},
       detected: "bad",
       img: "./image/Scammer.jpg",
+      actionOrder: 3,
     },
     twistedFate: {
       must: false,
@@ -107,6 +118,7 @@ const characterData = {
       ability: {},
       detected: "bad",
       img: "./image/TwistedFate.jpg",
+      actionOrder: 2,
     },
   },
   neutral: {
@@ -116,12 +128,14 @@ const characterData = {
       ability: {},
       detected: "bad",
       img: "./image/Vampire.jpg",
+      actionOrder: 2,
     },
     conspirator: {
       must: false,
       targetGroup: null,
       ability: null,
       detected: "good",
+      actionOrder: null,
     },
     joker: {
       must: false,
@@ -129,6 +143,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/joker.jpg",
+      actionOrder: 2,
     },
     reminiscence: {
       must: false,
@@ -136,6 +151,7 @@ const characterData = {
       ability: {},
       detected: "good",
       img: "./image/Reminiscence.jpg",
+      actionOrder: 3,
     },
   },
 };
