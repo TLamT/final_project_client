@@ -2,13 +2,16 @@
 
 import { useEffect, useState, useRef } from "react";
 import characterData from "../data/character";
-import NightChatRoom from "./NightChatRoom";
 import AliveChatAndTarget from "./AliveChatAndTarget";
 import AliveChatAndTargetFung from "./AliveChatAndTargetFung";
 import fungPlayerData from "../data/fungPlayerData";
 import DeadPlayerList from "./DeadPlayerList";
-import WholeDayChatRoom from "./WholeDayChatRoom";
-
+import AllChatRoom from "./AllChatRooms";
+// import WholeDayChatRoom from "./WholeDayChatRoom";
+// import DayChatRoom from "./DayChatRoom";
+// import NightChatRoom from "./NightChatRoom";
+import RoleCard from "./RoleCard";
+import { Flag } from "lucide-react";
 export default function Night({
   socket,
   day,
@@ -16,6 +19,9 @@ export default function Night({
   roomLeader,
   name,
   roomId,
+  dayTimeChat,
+  setShowWhichChat,
+  showWhichChat,
   nightTimeChat,
   setNightTimeChat,
   setVampireNightTimeChat,
@@ -35,6 +41,8 @@ export default function Night({
   deadPlayerMessageSent,
   setDayTimeChat,
   setPlayerDiedLastNight,
+  canShoot,
+  setCanShoot,
 }) {
   const [timer, setTimer] = useState(30);
   const [message, setMessage] = useState("");
@@ -80,6 +88,7 @@ export default function Night({
       setTimer((prev) => prev - 1);
     }, 1000);
 
+    setPlayerDiedLastNight([]);
     handleMessageSent();
 
     socket.emit("clearVotes", roomId);
@@ -147,31 +156,34 @@ export default function Night({
 
   function handleNightAction(actions, nightTimeAction) {
     if (actions.action === "kill") {
-      if (playersData[actions.target].linked === true) {
+      const townFaction = Object.keys(characterData.town);
+      if (playersData[actions.target].linked === true && !playersData[actions.target].jailed) {
+        const linkedArr = [];
+        playersData.forEach((player, index) => {
+          if (player.linked === true) {
+            linkedArr.push(index);
+          }
+        });
+        setPlayerDiedLastNight((prev) => [...prev, ...linkedArr]);
+        setPlayersData((prev) => prev.map((player) => (player.linked === true ? { ...player, alive: false } : player)));
         setPlayersData((prev) =>
-          prev.map((player) =>
-            player.linked === true ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.owner ? { ...player, votedOut: false } : player))
         );
-        setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.owner ? { ...player, votedOut: false } : player
-          )
-        );
-        setPlayerDiedLastNight((prev) => [...prev, actions.target]);
+        if (playersData[actions.owner].role === "police" && townFaction.includes(playersData[actions.target].role)) {
+          setCanShoot(false);
+        }
       }
-      if (playersData[actions.target].linked === false) {
+      if (playersData[actions.target].linked === false && !playersData[actions.target].jailed) {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.target ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
         );
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.owner ? { ...player, votedOut: false } : player
-          )
+          prev.map((player, index) => (index === actions.owner ? { ...player, votedOut: false } : player))
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
+        if (playersData[position].role === "police" && townFaction.includes(playersData[actions.target].role)) {
+          setCanShoot(false);
+        }
       }
     }
     if (actions.action === "detect") {
@@ -187,9 +199,7 @@ export default function Night({
         console.log("you successfully protected someone");
       }
       setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.target ? { ...player, alive: true } : player
-        )
+        prev.map((player, index) => (index === actions.target ? { ...player, alive: true } : player))
       );
     }
     if (actions.action === "lookOut") {
@@ -204,9 +214,7 @@ export default function Night({
     if (actions.action === "remember") {
       const targetRole = playersData[actions.target].role;
       setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.owner ? { ...player, role: targetRole } : player
-        )
+        prev.map((player, index) => (index === actions.owner ? { ...player, role: targetRole } : player))
       );
     }
     if (actions.action === "convert") {
@@ -215,25 +223,21 @@ export default function Night({
       if (targetRole !== "vampireHunter") {
         if (witch.includes(targetRole)) {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, alive: false } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
           );
+          setPlayerDiedLastNight((prev) => [...prev, actions.target]);
         }
         if (!witch.includes(targetRole)) {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, role: "vampire" } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, role: "vampire" } : player))
           );
         }
       }
       if (targetRole === "vampireHunter") {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.owner ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.owner ? { ...player, alive: false } : player))
         );
+        setPlayerDiedLastNight((prev) => [...prev, actions.owner]);
       }
     }
     if (actions.action === "vampireKill") {
@@ -241,26 +245,22 @@ export default function Night({
 
       if (targetRole === "vampire") {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.target ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
         );
+        setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       }
     }
     if (actions.action === "destiny") {
       if (actions.twistedTarget === playersData[actions.target].role) {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.target ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
         );
+        setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       } else {
         setTwistedFateFail(true);
         socket.emit("dayChat", {
           name: "server",
-          message: `${
-            playersData[actions.owner].name
-          } is twistedFate and is trying to kill ${
+          message: `${playersData[actions.owner].name} is twistedFate and is trying to kill ${
             playersData[actions.target].name
           }`,
           roomId: roomId,
@@ -277,29 +277,57 @@ export default function Night({
 
   return (
     <div
-      className={`flex flex-col w-screen h-screen text-white transition-all duration-300 ease-out ${
+      className={`mainContainer flex flex-col w-screen h-screen text-white transition-all duration-300 ease-out ${
         fadeOut ? "bg-white" : fade ? "bg-gray-700" : "bg-white"
       }`}
     >
-      <div>{timer}</div>
-      <div>Night {`${nights}`}</div>
+      <div className="text-3xl font-semibold text-center">{timer}</div>
+      <div className="text-xl font-bold text-center">Night {`${nights}`}</div>
       <div
-        className={`mainContainer flex flex-row justify-between transition-opacity duration-300 ${
+        className={`w-screen h-screen flex flex-row justify-between transition-opacity duration-300 ${
           fade ? "opacity-100" : "opacity-0"
         }`}
       >
         <div className="border-2 border-red-300 w-1/4">
           <div className="h-1/2">
-            <DeadPlayerList
-              setTarget={setTarget}
-              playersData={playersData}
-              position={position}
-              day={day}
-            />
+            <DeadPlayerList setTarget={setTarget} playersData={playersData} position={position} day={day} />
           </div>
           <div className="h-1/2 border-2 border-red-300">
-            <div className="flex flex-col justify-between items-center h-full w-full">
-              {Object.keys(characterData.neutral)[0] === role && (
+            <AllChatRoom
+              show={{
+                day: true,
+                dead: !playersData[position].alive,
+                witch: Object.keys(characterData.witch).includes(role),
+                vampire: Object.keys(characterData.neutral)[0] === role,
+                medium: role === "medium" && playersData[position].alive,
+              }}
+              playersData={playersData}
+              position={position}
+              role={role}
+              setMessage={setMessage}
+              message={message}
+              day={day}
+              // sentDayMessage={handleMessageSent}
+              sentDeadMessage={handleDeadPlayerMessageSent}
+              sentWitchMessage={handleMessageSent}
+              sentVampireMessage={handleVampireMessageSent}
+              dayChat={dayTimeChat}
+              witchChat={nightTimeChat}
+              deadChat={deadPlayerChat}
+              vampireChat={vampireNightTimeChat}
+            />
+            {/* <DayChatRoom
+                playersData={playersData}
+                position={position}
+                dayTimeChat={dayTimeChat}
+                setShowWhichChat={setShowWhichChat}
+                showWhichChat={showWhichChat}
+                setMessage={setMessage}
+                message={message}
+                handleMessageSent={handleMessageSent}
+              /> */}
+            {/* // vampire chat */}
+            {/* {Object.keys(characterData.neutral)[0] === role && (
                 <NightChatRoom
                   nightTimeChat={vampireNightTimeChat}
                   message={message}
@@ -309,8 +337,9 @@ export default function Night({
                   position={position}
                   role={role}
                 />
-              )}
-              {Object.keys(characterData.witch).includes(role) && (
+              )} */}
+            {/* // witch chat */}
+            {/* {Object.keys(characterData.witch).includes(role) && (
                 <NightChatRoom
                   nightTimeChat={nightTimeChat}
                   message={message}
@@ -320,8 +349,9 @@ export default function Night({
                   position={position}
                   role={role}
                 />
-              )}
-              {!playersData[position].alive && (
+              )} */}
+            {/* // alive player can only see the day chat */}
+            {/* {!playersData[position].alive && (
                 <WholeDayChatRoom
                   deadChat={deadPlayerChat}
                   message={message}
@@ -331,8 +361,9 @@ export default function Night({
                   playersData={playersData}
                   position={position}
                 />
-              )}
-              {role === "medium" && playersData[position].alive && (
+              )} */}
+            {/* // medium can only see the dead chat */}
+            {/* {role === "medium" && playersData[position].alive && (
                 <WholeDayChatRoom
                   deadChat={deadPlayerChat}
                   message={message}
@@ -342,11 +373,10 @@ export default function Night({
                   playersData={playersData}
                   position={position}
                 />
-              )}
-            </div>
+              )} */}
           </div>
         </div>
-        <div className="border-2 border-red-300 w-1/2">
+        <div className="border-2 border-red-300 w-1/2 flex flex-col items-center justify-center">
           {playersData[position].role === "twistedFate" && (
             <div>
               <select
@@ -356,37 +386,51 @@ export default function Night({
               >
                 <option className="bg-gray-700">Select a Role</option>
                 {twistedFateDropDownList.map((role) => (
-                  <option
-                    value={role.roleName}
-                    key={role.roleName}
-                    className="bg-gray-700"
-                  >
+                  <option value={role.roleName} key={role.roleName} className="bg-gray-700">
                     {role.roleName}
                   </option>
                 ))}
               </select>
             </div>
           )}
-          {targetRef &&
-            currAction &&
-            !playersData[position].jailed &&
-            playersData[position].role !== "joker" && (
-              <div>{`you decide to ${actionRef.current} ${
-                target === null ? "no one" : playersData[target].name
-              }`}</div>
+          <div className="">
+            {targetRef &&
+              currAction &&
+              !playersData[position].jailed &&
+              playersData[position].role !== "joker" &&
+              !!canShoot && (
+                <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
+                  <span>
+                    {`You decide to ${actionRef.current}`}
+                    <span className="font-semibold text-rose-600 ml-2">
+                      {target === null ? "no one" : playersData[target].name}
+                    </span>
+                  </span>
+                </div>
+              )}
+            {playersData[position].role === "joker" && playersData[position].votedOut === true && (
+              <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
+                {`You decide to ${actionRef.current} ${target === null ? "no one" : playersData[target].name}`}
+              </div>
             )}
-          {playersData[position].role === "joker" &&
-            playersData[position].votedOut === true && (
-              <div>{`you decide to ${actionRef.current} ${
-                target === null ? "no one" : playersData[target].name
-              }`}</div>
+            {playersData[position].jailed && (
+              <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key="jailed">
+                You have been jailed
+              </div>
             )}
-          {playersData[position].jailed && <div>you have been jailed</div>}
-        </div>
-        <div className="border-2 border-red-300 w-1/4 flex flex-col justify-between">
-          <div className="bg-gray-600 text-lg mt-4 mb-4 text-center">
-            {role}
+            {!canShoot && (
+              <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in">
+                You shot an innocent person thus lost the ability to shoot
+              </div>
+            )}
           </div>
+        </div>
+        <div className="border-2 border-red-300 w-1/4 h-full flex flex-col justify-between p-2 rounded-lg shadow-md">
+          {/* <div className="h-1/2"> */}
+          {/* <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md">{role}</div> */}
+
+          <RoleCard playersData={playersData} position={position} />
+          {/* </div> */}
           <div className="h-1/2">
             <AliveChatAndTarget
               playersData={playersData}
@@ -394,6 +438,7 @@ export default function Night({
               setTarget={setTarget}
               day={day}
               cupidAbilityUsed={cupidAbilityUsed}
+              canShoot={canShoot}
             />
           </div>
         </div>

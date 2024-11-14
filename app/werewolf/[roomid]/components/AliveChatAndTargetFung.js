@@ -3,9 +3,7 @@ import characterData from "../data/character";
 const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
   const deadList = playersData.filter((player) => !player.alive);
   const allPlayersData = playersData.map((player) => {
-    const characterInfo = allCharactersInfo.find(
-      (char) => char.roleName === player.role
-    );
+    const characterInfo = allCharactersInfo.find((char) => char.roleName === player.role);
     return {
       ...player,
       characterInfo,
@@ -34,9 +32,7 @@ const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
     }
     return {
       ...player,
-      showRole:
-        currPlayer.characterInfo.faction === "witch" &&
-        player.characterInfo.faction === "witch",
+      showRole: currPlayer.characterInfo.faction === "witch" && player.characterInfo.faction === "witch",
       canTarget,
     };
   });

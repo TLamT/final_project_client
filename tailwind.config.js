@@ -1,3 +1,5 @@
+import daisyui from "daisyui";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -11,7 +13,10 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        k2d: ["var(--font-k2d)"],
+      },
     },
   },
-  plugins: [],
+  plugins: [daisyui],
 };

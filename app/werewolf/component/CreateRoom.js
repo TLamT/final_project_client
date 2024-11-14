@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useContext } from "react";
 import { SocketConnection } from "../layout";
+import { Plus } from "lucide-react";
 
 // Create a Room function
 export function CreateRoom() {
@@ -25,30 +26,14 @@ export function CreateRoom() {
   };
 
   return (
-    <p className="flex">
-      {/* <select
-        className="w-48 shadow-lg flex-2"
-        id="playerCount"
-        value={playerCount}
-        onChange={handlePlayerCountChange} // Fixed syntax here
-      >
-        {[...Array(7).keys()].map((i) => (
-          <option key={i + 6} value={i + 6}>
-            {i + 6} Players
-          </option>
-        ))}
-      </select> */}
-
-      {/* <a href={`/werewolf/${createRoom}`} onClick={handleCreateRoomSubmit}>
-        創建房間
-      </a> */}
+    <div className="flex justify-center">
       <Link
         onClick={handleCreateRoomSubmit}
-        className="flex-1 hover:bg-sky-700"
-        href={{ pathname: `/werewolf/${roomId}`, query: { c: playerCount } }}
+        className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300 text-center mb-3 flex flex-row justify-center"
+        href={{ pathname: `/werewolf/${roomId}` }}
       >
-        創建房間
+        <Plus className="mr-2 h-4 w-4 mt-1" /> Create Room
       </Link>
-    </p>
+    </div>
   );
 }

@@ -10,13 +10,24 @@ export default function HomePage({ setAuth }) {
   }
 
   return (
-    <>
-      <div className="flex flex-col items-center p-4 border-t border-gray-200">
-        <Link href="../werewolf" className="">
-          狼人殺
-        </Link>
-        <button onClick={handleLogOut}>LogOut</button>
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">HomePage</h1>
+        <div className="space-y-4">
+          <Link
+            href="../werewolf"
+            className="block w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md text-center transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            香港風雲 (港版狼人殺)
+          </Link>
+          <button
+            onClick={handleLogOut}
+            className="w-full py-3 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            Log Out
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

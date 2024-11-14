@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
+import clsx from "clsx";
 import AliveChatAndTarget from "./AliveChatAndTarget";
 import DeadPlayerList from "./DeadPlayerList";
+import AllChatRoom from "./AllChatRooms";
 import WholeDayChatRoom from "./WholeDayChatRoom";
+import DayChatRoom from "./DayChatRoom";
+import RoleCard from "./RoleCard";
+import reaper from "../data/image/reaper.jpg";
 
 export default function Day({
   socket,
@@ -33,91 +39,107 @@ export default function Day({
   chooseSomeone,
   playerDiedLastNight,
 }) {
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(10);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
-  const [showWhichChat, setShowWhichChat] = useState(true);
   const [personal, setPersonal] = useState(null);
   const [highestVotePlayers, setHighestVotePlayer] = useState(null);
   const [fade, setFade] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-
-  // console.log("personal:", personal);
-  // console.log("playersData", playersData);
+  const [currentDeadIndex, setCurrentDeadIndex] = useState(0);
+  const [deadMessage, setDeadMessage] = useState("");
+  const [isVisible, setIsVisible] = useState(false);
+  const [showRoles, setShowRoles] = useState(false);
 
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
   const playerDataRef = useRef(playersData);
 
-  console.log(playersData);
+  const playerDied = [...new Set(playerDiedLastNight)];
 
   useEffect(() => {
-    setTimer(10);
     setFade(true);
+    if (currentDeadIndex < playerDied.length) {
+      const animationTimeout = setTimeout(() => {
+        setTimeout(() => {
+          setCurrentDeadIndex(currentDeadIndex + 1);
+          setDeadMessage("");
+        }, 1000); // Wait for fade-out to complete
+      }, 3000);
 
-    setPlayersData((prev) =>
-      prev.map((player) => ({ ...player, jailed: false }))
-    );
+      const animation = setTimeout(() => {
+        setIsVisible(false);
+      }, 2000);
 
-    setCurrAction(actions[role]);
-    if (role === "reminiscence" && role !== playersData[position].role) {
-      socket.emit("dayChat", {
-        roomId,
-        message: `an reminiscence have remember that he is ${playersData[position].role}`,
-        name: "server",
-      });
-    }
-    setRole(playersData[position].role);
+      setDeadMessage(`${playersData[playerDied[currentDeadIndex]].name} has died last night!`);
+      setIsVisible(true);
 
-    const action = setInterval(() => {
-      socket.emit("dayAction", {
-        days,
-        position,
-        roomId,
-        target: targetRef.current,
-        action: actionRef.current,
-      });
-      setFadeOut(true);
-    }, 10000);
+      return () => {
+        clearTimeout(animation);
+        clearTimeout(animationTimeout);
+      };
+    } else {
+      setTimer(10);
 
-    const dayTime = setInterval(() => {
-      console.log(playerDiedLastNight);
-      //(same votes:no one die)
-      // find who have the most vote
-      if (days > 1) {
-        calculateHighestVoted();
+      setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
+
+      setCurrAction(actions[role]);
+      if (role === "reminiscence" && role !== playersData[position].role) {
+        socket.emit("dayChat", {
+          roomId,
+          message: `an reminiscence have remember that he is ${playersData[position].role}`,
+          name: "server",
+        });
       }
+      setRole(playersData[position].role);
 
-      // Trigger fade-out effect before ending the day
+      const action = setInterval(() => {
+        socket.emit("dayAction", {
+          days,
+          position,
+          roomId,
+          target: targetRef.current,
+          action: actionRef.current,
+        });
+        setFadeOut(true);
+      }, 10000);
 
-      setDays((prev) => prev + 1);
-      if (roomLeader) socket.emit("sendSetDay", { roomId, dayTime: false });
-    }, 11000);
-
-    const clockTimer = setInterval(() => {
-      setTimer((prev) => {
-        if (prev < 1) {
-          return;
+      const dayTime = setInterval(() => {
+        //(same votes:no one die)
+        // find who have the most vote
+        if (days > 1) {
+          calculateHighestVoted();
         }
-        return prev - 1;
-      });
-    }, 1000);
 
-    socket.emit("resetNightAction", { roomId });
+        // Trigger fade-out effect before ending the day
 
-    handleMessageSent();
+        setDays((prev) => prev + 1);
+        if (roomLeader) socket.emit("sendSetDay", { roomId, dayTime: false });
+      }, 11000);
 
-    return () => {
-      clearInterval(action);
-      clearInterval(dayTime);
-      clearInterval(clockTimer);
-    };
-  }, []);
+      const clockTimer = setInterval(() => {
+        setTimer((prev) => {
+          if (prev < 1) {
+            return;
+          }
+          return prev - 1;
+        });
+      }, 1000);
 
-  const alivePlayerId = playersData
-    .filter((player) => player.alive)
-    .map((player) => player.id);
+      socket.emit("resetNightAction", { roomId });
+
+      handleMessageSent();
+
+      return () => {
+        clearInterval(action);
+        clearInterval(dayTime);
+        clearInterval(clockTimer);
+      };
+    }
+  }, [currentDeadIndex]);
+
+  const alivePlayerId = playersData.filter((player) => player.alive).map((player) => player.id);
 
   useEffect(() => {
     targetRef.current = target;
@@ -134,9 +156,7 @@ export default function Day({
     const playersVote = playerDataRef.current.map((player) => player.vote);
     const maxVotes = Math.max(...playersVote);
     // console.log("maxVotes", maxVotes);
-    const highestVotePlayers = playerDataRef.current.filter(
-      (player) => player.vote === maxVotes
-    );
+    const highestVotePlayers = playerDataRef.current.filter((player) => player.vote === maxVotes);
     if (highestVotePlayers.length === 1) {
       const votedOutPlayer = highestVotePlayers[0];
       console.log("votedOutPlayer1", votedOutPlayer);
@@ -170,9 +190,7 @@ export default function Day({
           repeat: "no",
         });
       }
-      setPlayersData((preData) =>
-        preData.map((player) => ({ ...player, vote: 0 }))
-      );
+      setPlayersData((preData) => preData.map((player) => ({ ...player, vote: 0 })));
     }
   };
 
@@ -193,9 +211,7 @@ export default function Day({
       Object.values(voteData).forEach((playerIndex) => {
         setPlayersData((prev) =>
           prev.map((player, index) =>
-            index === +playerIndex
-              ? { ...player, vote: player.vote + 1 }
-              : { ...player, vote: player.vote }
+            index === +playerIndex ? { ...player, vote: player.vote + 1 } : { ...player, vote: player.vote }
           )
         );
       });
@@ -204,14 +220,10 @@ export default function Day({
       dayTimeAction.forEach((actions) => {
         if (actions.action === "link with") {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, linked: true } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, linked: true } : player))
           );
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.owner ? { ...player, linked: true } : player
-            )
+            prev.map((player, index) => (index === actions.owner ? { ...player, linked: true } : player))
           );
           if (playersData[position].role === "cupid") {
             setCupidAbilityUsed(true);
@@ -219,9 +231,7 @@ export default function Day({
         }
         if (actions.action === "jail") {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, jailed: true } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, jailed: true } : player))
           );
         }
       });
@@ -257,30 +267,48 @@ export default function Day({
     }
   }
 
+  const handleImage = () => {
+    setShowRoles(!showRoles);
+  };
+
   const CircleWithItems = ({ items, radius }) => {
     const centerX = 300; // X coordinate of the circle center
     const centerY = 300; // Y coordinate of the circle center
 
     return (
-      <svg width="600" height="600">
-        <circle cx={centerX} cy={centerY} r={radius} fill="lightblue" />
+      <svg width="600" height="600" className="absolute">
+        <circle cx={centerX} cy={centerY} r={radius} opacity="0" fill="red" />
         {items.map((item, index) => {
           const angle = (index / items.length) * 2 * Math.PI; // angle in radians
           const x = centerX + radius * Math.cos(angle); // X position
           const y = centerY + radius * Math.sin(angle); // Y position
 
           return (
-            <g key={index} transform={`translate(${x}, ${y})`}>
+            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
               <text x="0" y="60" textAnchor="middle" dominantBaseline="middle">
-                {item}
+                {item.name}
               </text>
               <image
-                href="https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"
+                href={`${
+                  item.alive
+                    ? "https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"
+                    : "https://m.media-amazon.com/images/I/71l8hjKIRZL._AC_SL1500_.jpg"
+                }`}
                 width="100"
                 height="100"
                 x="-50" // Center the image
                 y="-50" // Center the image
+                className="hover:scale-105 transition duration-150 ease-in-out cursor-pointer"
+                onClick={handleImage}
               />
+              {showRoles && (
+                <text className="mt-4 bg-gray-200 p-4 rounded shadow-md absolute">
+                  <ul className="list-disc list-inside">
+                    <li>Role 1</li>
+                    <li>Role 2</li>
+                  </ul>
+                </text>
+              )}
             </g>
           );
         })}
@@ -290,61 +318,56 @@ export default function Day({
 
   return (
     <div
-      className={`flex flex-col w-screen h-screen transition-all duration-1000 ease-in	
+      className={`mainContainer flex flex-col  h-screen transition-all duration-1000 ease-in 
          ${fadeOut ? "bg-gray-700" : fade ? "bg-white" : "bg-gray-700"}`}
     >
-      <div>{timer}</div>
-      <div>DAY {`${days}`}</div>
+      <div className="text-3xl font-semibold text-center">{timer}</div>
+      <div className="text-xl font-bold text-center">DAY {`${days}`}</div>
       <div
-        className={`mainContainer flex flex-row justify-between 
+        className={`flex flex-row justify-between h-screen
           transition-opacity duration-1000 ${fade ? "opacity-100" : "opacity-0"}
         `}
       >
         {/* left component */}
-        <div className="border-2 border-red-300 w-1/4">
+        <div className="border-2 border-red-300 w-1/4 h-full">
           <div className="h-1/2">
-            <DeadPlayerList
-              playersData={playersData}
-              position={position}
-              day={day}
-              setTarget={setTarget}
-            />
+            <DeadPlayerList playersData={playersData} position={position} day={day} setTarget={setTarget} />
           </div>
           <div className="h-1/2 border-2 border-red-300">
-            {!playersData[position].alive && (
-              <div className="dead-chat-change">
-                <button onClick={() => setShowWhichChat(true)}>Day Chat</button>
-                <button onClick={() => setShowWhichChat(false)}>
-                  Graveyard Chat
-                </button>
-              </div>
-            )}
-            <div className="flex flex-col justify-between items-center h-full">
-              <div className="mt-4 border-2 border-blue-300 w-full h-3/4 overflow-y-scroll">
-                {dayTimeChat.map((allDayMessage, index) => (
-                  <div key={index}>
-                    {allDayMessage.name}: {allDayMessage.message}
-                  </div>
-                ))}
-              </div>
-              {showWhichChat && playersData[position].alive ? (
-                <div className="mt-10">
-                  <input
-                    value={message}
-                    onChange={(ev) => setMessage(ev.target.value)}
-                    className="border-2 border-cyan-300"
-                  />
-                  <div onClick={handleMessageSent} className="cursor-pointer">
-                    Send
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-10">
-                  Day Chat: You cannot send messages in here.
-                </div>
-              )}
-            </div>
-            {!playersData[position].alive && !showWhichChat && (
+            {/*day chat room in here*/}
+            <AllChatRoom
+              show={{
+                day: true,
+                dead: !playersData[position].alive,
+              }}
+              playersData={playersData}
+              position={position}
+              role={role}
+              day={day}
+              setMessage={setMessage}
+              message={message}
+              sentDayMessage={handleMessageSent}
+              sentDeadMessage={handleDeadPlayerMessageSent}
+              // sentWitchMessage={handleMessageSent}
+              // sentVampireMessage={handleVampireMessageSent}
+              dayChat={dayTimeChat}
+              // witchChat={nightTimeChat}
+              deadChat={deadPlayerChat}
+              // vampireChat={vampireNightTimeChat}
+            />
+
+            {/* <DayChatRoom
+              playersData={playersData}
+              position={position}
+              dayTimeChat={dayTimeChat}
+              // setShowWhichChat={setShowWhichChat}
+              // showWhichChat={showWhichChat}
+              setMessage={setMessage}
+              message={message}
+              sentDayMessage={handleMessageSent}
+            /> */}
+
+            {/* {!playersData[position].alive && !showWhichChat && (
               <WholeDayChatRoom
                 deadChat={deadPlayerChat}
                 message={message}
@@ -352,54 +375,86 @@ export default function Day({
                 handleMessageSent={handleDeadPlayerMessageSent}
                 role={role}
               />
-            )}
+            )} */}
           </div>
         </div>
         {/* middle component*/}
-        <div className="border-2 border-red-300 w-1/2 flex flex-col justify-center items-center">
-          <div>
-            {targetRef && currAction && (
-              <div>{`you decide to ${currAction} ${
-                target === null ? "no one" : playersData[target].name
-              }`}</div>
+        <div className="border-2 border-red-300 w-1/2 flex flex-col items-center justify-center relative">
+          <CircleWithItems items={playersData} radius={240} />
+
+          <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">
+            {targetRef && currAction && !cupidAbilityUsed && (
+              <div>{`you decide to ${currAction} ${target === null ? "no one" : playersData[target].name}`}</div>
             )}
           </div>
-          <div>
+
+          <div className="transition-all duration-500 ease-in-out fade-in text-xl">
             {!!detectiveAbilityInfo.name && role === "detective" && (
-              <div>{`${detectiveAbilityInfo.name} is ${detectiveAbilityInfo.detected}`}</div>
+              <span>
+                <span>{`${detectiveAbilityInfo.name} is `}</span>
+                <span className={clsx(detectiveAbilityInfo.detected === "good" ? "text-blue-600" : "text-red-600")}>
+                  {detectiveAbilityInfo.detected}
+                </span>
+                {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
+              </span>
             )}
           </div>
+
           <div>
             {role === "sentinel" &&
               sentinelAbilityInfo.map((players) => {
                 const owner = playersData[players.owner].name;
                 const visited = playersData[players.target].name;
-                return <div>{`${owner} visited ${visited}`}</div>;
+                return (
+                  <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">{`${owner} visited ${visited}`}</div>
+                );
               })}
           </div>
-          <div>
-            {role === "conspirator" && (
-              <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>
+
+          <div>{role === "conspirator" && <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>}</div>
+
+          <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in" key={personal}>
+            {days > 1 && (
+              <span>
+                You have voted
+                <span className="font-semibold text-rose-600 ml-2">
+                  {personal !== null ? playersData[personal].name : "no one"}
+                </span>
+              </span>
             )}
           </div>
-          <div>
-            {days > 1 &&
-              `You have voted ${
-                personal !== null ? playersData[personal].name : "no one"
+
+          {deadMessage && (
+            <div
+              className={`absolute border-2 border-black rounded p-4 fade-message text-5xl bg-white ${
+                isVisible ? "show" : ""
               }`}
-          </div>
-          <div>
-            <CircleWithItems
-              items={playersData.map((x) => x.name)}
-              radius={240}
-            />
-          </div>
+            >
+              {deadMessage}
+            </div>
+          )}
         </div>
         {/* right component */}
-        <div className="border-2 border-red-300 w-1/4 flex flex-col justify-between">
-          <div className="bg-gray-600 text-lg mt-4 mb-4 text-center">
-            {role}
-          </div>
+        <div className="border-2 border-red-300 w-1/4 flex flex-col justify-between rounded-lg shadow-md relative">
+          {/* <div className="h-1/2 "> */}
+          {/* <div className="overflow-hidden w-full top-5">
+              <Image
+                className="absolute h-1/2 w-full object-cover opacity-30 rounded-lg top-20 -translate-y-20"
+                src={reaper}
+                alt="reaper"
+              />
+            </div> */}
+          {/* {console.log(playersData[position])} */}
+          <RoleCard playersData={playersData} position={position} />
+          {/* <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative">
+              {role}
+            </div> */}
+
+          {/* <div className=" text-base text-center p-4 rounded-md border-2 border-rose-500 ">
+              <RoleCard playersData={playersData} position={position} />
+            </div> */}
+          {/* <RoleCard playersData={playerDataRef} position={position} /> */}
+          {/* </div> */}
           <div className="h-1/2">
             <AliveChatAndTarget
               playersData={playerDataRef.current}

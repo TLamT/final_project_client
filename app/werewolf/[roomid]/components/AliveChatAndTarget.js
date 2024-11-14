@@ -8,10 +8,9 @@ const AliveChatAndTarget = ({
   cupidAbilityUsed,
   days,
   handleVote,
+  canShoot,
 }) => {
-  let myPlayer = fungPlayerData.find(
-    (player) => player.roleName === playersData[position].role
-  );
+  let myPlayer = fungPlayerData.find((player) => player.roleName === playersData[position].role);
   myPlayer = { ...myPlayer, ...playersData[position] };
 
   // JSX
@@ -25,20 +24,15 @@ const AliveChatAndTarget = ({
   //設定可睇到target既玩家
   const targetPlayer = playersData.map((player) => {
     let canTarget = false;
-    console.log(deadPlayer.map((player) => player.name));
     if (!day) {
       if (myPlayer.targetGroup === "all") {
         canTarget = player.role !== myPlayer.roleName;
       } else if (myPlayer.targetGroup === "nonWitch") {
-        canTarget =
-          fungPlayerData.find((role) => role.roleName === player.role)
-            ?.faction !== "witch";
+        canTarget = fungPlayerData.find((role) => role.roleName === player.role)?.faction !== "witch";
       } else if (myPlayer.role === "reminsence") {
         canTarget = deadPlayer;
       } else if (myPlayer.targetGroup === "nonWitch") {
-        canTarget =
-          fungPlayerData.find((role) => role.roleName === player.role)
-            ?.faction !== "witch";
+        canTarget = fungPlayerData.find((role) => role.roleName === player.role)?.faction !== "witch";
       }
       // else if (myPlayer.targetGroup === "dead") {
       //   canTarget = deadPlayer;
@@ -52,49 +46,51 @@ const AliveChatAndTarget = ({
       ...player,
       canTarget,
       showRole:
-        myPlayer.faction === "witch" &&
-        fungPlayerData.find((e) => e.roleName === player.role)?.faction ===
-          "witch",
+        myPlayer.faction === "witch" && fungPlayerData.find((e) => e.roleName === player.role)?.faction === "witch",
     };
   });
 
   // retern 番 player既資料同埋canTarget, 再加上係壞人就會show番佢地既角色
 
   return (
-    <div className="border-2 border-rose-600 h-full">
-      <div className="font-bold">Alive</div>
+    <div className="border-2 border-rose-600 h-full p-4">
+      <div className="font-bold text-lg mb-2">Alive</div>
       {targetPlayer.map(
         (player, index) =>
           player.alive && (
             <div key={index}>
-              <div className="flex flex-row">
+              <div className="flex flex-row items-center mb-2">
                 <div className="mr-2">{`${index + 1} ${player.name} `}</div>
-                {player.showRole && <span>{`[${player.role}]`}</span>}
+                {player.showRole && <span className="text-sm italic mr-2">{`[${player.role}]`}</span>}
                 {player.canTarget &&
                   !playersData[position].jailed &&
                   playersData[position].alive &&
                   cupidAbilityUsed === false &&
-                  playersData[position].role !== "reminsence" && (
-                    <button onClick={() => setTarget(index)}>target</button>
+                  playersData[position].role !== "reminsence" &&
+                  !!canShoot && (
+                    <button onClick={() => setTarget(index)} className="btn btn-sm btn-primary btn-outline">
+                      target
+                    </button>
                   )}
-                {playersData[position].role === "joker" &&
-                  playersData[position].votedOut === true && (
-                    <button onClick={() => setTarget(index)}>target</button>
-                  )}
+                {playersData[position].role === "joker" && playersData[position].votedOut === true && (
+                  <button onClick={() => setTarget(index)} className="btn btn-sm btn-primary btn-outline">
+                    target
+                  </button>
+                )}
 
-                {playersData[position].role === "vampireHunter" &&
-                  playersData[position].alive &&
-                  !day && (
-                    <button onClick={() => setTarget(index)}>target</button>
-                  )}
-                {days > 1 &&
-                  day &&
-                  player.alive === true &&
-                  playersData[position].alive && (
-                    <button onClick={() => handleVote(index)}>Vote</button>
-                  )}
+                {playersData[position].role === "vampireHunter" && playersData[position].alive && !day && (
+                  <button onClick={() => setTarget(index)} className="btn btn-sm btn-primary btn-outline">
+                    target
+                  </button>
+                )}
 
-                {days > 1 && day && `${player.vote}`}
+                {days > 1 && day && player.alive === true && playersData[position].alive && (
+                  <button onClick={() => handleVote(index)} className="btn btn-sm btn-accent btn-outline">
+                    Vote
+                  </button>
+                )}
+
+                {days > 1 && day && <span className="ml-2">{player.vote}</span>}
               </div>
             </div>
           )

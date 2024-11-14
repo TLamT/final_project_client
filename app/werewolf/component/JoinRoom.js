@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useContext } from "react";
 import { SocketConnection } from "../layout";
+import { LogIn } from "lucide-react";
 
 export function JoinRoom() {
   const socket = useContext(SocketConnection);
@@ -9,7 +10,7 @@ export function JoinRoom() {
   const [roomId, setRoomId] = useState("");
 
   const handleJoinRoom = () => {
-    let room = prompt("輸入房間ID");
+    let room = prompt("Please Enter the Room ID!");
     setRoomId(room);
   };
 
@@ -21,13 +22,14 @@ export function JoinRoom() {
   }, [roomId]);
 
   return (
-    <>
+    <div className="flex justify-center">
       <button
         onClick={handleJoinRoom}
-        className="text-rose-800 hover:bg-rose-600  "
+        className="w-full bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300 flex flex-row justify-center"
       >
-        加入房間
+        <LogIn className="mr-2 h-4 w-4 mt-1" />
+        Join Room
       </button>
-    </>
+    </div>
   );
 }
