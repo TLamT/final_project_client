@@ -1,4 +1,7 @@
+"use client";
+
 import Cookies from "universal-cookie";
+import { useState, useEffect } from "react";
 
 const cookies = new Cookies();
 
