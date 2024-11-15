@@ -7,7 +7,7 @@ function SignUp({ setLogin }) {
   const [comment, setComment] = useState("");
 
   async function signUp() {
-    const db = await fetch(`http://localhost:3001/signup`, {
+    const db = await fetch(process.env.BACKEND_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

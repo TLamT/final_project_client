@@ -2,22 +2,24 @@ import { useState } from "react";
 import characterData from "../data/character";
 import fungPlayerData from "../data/fungPlayerData";
 import Image from "next/image";
-import reaper from "../data/image/reaper.jpg";
-import conspirator from "../data/image/conspirator.jpg";
-import cupid from "../data/image/cupid.jpg";
-import defender from "../data/image/defender.jpg";
-import detective from "../data/image/detective.jpg";
-import jailor from "../data/image/jailor.jpg";
-import joker from "../data/image/joker.jpg";
-import medium from "../data/image/medium.jpg";
-import police from "../data/image/police.jpg";
-import scammer from "../data/image/scammer.jpg";
-import twistedFate from "../data/image/twistedFate.jpg";
-import vampire from "../data/image/vampire.jpg";
-import vampireHunter from "../data/image/vampireHunter.jpg";
+import reaper from "@/public/image/reaper.jpg";
+import conspirator from "@/public/image/conspirator.jpg";
+import cupid from "@/public/image/cupid.jpg";
+import defender from "@/public/image/defender.jpg";
+import detective from "@/public/image/detective.jpg";
+import jailor from "@/public/image/jailor.jpg";
+import joker from "@/public/image/joker.jpg";
+import medium from "@/public/image/medium.jpg";
+import police from "@/public/image/police.jpg";
+import scammer from "@/public/image/scammer.jpg";
+import twistedFate from "@/public/image/twistedFate.jpg";
+import vampire from "@/public/image/vampire.jpg";
+import vampireHunter from "@/public/image/vampireHunter.jpg";
 
 const RoleCard = ({ playersData, position }) => {
-  const myPlayer = fungPlayerData.find((player) => player.roleName === playersData[position].role);
+  const myPlayer = fungPlayerData.find(
+    (player) => player.roleName === playersData[position].role
+  );
   const imageRole = (role) => {
     switch (role) {
       case "reaper":
@@ -44,6 +46,10 @@ const RoleCard = ({ playersData, position }) => {
         return vampire;
       case "vampireHunter":
         return vampireHunter;
+      case "detective":
+        return detective;
+      case "default":
+        return;
     }
   };
   const factionRoleTC = (role) => {
@@ -106,10 +112,16 @@ const RoleCard = ({ playersData, position }) => {
           Role : {myPlayer.roleName}, Faction : {myPlayer.faction.toUpperCase()}
         </div>
         <div className="flex h-4/6 w-1/3">
-          <Image src={imageRole(myPlayer.roleName)} alt={`${myPlayer.roleName}`} className="object-contain" />
+          <Image
+            src={imageRole(myPlayer.roleName)}
+            alt={`${myPlayer.roleName}`}
+            className="object-contain"
+          />
         </div>
         <ul className="flex flex-col items-center justify-center mt-4 h-1/6">
-          <li className="border-2 border-yellow-500">Abilty : {`${myPlayer.ability}`}</li>
+          <li className="border-2 border-yellow-500">
+            Abilty : {`${myPlayer.ability}`}
+          </li>
         </ul>
       </div>
     </>

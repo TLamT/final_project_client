@@ -13,7 +13,7 @@ function Login({ setAuth }) {
   const cookies = new Cookies();
 
   async function signin() {
-    const db = await fetch(`http://localhost:3001/login`, {
+    const db = await fetch(process.env.BACKEND_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
