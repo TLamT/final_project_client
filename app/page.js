@@ -15,15 +15,18 @@ export default function Page() {
   }, []);
   const checkToken = async (token) => {
     try {
-      const res = await fetch(`${process.env.BACKEND_URL}/checkToken`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: token,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkToken`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: token,
+          }),
+        }
+      );
       const data = await res.json();
       cookies.set("email", data.email);
       if (data.email) setAuth(true);
