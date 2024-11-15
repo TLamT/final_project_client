@@ -15,7 +15,7 @@ export default function Page() {
   }, []);
   const checkToken = async (token) => {
     try {
-      const res = await fetch(process.env.BACKEND_URL, {
+      const res = await fetch(`${process.env.BACKEND_URL}/checkToken`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
