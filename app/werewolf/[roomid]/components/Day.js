@@ -9,7 +9,6 @@ import AllChatRoom from "./AllChatRooms";
 import WholeDayChatRoom from "./WholeDayChatRoom";
 import DayChatRoom from "./DayChatRoom";
 import RoleCard from "./RoleCard";
-import reaper from "../data/image/reaper.jpg";
 
 export default function Day({
   socket,
