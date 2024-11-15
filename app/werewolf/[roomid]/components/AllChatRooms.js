@@ -32,12 +32,15 @@ const AllChatRoom = ({
     dead: false,
     ...show,
   };
-  const tabs = Object.entries(chatController).reduce((result, [type, isShow]) => {
-    if (isShow) {
-      result.push(type[0].toUpperCase() + type.slice(1));
-    }
-    return result;
-  }, []);
+  const tabs = Object.entries(chatController).reduce(
+    (result, [type, isShow]) => {
+      if (isShow) {
+        result.push(type[0].toUpperCase() + type.slice(1));
+      }
+      return result;
+    },
+    []
+  );
   const [tab, setTab] = useState(tabs?.[0]);
 
   const renderDayChat = () => (
@@ -105,12 +108,16 @@ const AllChatRoom = ({
     <div className="h-full flex flex-col">
       <ul className="flex gap-1 h-8">
         {tabs.map((tab, index) => (
-          <li key={index} className="px-2 py-1 bg-sky-400 text-white cursor-pointer" onClick={() => setTab(tab)}>
+          <li
+            key={index}
+            className="px-2 py-1 bg-sky-400 text-white cursor-pointer"
+            onClick={() => setTab(tab)}
+          >
             {tab}
           </li>
         ))}
       </ul>
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto h-full">
         {tab === "Day" && renderDayChat()}
         {tab === "Witch" && renderWitchChat()}
         {tab === "Vampire" && renderVampireChat()}

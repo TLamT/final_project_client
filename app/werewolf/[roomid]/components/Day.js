@@ -39,7 +39,7 @@ export default function Day({
   chooseSomeone,
   playerDiedLastNight,
 }) {
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(30);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
@@ -72,7 +72,9 @@ export default function Day({
         setIsVisible(false);
       }, 2000);
 
-      setDeadMessage(`${playersData[playerDied[currentDeadIndex]].name} has died last night!`);
+      setDeadMessage(
+        `${playersData[playerDied[currentDeadIndex]].name} has died last night!`
+      );
       setIsVisible(true);
 
       return () => {
@@ -82,7 +84,9 @@ export default function Day({
     } else {
       setTimer(10);
 
-      setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
+      setPlayersData((prev) =>
+        prev.map((player) => ({ ...player, jailed: false }))
+      );
 
       setCurrAction(actions[role]);
       if (role === "reminiscence" && role !== playersData[position].role) {
@@ -103,7 +107,7 @@ export default function Day({
           action: actionRef.current,
         });
         setFadeOut(true);
-      }, 10000);
+      }, 30000);
 
       const dayTime = setInterval(() => {
         //(same votes:no one die)
@@ -116,7 +120,7 @@ export default function Day({
 
         setDays((prev) => prev + 1);
         if (roomLeader) socket.emit("sendSetDay", { roomId, dayTime: false });
-      }, 11000);
+      }, 31000);
 
       const clockTimer = setInterval(() => {
         setTimer((prev) => {
@@ -139,7 +143,9 @@ export default function Day({
     }
   }, [currentDeadIndex]);
 
-  const alivePlayerId = playersData.filter((player) => player.alive).map((player) => player.id);
+  const alivePlayerId = playersData
+    .filter((player) => player.alive)
+    .map((player) => player.id);
 
   useEffect(() => {
     targetRef.current = target;
@@ -156,7 +162,9 @@ export default function Day({
     const playersVote = playerDataRef.current.map((player) => player.vote);
     const maxVotes = Math.max(...playersVote);
     // console.log("maxVotes", maxVotes);
-    const highestVotePlayers = playerDataRef.current.filter((player) => player.vote === maxVotes);
+    const highestVotePlayers = playerDataRef.current.filter(
+      (player) => player.vote === maxVotes
+    );
     if (highestVotePlayers.length === 1) {
       const votedOutPlayer = highestVotePlayers[0];
       console.log("votedOutPlayer1", votedOutPlayer);
@@ -190,7 +198,9 @@ export default function Day({
           repeat: "no",
         });
       }
-      setPlayersData((preData) => preData.map((player) => ({ ...player, vote: 0 })));
+      setPlayersData((preData) =>
+        preData.map((player) => ({ ...player, vote: 0 }))
+      );
     }
   };
 
@@ -211,7 +221,9 @@ export default function Day({
       Object.values(voteData).forEach((playerIndex) => {
         setPlayersData((prev) =>
           prev.map((player, index) =>
-            index === +playerIndex ? { ...player, vote: player.vote + 1 } : { ...player, vote: player.vote }
+            index === +playerIndex
+              ? { ...player, vote: player.vote + 1 }
+              : { ...player, vote: player.vote }
           )
         );
       });
@@ -220,10 +232,14 @@ export default function Day({
       dayTimeAction.forEach((actions) => {
         if (actions.action === "link with") {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, linked: true } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, linked: true } : player
+            )
           );
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.owner ? { ...player, linked: true } : player))
+            prev.map((player, index) =>
+              index === actions.owner ? { ...player, linked: true } : player
+            )
           );
           if (playersData[position].role === "cupid") {
             setCupidAbilityUsed(true);
@@ -231,7 +247,9 @@ export default function Day({
         }
         if (actions.action === "jail") {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, jailed: true } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, jailed: true } : player
+            )
           );
         }
       });
@@ -272,11 +290,11 @@ export default function Day({
   };
 
   const CircleWithItems = ({ items, radius }) => {
-    const centerX = 300; // X coordinate of the circle center
-    const centerY = 300; // Y coordinate of the circle center
+    const centerX = 200; // X coordinate of the circle center
+    const centerY = 200; // Y coordinate of the circle center
 
     return (
-      <svg width="600" height="600" className="absolute">
+      <svg width="400" height="400" className="absolute">
         <circle cx={centerX} cy={centerY} r={radius} opacity="0" fill="red" />
         {items.map((item, index) => {
           const angle = (index / items.length) * 2 * Math.PI; // angle in radians
@@ -284,7 +302,11 @@ export default function Day({
           const y = centerY + radius * Math.sin(angle); // Y position
 
           return (
-            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
+            <g
+              key={item.id}
+              transform={`translate(${x}, ${y})`}
+              className="relative"
+            >
               <text x="0" y="60" textAnchor="middle" dominantBaseline="middle">
                 {item.name}
               </text>
@@ -331,7 +353,12 @@ export default function Day({
         {/* left component */}
         <div className="border-2 border-red-300 w-1/4 h-full">
           <div className="h-1/2">
-            <DeadPlayerList playersData={playersData} position={position} day={day} setTarget={setTarget} />
+            <DeadPlayerList
+              playersData={playersData}
+              position={position}
+              day={day}
+              setTarget={setTarget}
+            />
           </div>
           <div className="h-1/2 border-2 border-red-300">
             {/*day chat room in here*/}
@@ -380,11 +407,13 @@ export default function Day({
         </div>
         {/* middle component*/}
         <div className="border-2 border-red-300 w-1/2 flex flex-col items-center justify-center relative">
-          <CircleWithItems items={playersData} radius={240} />
+          <CircleWithItems items={playersData} radius={160} />
 
           <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">
             {targetRef && currAction && !cupidAbilityUsed && (
-              <div>{`you decide to ${currAction} ${target === null ? "no one" : playersData[target].name}`}</div>
+              <div>{`you decide to ${currAction} ${
+                target === null ? "no one" : playersData[target].name
+              }`}</div>
             )}
           </div>
 
@@ -392,7 +421,13 @@ export default function Day({
             {!!detectiveAbilityInfo.name && role === "detective" && (
               <span>
                 <span>{`${detectiveAbilityInfo.name} is `}</span>
-                <span className={clsx(detectiveAbilityInfo.detected === "good" ? "text-blue-600" : "text-red-600")}>
+                <span
+                  className={clsx(
+                    detectiveAbilityInfo.detected === "good"
+                      ? "text-blue-600"
+                      : "text-red-600"
+                  )}
+                >
                   {detectiveAbilityInfo.detected}
                 </span>
                 {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
@@ -411,9 +446,16 @@ export default function Day({
               })}
           </div>
 
-          <div>{role === "conspirator" && <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>}</div>
+          <div>
+            {role === "conspirator" && (
+              <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>
+            )}
+          </div>
 
-          <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in" key={personal}>
+          <div
+            className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in"
+            key={personal}
+          >
             {days > 1 && (
               <span>
                 You have voted

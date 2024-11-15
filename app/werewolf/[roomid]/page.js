@@ -56,20 +56,29 @@ export default function () {
   const assignNewReaper = () => {
     // 當遊戲開始後才進行
     if (gameStart) {
-      const originReaper = playersData.find((player) => player.role === "reaper");
+      const originReaper = playersData.find(
+        (player) => player.role === "reaper"
+      );
       // 設定當reaper死後才進行
       if (!originReaper?.alive) {
         // 係現有既玩家篩選反派出來
         const witchCharacterWithoutReaper = playersData.filter(
-          (player) => player.role === "cultist" || player.role === "scammer" || player.role === "twistedFate"
+          (player) =>
+            player.role === "cultist" ||
+            player.role === "scammer" ||
+            player.role === "twistedFate"
         );
         // 當剩下的反派角色數>1 時才進行(不包括reaper)
         if (witchCharacterWithoutReaper.length > 0) {
-          const randomIndex = Math.floor(Math.random() * witchCharacterWithoutReaper.length);
+          const randomIndex = Math.floor(
+            Math.random() * witchCharacterWithoutReaper.length
+          );
           //隨機抽取一個現有反派成為reaper
           const newReaper = witchCharacterWithoutReaper[randomIndex];
 
-          const newReaperIndex = playersData.findIndex((player) => player.role === newReaper.role);
+          const newReaperIndex = playersData.findIndex(
+            (player) => player.role === newReaper.role
+          );
 
           playersData[newReaperIndex].role = "reaper";
         }
@@ -80,16 +89,22 @@ export default function () {
   useEffect(() => {
     if (gameStart) {
       assignNewReaper();
-      // checkWon();
+      checkWon();
     }
   }, [playersData]);
 
   const checkWon = () => {
     const townArr = [...Object.keys(characterData.town)];
     const witchArr = [...Object.keys(characterData.witch)];
-    const currTown = playersData.filter((player) => townArr.includes(player.role) && player.alive === true);
-    const currWitch = playersData.filter((player) => witchArr.includes(player.role) && player.alive === true);
-    const currVampire = playersData.filter((player) => player.role === "vampire");
+    const currTown = playersData.filter(
+      (player) => townArr.includes(player.role) && player.alive === true
+    );
+    const currWitch = playersData.filter(
+      (player) => witchArr.includes(player.role) && player.alive === true
+    );
+    const currVampire = playersData.filter(
+      (player) => player.role === "vampire"
+    );
 
     if (currWitch.length === 0 && currVampire.length === 0) {
       setGameEndMessage((prev) => [...prev, "town win"]);
@@ -101,22 +116,39 @@ export default function () {
       setGameEnd(true);
     }
 
-    if (currVampire.length > 0 && currWitch.length === 0 && currTown.length === 0) {
+    if (
+      currVampire.length > 0 &&
+      currWitch.length === 0 &&
+      currTown.length === 0
+    ) {
       setGameEndMessage((prev) => [...prev, "vampire win"]);
       setGameEnd(true);
     }
 
-    if (currTown.length === 0 && currWitch.length === 0 && currVampire.length === 0) {
+    if (
+      currTown.length === 0 &&
+      currWitch.length === 0 &&
+      currVampire.length === 0
+    ) {
       setGameEndMessage((prev) => [...prev, "draw"]);
       setGameEnd(true);
     }
 
     playersData.map((player) => {
       if (player.role === "joker" && player.votedOut === true) {
-        setGameEndMessage((prev) => [...prev, `${player.name} has won as joker`]);
+        setGameEndMessage((prev) => [
+          ...prev,
+          `${player.name} has won as joker`,
+        ]);
       }
-      if (player.role === "conspirator" && playersData[chooseSomeone]?.votedOut === true) {
-        setGameEndMessage((prev) => [...prev, `${player.name} has achieved their goal and wins!`]);
+      if (
+        player.role === "conspirator" &&
+        playersData[chooseSomeone]?.votedOut === true
+      ) {
+        setGameEndMessage((prev) => [
+          ...prev,
+          `${player.name} has achieved their goal and wins!`,
+        ]);
       }
     });
 
@@ -216,7 +248,9 @@ export default function () {
         !gameStart ? (
           <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6 text-lg">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">{changeLanguage ? "Game Lobby" : "遊戲大廳"}</h1>
+              <h1 className="text-2xl font-bold">
+                {changeLanguage ? "Game Lobby" : "遊戲大廳"}
+              </h1>
               <button
                 onClick={handleOnChange}
                 className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
@@ -225,13 +259,21 @@ export default function () {
               </button>
             </div>
             <div className="mb-4">
-              <span className="font-semibold">{changeLanguage ? "Room ID: " : "房間號碼: "}</span> {roomid}
+              <span className="font-semibold">
+                {changeLanguage ? "Room ID: " : "房間號碼: "}
+              </span>{" "}
+              {roomid}
             </div>
             <div className="mb-4">
-              <span className="font-semibold">{changeLanguage ? "Name:" : "名稱:"}:</span> {name}
+              <span className="font-semibold">
+                {changeLanguage ? "Name:" : "名稱:"}:
+              </span>{" "}
+              {name}
             </div>
             <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">{changeLanguage ? "Player: " : "玩家: "}</h2>
+              <h2 className="text-lg font-semibold mb-2">
+                {changeLanguage ? "Player: " : "玩家: "}
+              </h2>
               <div className="max-h-40 overflow-y-auto border rounded-md p-2">
                 {players.map((info) => (
                   <div key={info.id} className="py-1">
@@ -248,7 +290,9 @@ export default function () {
                 {changeLanguage ? "Start Game" : "開始遊戲"}
               </button>
             )}
-            {typeof playersData === "string" && <div className="text-red-500 mb-4">{playersData}</div>}
+            {typeof playersData === "string" && (
+              <div className="text-red-500 mb-4">{playersData}</div>
+            )}
             <button
               onClick={handleLogout}
               className="w-full py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors mb-6"
@@ -257,7 +301,9 @@ export default function () {
             </button>
             <div>
               <h2 className="text-xl font-bold mb-2">
-                {changeLanguage ? "Role introduction & Victory Condition" : "角色介紹&勝利條件"}
+                {changeLanguage
+                  ? "Role introduction & Victory Condition"
+                  : "角色介紹&勝利條件"}
               </h2>
               <CharacterSkill changeLanguage={changeLanguage} />
             </div>
