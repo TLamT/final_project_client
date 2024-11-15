@@ -14,6 +14,7 @@ export default function Page() {
     checkToken(token);
   }, []);
   const checkToken = async (token) => {
+    console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/checkToken`,
