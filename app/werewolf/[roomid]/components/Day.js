@@ -38,7 +38,7 @@ export default function Day({
   chooseSomeone,
   playerDiedLastNight,
 }) {
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(15);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
@@ -60,6 +60,15 @@ export default function Day({
   useEffect(() => {
     setFade(true);
     if (currentDeadIndex < playerDied.length) {
+      if (roomLeader) {
+        socket.emit("dayChat", {
+          roomId,
+          message: `${
+            playersData[playerDied[currentDeadIndex]].name
+          } has died last night!`,
+          name: "server",
+        });
+      }
       const animationTimeout = setTimeout(() => {
         setTimeout(() => {
           setCurrentDeadIndex(currentDeadIndex + 1);
@@ -81,12 +90,19 @@ export default function Day({
         clearTimeout(animationTimeout);
       };
     } else {
-      setTimer(10);
+      setTimer(15);
 
       setPlayersData((prev) =>
         prev.map((player) => ({ ...player, jailed: false }))
       );
 
+      if (roomLeader && days > 1) {
+        socket.emit("dayChat", {
+          roomId,
+          message: `Last night was a safe night.`,
+          name: "server",
+        });
+      }
       setCurrAction(actions[role]);
       if (role === "reminiscence" && role !== playersData[position].role) {
         socket.emit("dayChat", {
@@ -106,7 +122,7 @@ export default function Day({
           action: actionRef.current,
         });
         setFadeOut(true);
-      }, 30000);
+      }, 15000);
 
       const dayTime = setInterval(() => {
         //(same votes:no one die)
@@ -118,8 +134,8 @@ export default function Day({
         // Trigger fade-out effect before ending the day
 
         setDays((prev) => prev + 1);
-        if (roomLeader) socket.emit("sendSetDay", { roomId, dayTime: false });
-      }, 31000);
+        socket.emit("sendSetDay", { roomId, dayTime: false });
+      }, 16000);
 
       const clockTimer = setInterval(() => {
         setTimer((prev) => {
@@ -218,13 +234,15 @@ export default function Day({
       setPlayersData((prev) => prev.map((player) => ({ ...player, vote: 0 })));
       // secondly base on how many vote, make that player vote
       Object.values(voteData).forEach((playerIndex) => {
-        setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === +playerIndex
-              ? { ...player, vote: player.vote + 1 }
-              : { ...player, vote: player.vote }
-          )
-        );
+        if (playerIndex !== null) {
+          setPlayersData((prev) =>
+            prev.map((player, index) =>
+              index === +playerIndex
+                ? { ...player, vote: player.vote + 1 }
+                : { ...player, vote: player.vote }
+            )
+          );
+        }
       });
     });
     socket.on("allDayAction", (dayTimeAction) => {
@@ -269,16 +287,22 @@ export default function Day({
     setMessage("");
   }
   function handleVote(targetIndex) {
-    setPersonal(targetIndex);
-    if (days <= 1) {
-      alert("You can't voting on the first day!");
-      return;
-    }
-    if (targetIndex !== null) {
+    // if (days <= 1) {
+    //   alert("You can't voting on the first day!");
+    //   return;
+    // }
+    if (targetIndex !== null && targetIndex !== personal) {
+      setPersonal(targetIndex);
       socket.emit("submitVote", {
-        allPlayerId: alivePlayerId,
         id: playersData[position].id,
         target: targetIndex,
+        roomId,
+      });
+    } else {
+      setPersonal(null);
+      socket.emit("submitVote", {
+        id: playersData[position].id,
+        target: null,
         roomId,
       });
     }
@@ -357,6 +381,7 @@ export default function Day({
               position={position}
               day={day}
               setTarget={setTarget}
+              target={target}
             />
           </div>
           <div className="h-1/2 border-2 border-red-300">
@@ -459,7 +484,7 @@ export default function Day({
               <span>
                 You have voted
                 <span className="font-semibold text-rose-600 ml-2">
-                  {personal !== null ? playersData[personal].name : "no one"}
+                  {personal !== null ? playersData[personal]?.name : "no one"}
                 </span>
               </span>
             )}
@@ -505,6 +530,7 @@ export default function Day({
               cupidAbilityUsed={cupidAbilityUsed}
               days={days}
               handleVote={handleVote}
+              target={target}
             />
           </div>
         </div>

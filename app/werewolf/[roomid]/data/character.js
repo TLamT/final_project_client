@@ -94,7 +94,7 @@ const characterData = {
     vampireHunter: {
       nameTC: "吸血鬼獵人",
       must: false,
-      targetGroup: null,
+      targetGroup: "all",
       ability:
         "Can target a player at night. If they target a Vampire, they kill them. If attacked by a Vampire, the Vampire dies instead. If no Vampires exist, they become a Police instead.",
       detected: "good",
@@ -119,7 +119,8 @@ const characterData = {
       nameTC: "邪教教徒",
       must: false,
       targetGroup: null,
-      ability: "Appears as “good” if checked by a Detector, but their true alignment is with the Witch faction.",
+      ability:
+        "Appears as “good” if checked by a Detector, but their true alignment is with the Witch faction.",
       detected: "good",
       img: "",
       actionOrder: null,
@@ -149,7 +150,8 @@ const characterData = {
       nameTC: "吸血鬼",
       must: false,
       targetGroup: "all",
-      ability: "Can convert other players into Vampire Thralls. If a Vampire targets a Werewolf, the Werewolf dies.",
+      ability:
+        "Can convert other players into Vampire Thralls. If a Vampire targets a Werewolf, the Werewolf dies.",
       detected: "bad",
       img: "./image/vampire.jpg",
       actionOrder: 2,

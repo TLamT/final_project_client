@@ -20,7 +20,7 @@ function DayChatRoom({
   }, [dayTimeChat]);
 
   useEffect(() => {
-    console.log("Daytime status:", day); // Check if day is true or false
+    // console.log("Daytime status:", day); // Check if day is true or false
   }, [day]);
   const handleKeyDown = (event) => {
     if (event.key === "Enter" && day) {

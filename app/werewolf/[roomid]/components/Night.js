@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import characterData from "../data/character";
 import AliveChatAndTarget from "./AliveChatAndTarget";
-import AliveChatAndTargetFung from "./AliveChatAndTargetFung";
 import fungPlayerData from "../data/fungPlayerData";
 import DeadPlayerList from "./DeadPlayerList";
 import AllChatRoom from "./AllChatRooms";
@@ -11,12 +10,11 @@ import AllChatRoom from "./AllChatRooms";
 // import DayChatRoom from "./DayChatRoom";
 // import NightChatRoom from "./NightChatRoom";
 import RoleCard from "./RoleCard";
-import { Flag } from "lucide-react";
+
 export default function Night({
   socket,
   day,
   setDay,
-  roomLeader,
   name,
   roomId,
   dayTimeChat,
@@ -43,8 +41,9 @@ export default function Night({
   setPlayerDiedLastNight,
   canShoot,
   setCanShoot,
+  initialVampire,
 }) {
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(15);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
@@ -61,7 +60,7 @@ export default function Night({
   );
 
   useEffect(() => {
-    setTimer(30);
+    setTimer(15);
     setFade(true);
     setCurrAction(actions[role]);
 
@@ -76,13 +75,13 @@ export default function Night({
         action: actionRef.current,
         twistedTarget: twistedFateTargetRef.current,
       });
-    }, 30000);
+    }, 15000);
 
     const nightTime = setInterval(() => {
       setFadeOut(true);
       setNights((prev) => prev + 1);
       socket.emit("sendSetDay", { roomId, dayTime: true });
-    }, 31000);
+    }, 16000);
 
     const clockTimer = setInterval(() => {
       setTimer((prev) => prev - 1);
@@ -208,6 +207,7 @@ export default function Night({
         }
       }
     }
+
     if (actions.action === "detect") {
       // get the detected player name
       const detectedName = playersData[actions.target].name;
@@ -226,15 +226,18 @@ export default function Night({
         )
       );
     }
+
     if (actions.action === "lookOut") {
       const playerVisit = nightTimeAction.filter((player) => {
         return player.target === actions.target;
       });
       setSentinelAbilityInfo(playerVisit);
     }
+
     if (actions.action === "scam") {
       setDetectiveAbilityInfo((prev) => ({ ...prev, detected: "bad" }));
     }
+
     if (actions.action === "remember") {
       const targetRole = playersData[actions.target].role;
       setPlayersData((prev) =>
@@ -243,6 +246,7 @@ export default function Night({
         )
       );
     }
+
     if (actions.action === "convert") {
       const witch = Object.keys(characterData.witch);
       const targetRole = playersData[actions.target].role;
@@ -272,6 +276,7 @@ export default function Night({
         setPlayerDiedLastNight((prev) => [...prev, actions.owner]);
       }
     }
+
     if (actions.action === "vampireKill") {
       const targetRole = playersData[actions.target].role;
 
@@ -284,6 +289,7 @@ export default function Night({
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       }
     }
+
     if (actions.action === "destiny") {
       if (actions.twistedTarget === playersData[actions.target].role) {
         setPlayersData((prev) =>
@@ -333,6 +339,7 @@ export default function Night({
               playersData={playersData}
               position={position}
               day={day}
+              target={target}
             />
           </div>
           <div className="h-1/2 border-2 border-red-300">
@@ -498,6 +505,8 @@ export default function Night({
               day={day}
               cupidAbilityUsed={cupidAbilityUsed}
               canShoot={canShoot}
+              initialVampire={initialVampire}
+              target={target}
             />
           </div>
         </div>

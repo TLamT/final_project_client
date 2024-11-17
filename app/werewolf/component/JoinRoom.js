@@ -17,9 +17,19 @@ export function JoinRoom() {
   useEffect(() => {
     if (roomId) {
       socket.emit("joinRoom", { roomId });
-      router.push(`/werewolf/${roomId}`);
     }
   }, [roomId]);
+
+  useEffect(() => {
+    socket.on("gameStarted", ({ gameJoin, roomId }) => {
+      if (gameJoin) {
+        router.push(`/werewolf/${roomId}`);
+      }
+      if (!gameJoin) {
+        alert("game already started");
+      }
+    });
+  }, [socket]);
 
   return (
     <div className="flex justify-center">

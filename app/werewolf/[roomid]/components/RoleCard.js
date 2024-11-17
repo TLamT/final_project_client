@@ -120,7 +120,7 @@ const RoleCard = ({ playersData, position }) => {
         </div>
         <ul className="flex flex-col items-center justify-center mt-4 h-1/6">
           <li className="border-2 border-yellow-500">
-            Abilty : {`${myPlayer.ability}`}
+            Ability : {`${myPlayer.ability}`}
           </li>
         </ul>
       </div>

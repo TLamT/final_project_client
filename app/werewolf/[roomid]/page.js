@@ -11,6 +11,7 @@ import playerRoleList from "./components/DealCardMachine";
 import fungPlayerData from "./data/fungPlayerData";
 import characterData from "./data/character";
 import CharacterSkill from "../component/CharacterSkill";
+
 const isSSR = typeof window === "undefined";
 
 export default function () {
@@ -36,6 +37,7 @@ export default function () {
   const [gameEnd, setGameEnd] = useState(false);
   const [gameEndMessage, setGameEndMessage] = useState([]);
   const [playerDiedLastNight, setPlayerDiedLastNight] = useState([]);
+  const [initialVampire, setInitialVampire] = useState(null);
   // day data
   const [days, setDays] = useState(1);
   const [dayTimeChat, setDayTimeChat] = useState([]);
@@ -49,10 +51,11 @@ export default function () {
   const [changeLanguage, setChangeLanguage] = useState(true);
   // police skill
   const [canShoot, setCanShoot] = useState(true);
-  // transfer TC to EN
+
   const handleOnChange = () => {
     setChangeLanguage((prevState) => !prevState);
   };
+
   const assignNewReaper = () => {
     // 當遊戲開始後才進行
     if (gameStart) {
@@ -89,7 +92,7 @@ export default function () {
   useEffect(() => {
     if (gameStart) {
       assignNewReaper();
-      checkWon();
+      // checkWon();
     }
   }, [playersData]);
 
@@ -106,12 +109,20 @@ export default function () {
       (player) => player.role === "vampire"
     );
 
-    if (currWitch.length === 0 && currVampire.length === 0) {
+    if (
+      currWitch.length === 0 &&
+      currVampire.length === 0 &&
+      currTown.length > 0
+    ) {
       setGameEndMessage((prev) => [...prev, "town win"]);
       setGameEnd(true);
     }
 
-    if (currTown.length === 0 && currVampire.length === 0) {
+    if (
+      currTown.length === 0 &&
+      currVampire.length === 0 &&
+      currWitch.length > 0
+    ) {
       setGameEndMessage((prev) => [...prev, "witch win"]);
       setGameEnd(true);
     }
@@ -223,13 +234,18 @@ export default function () {
     });
 
     let indexArr = [];
+
     playersData.forEach((player, index) => {
       player.role === "conspirator" ? null : indexArr.push(index);
     });
+
     const randomIndex = Math.floor(Math.random() * indexArr.length);
+
     setChooseSomeone(indexArr[randomIndex]);
 
     setPlayersData(roles);
+
+    setInitialVampire(roles.find((player) => player.role === "vampire"));
   }, [players]);
 
   function handleGameStart() {
@@ -303,7 +319,7 @@ export default function () {
               <h2 className="text-xl font-bold mb-2">
                 {changeLanguage
                   ? "Role introduction & Victory Condition"
-                  : "角色介紹&勝利條件"}
+                  : "角色資料&勝利條件"}
               </h2>
               <CharacterSkill changeLanguage={changeLanguage} />
             </div>
@@ -366,6 +382,7 @@ export default function () {
             setPlayerDiedLastNight={setPlayerDiedLastNight}
             canShoot={canShoot}
             setCanShoot={setCanShoot}
+            initialVampire={initialVampire}
           />
         )
       ) : (

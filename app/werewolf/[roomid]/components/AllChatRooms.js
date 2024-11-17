@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useReducer } from "react";
+import { useState } from "react";
 import DayChatRoom from "./DayChatRoom";
 import NightChatRoom from "./NightChatRoom";
 import WholeDayChatRoom from "./WholeDayChatRoom";
@@ -97,7 +97,7 @@ const AllChatRoom = ({
       nightTimeChat={vampireChat}
       message={message}
       setMessage={setMessage}
-      sentMessage={sentVampireMessage}
+      sentNightMessage={sentVampireMessage}
       playersData={playersData}
       position={position}
       role={role}
