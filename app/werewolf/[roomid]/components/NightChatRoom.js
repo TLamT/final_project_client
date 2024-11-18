@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import EmojiPicker from "emoji-picker-react";
 
 function NightChatRoom({ nightTimeChat, message, setMessage, sentNightMessage, playersData, position }) {
   const scrollRef = useRef(null);
+  const emojiPickerRef = useRef(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const onEmojiClick = (emojiData) => {
+    setMessage((prevMessage) => prevMessage + emojiData.emoji);
+  };
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -17,6 +24,24 @@ function NightChatRoom({ nightTimeChat, message, setMessage, sentNightMessage, p
       sentNightMessage();
     }
   };
+
+  const handleClickOutside = (event) => {
+    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+      setShowEmojiPicker(false); // Close the emoji picker
+    }
+  };
+
+  useEffect(() => {
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
 
   const isPlayerAlive = playersData[position]?.alive;
 
@@ -37,6 +62,17 @@ function NightChatRoom({ nightTimeChat, message, setMessage, sentNightMessage, p
       {/* Input and Send Button Section */}
       {isPlayerAlive ? (
         <div className="h-1/5 flex items-center space-x-2">
+          <button
+            onClick={() => setShowEmojiPicker((prev) => !prev)}
+            className="bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out"
+          >
+            😊
+          </button>
+          {showEmojiPicker && (
+            <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-50 bg-white rounded-lg shadow-lg">
+              <EmojiPicker onEmojiClick={onEmojiClick} />
+            </div>
+          )}
           <input
             type="text"
             value={message}
@@ -45,6 +81,7 @@ function NightChatRoom({ nightTimeChat, message, setMessage, sentNightMessage, p
             className="w-full px-3 py-2 border border-cyan-300 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400"
             placeholder="Type your message..."
           />
+
           <button
             onClick={sentNightMessage}
             className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out"

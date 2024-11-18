@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import EmojiPicker from "emoji-picker-react";
 
 function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat, playersData, position }) {
   const scrollRef = useRef(null);
+  const emojiPickerRef = useRef(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -16,6 +19,27 @@ function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat
       event.preventDefault(); // Prevents a new line from being added in the input
       sentDeadMessage();
     }
+  };
+
+  const handleClickOutside = (event) => {
+    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+      setShowEmojiPicker(false); // Close the emoji picker
+    }
+  };
+
+  useEffect(() => {
+    if (showEmojiPicker) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showEmojiPicker]);
+  const onEmojiClick = (emojiData) => {
+    setMessage((prevMessage) => prevMessage + emojiData.emoji);
   };
 
   // Check if the role is "medium" and if the player is alive
@@ -42,6 +66,17 @@ function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat
 
       {/* Input Field and Send Button Section */}
       <div className="h-1/5 flex items-center space-x-2">
+        <button
+          onClick={() => setShowEmojiPicker((prev) => !prev)}
+          className="px-4 py-2 rounded-lg font-semibold text-white bg-gray-700 hover:bg-gray-600 transition duration-150 ease-in-out"
+        >
+          😊
+        </button>
+        {showEmojiPicker && (
+          <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-50 bg-white rounded-lg shadow-lg">
+            <EmojiPicker onEmojiClick={onEmojiClick} />
+          </div>
+        )}
         <input
           value={message}
           onChange={(ev) => setMessage(ev.target.value)}
@@ -56,6 +91,7 @@ function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat
           placeholder="Type your message..."
           disabled={isMedium && playersData[position]?.alive} // Disable input if medium role is alive
         />
+
         <button
           onClick={sentDeadMessage}
           className={`px-4 py-2 rounded-lg font-semibold text-white transition duration-150 ease-in-out 

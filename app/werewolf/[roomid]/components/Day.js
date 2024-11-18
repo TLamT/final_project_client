@@ -59,13 +59,11 @@ export default function Day({
 
   useEffect(() => {
     setFade(true);
-    if (currentDeadIndex < playerDied.length) {
+    if (playerDied.length && currentDeadIndex < playerDied.length) {
       if (roomLeader) {
         socket.emit("dayChat", {
           roomId,
-          message: `${
-            playersData[playerDied[currentDeadIndex]].name
-          } has died last night!`,
+          message: `${playersData[playerDied[currentDeadIndex]].name} has died last night!`,
           name: "server",
         });
       }
@@ -80,9 +78,7 @@ export default function Day({
         setIsVisible(false);
       }, 2000);
 
-      setDeadMessage(
-        `${playersData[playerDied[currentDeadIndex]].name} has died last night!`
-      );
+      setDeadMessage(`${playersData[playerDied[currentDeadIndex]].name} has died last night!`);
       setIsVisible(true);
 
       return () => {
@@ -92,9 +88,7 @@ export default function Day({
     } else {
       setTimer(15);
 
-      setPlayersData((prev) =>
-        prev.map((player) => ({ ...player, jailed: false }))
-      );
+      setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
 
       if (roomLeader && days > 1) {
         socket.emit("dayChat", {
@@ -158,9 +152,7 @@ export default function Day({
     }
   }, [currentDeadIndex]);
 
-  const alivePlayerId = playersData
-    .filter((player) => player.alive)
-    .map((player) => player.id);
+  const alivePlayerId = playersData.filter((player) => player.alive).map((player) => player.id);
 
   useEffect(() => {
     targetRef.current = target;
@@ -177,9 +169,7 @@ export default function Day({
     const playersVote = playerDataRef.current.map((player) => player.vote);
     const maxVotes = Math.max(...playersVote);
     // console.log("maxVotes", maxVotes);
-    const highestVotePlayers = playerDataRef.current.filter(
-      (player) => player.vote === maxVotes
-    );
+    const highestVotePlayers = playerDataRef.current.filter((player) => player.vote === maxVotes);
     if (highestVotePlayers.length === 1) {
       const votedOutPlayer = highestVotePlayers[0];
       console.log("votedOutPlayer1", votedOutPlayer);
@@ -213,9 +203,7 @@ export default function Day({
           repeat: "no",
         });
       }
-      setPlayersData((preData) =>
-        preData.map((player) => ({ ...player, vote: 0 }))
-      );
+      setPlayersData((preData) => preData.map((player) => ({ ...player, vote: 0 })));
     }
   };
 
@@ -237,9 +225,7 @@ export default function Day({
         if (playerIndex !== null) {
           setPlayersData((prev) =>
             prev.map((player, index) =>
-              index === +playerIndex
-                ? { ...player, vote: player.vote + 1 }
-                : { ...player, vote: player.vote }
+              index === +playerIndex ? { ...player, vote: player.vote + 1 } : { ...player, vote: player.vote }
             )
           );
         }
@@ -249,14 +235,10 @@ export default function Day({
       dayTimeAction.forEach((actions) => {
         if (actions.action === "link with") {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, linked: true } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, linked: true } : player))
           );
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.owner ? { ...player, linked: true } : player
-            )
+            prev.map((player, index) => (index === actions.owner ? { ...player, linked: true } : player))
           );
           if (playersData[position].role === "cupid") {
             setCupidAbilityUsed(true);
@@ -264,9 +246,7 @@ export default function Day({
         }
         if (actions.action === "jail") {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, jailed: true } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, jailed: true } : player))
           );
         }
       });
@@ -325,11 +305,7 @@ export default function Day({
           const y = centerY + radius * Math.sin(angle); // Y position
 
           return (
-            <g
-              key={item.id}
-              transform={`translate(${x}, ${y})`}
-              className="relative"
-            >
+            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
               <text x="0" y="60" textAnchor="middle" dominantBaseline="middle">
                 {item.name}
               </text>
@@ -435,9 +411,7 @@ export default function Day({
 
           <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">
             {targetRef && currAction && !cupidAbilityUsed && (
-              <div>{`you decide to ${currAction} ${
-                target === null ? "no one" : playersData[target].name
-              }`}</div>
+              <div>{`you decide to ${currAction} ${target === null ? "no one" : playersData[target].name}`}</div>
             )}
           </div>
 
@@ -445,13 +419,7 @@ export default function Day({
             {!!detectiveAbilityInfo.name && role === "detective" && (
               <span>
                 <span>{`${detectiveAbilityInfo.name} is `}</span>
-                <span
-                  className={clsx(
-                    detectiveAbilityInfo.detected === "good"
-                      ? "text-blue-600"
-                      : "text-red-600"
-                  )}
-                >
+                <span className={clsx(detectiveAbilityInfo.detected === "good" ? "text-blue-600" : "text-red-600")}>
                   {detectiveAbilityInfo.detected}
                 </span>
                 {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
@@ -470,16 +438,9 @@ export default function Day({
               })}
           </div>
 
-          <div>
-            {role === "conspirator" && (
-              <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>
-            )}
-          </div>
+          <div>{role === "conspirator" && <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>}</div>
 
-          <div
-            className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in"
-            key={personal}
-          >
+          <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in" key={personal}>
             {days > 1 && (
               <span>
                 You have voted

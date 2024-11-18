@@ -4,21 +4,17 @@ import { useState, useEffect, useContext } from "react";
 import { SocketConnection } from "../layout";
 import { LogIn } from "lucide-react";
 
-export function JoinRoom() {
+export function JoinRoom({ changeLanguage }) {
   const socket = useContext(SocketConnection);
   const router = useRouter();
   const [roomId, setRoomId] = useState("");
+  const [alert, setAlert] = useState("");
 
   const handleJoinRoom = () => {
-    let room = prompt("Please Enter the Room ID!");
-    setRoomId(room);
-  };
-
-  useEffect(() => {
     if (roomId) {
       socket.emit("joinRoom", { roomId });
     }
-  }, [roomId]);
+  };
 
   useEffect(() => {
     socket.on("gameStarted", ({ gameJoin, roomId }) => {
@@ -26,20 +22,32 @@ export function JoinRoom() {
         router.push(`/werewolf/${roomId}`);
       }
       if (!gameJoin) {
-        alert("game already started");
+        setAlert("game already started");
+        setRoomId("");
+        setTimeout(() => {
+          setAlert("");
+        }, 2000);
       }
     });
   }, [socket]);
 
   return (
-    <div className="flex justify-center">
-      <button
-        onClick={handleJoinRoom}
-        className="w-full bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300 flex flex-row justify-center"
-      >
-        <LogIn className="mr-2 h-4 w-4 mt-1" />
-        Join Room
-      </button>
+    <div className="flex gap-2">
+      <input
+        placeholder={alert ? alert : "Enter Code"}
+        className="bg-transparent border-2 border-white/20 rounded-xl p-4"
+        value={roomId}
+        onChange={(ev) => setRoomId(ev.target.value)}
+      />
+      <div variant="outline" className="border-2 rounded-xl min-w-48">
+        <button
+          onClick={handleJoinRoom}
+          className="text-white font-bold py-4 px-8 rounded hover:scale-110 transition duration-300 flex flex-row justify-center w-full"
+        >
+          <LogIn className="mr-2 h-4 w-4 mt-2" />
+          {changeLanguage ? "Join Room" : "加入房間"}
+        </button>
+      </div>
     </div>
   );
 }

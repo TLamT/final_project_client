@@ -27,9 +27,9 @@ const characterData = {
       nameTC: "警察",
       must: true,
       targetGroup: "all",
-      ability: "Can kill a player at night. ",
+      ability: "Shoot a player at night,if the targeted player is innocent,you will lost the ability to shoot.",
       abilityTC:
-        "“一槍不夠就兩槍？治安官有話要說：‘這裡只有槍法，沒有商量！’ : 晚上可以殺死一名玩家。如果目標是無辜者，治安官將失去殺戮能力。總共可以開槍兩次。",
+        '技能（膊頭有花）: "對唔住，我係差人。" 可以每晚選擇射殺一個人，如果錯殺無菇市民，就會失去手槍，變成冇任何能力既廢柴。',
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/police.jpg",
       actionOrder: 2,
@@ -38,35 +38,42 @@ const characterData = {
       nameTC: "偵探",
       must: true,
       targetGroup: "all",
-      ability: "Can check the alignment (good or bad) of a player each night.",
+      ability: "Check the alignment (good or bad) of a player each night.",
+      abilityTC:
+        "“技能（花生專家）: 等我八卦完再update你，頭號花生友一定係我～ 每晚可以八卦一名玩家既陣營係好人定係衰人。",
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/detective.jpg",
       actionOrder: 4,
     },
     defender: {
-      nameTC: "守衛者",
+      nameTC: "金槍人",
       must: false,
       targetGroup: "all",
       ability: "Protects a player at night.",
+      abilityTC: `技能（鐵布衫）: “就憑你果招垃圾技就想殺我想保護既人？”
+                每晚可以保護一名玩家唔會比古惑仔坑害，但無辦法擋住唔係人（彊屍）既攻擊。`,
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/defender.jpg",
       actionOrder: 1,
     },
     medium: {
-      nameTC: "靈媒",
+      nameTC: "龍婆",
       must: false,
       targetGroup: null,
-      ability: "Can watch the deadplayer chatroom",
+      ability: "You can see the deadplayer chatroom at night,but you cannot talk to deadplayer.",
+      abilityTC: "技能（通靈）: “龍婆既口號：‘死者之言，聲聲入耳。' 每晚都可以查看已歸西既玩家之間既對話。",
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/medium.jpg",
       actionOrder: null,
     },
     cupid: {
-      nameTC: "丘比特",
+      nameTC: "如花",
       must: false,
       targetGroup: null,
       ability:
-        " During the game start, Cupid can link the lives of two players. If one dies, the other dies too, regardless of faction.",
+        "During daytime,you can link yourself with a player and when one linked player died,the other will also died.",
+      abilityTC:
+        "技能（如花似玉）: “我係黃花閨女黎嫁嘛，唔好曬時間，快啲黎啦！” 能夠將一人與其連結。如果其中一個人死左，另一人都會跟住攬炒，唔理係邊個陣營。",
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/cupid.jpg",
       actionOrder: 1,
@@ -75,8 +82,8 @@ const characterData = {
       nameTC: "哨兵",
       must: false,
       targetGroup: "all",
-      ability:
-        "Can check on a player each night. If any players visited the target that night, their names will be revealed to the Sentinel.",
+      ability: "You can choose a player at night and see which player visited them.",
+      abilityTC: "技能（放大鏡）: 每晚可以查看一名玩家。如果有其他人當晚拜訪了該玩家，他們的名字將會顯示給哨兵。",
       detected: "good",
       img: "",
       actionOrder: 5,
@@ -85,18 +92,21 @@ const characterData = {
       nameTC: "獄卒",
       must: false,
       targetGroup: null,
-      ability:
-        "Selects a player to imprison, preventing them from using their ability that night. The jailed player cannot be killed while in jail.",
+      ability: "You can jail a player at day and the player cannot use their night ability.",
+      abilityTC:
+        "技能（畫地為牢）: “想搞搞震？畫個圈圈詛咒你，拖你入黑房面壁思過！”  選擇一名玩家將其關入黑房，阻止果個玩家當晚使用技能。被人困住既玩家係黑房面壁思過期間唔會被殺。",
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/jailor.jpg",
       actionOrder: 1,
     },
     vampireHunter: {
-      nameTC: "吸血鬼獵人",
+      nameTC: "茅山道士",
       must: false,
       targetGroup: "all",
       ability:
-        "Can target a player at night. If they target a Vampire, they kill them. If attacked by a Vampire, the Vampire dies instead. If no Vampires exist, they become a Police instead.",
+        "You can check a player at night,if the targeted player is vampire,kill the targeted player.If the vampire try to convert you at night,also kill them.",
+      abilityTC:
+        "技能（掌心雷法）:  “但凡係遺禍人間，塗毒生靈既妖孽，都由我黎解決”  每晚選擇一名玩家。如果目標係彊屍，可以將佢殺死。如果被彊屍攻擊，會反殺番吸血鬼。假如場上無囇彊屍，道士會轉職做警察。",
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/vampireHunter.jpg",
       actionOrder: 2,
@@ -104,23 +114,22 @@ const characterData = {
   },
   witch: {
     reaper: {
-      nameTC: "殺手",
+      nameTC: "金牌打手",
       must: true,
       targetGroup: "nonWitch",
-      ability:
-        "Can kill a player each night. If the Reaper dies and there is no Potion Master, a random Witch player will inherit the Reaper role.",
+      ability: "Can kill a player each night.",
       abilityTC:
-        "“開膛手的信條：‘刀在手，天下我有！下個夜晚，誰是倒霉蛋？’ : 每晚可以殺死一名玩家。如果開膛手死亡且場上無藥劑師，則隨機選擇一名巫師成為開膛手。",
+        "“技能（收保護費）: “金牌打手：‘12點之後，呢到我話事”  每晚可以殺死一名玩家。如果金牌打手死亡，將會隨機選擇一名古惑仔升級做金牌打手。",
       detected: "bad",
       img: "../data/image/reaper.jpg",
       actionOrder: 2,
     },
     cultist: {
-      nameTC: "邪教教徒",
+      nameTC: "二五仔",
       must: false,
       targetGroup: null,
-      ability:
-        "Appears as “good” if checked by a Detector, but their true alignment is with the Witch faction.",
+      ability: "Appears as “good” when checked by a Detector.",
+      abilityTC: "技能（專業卧底）: 當比偵探查看身分果陣，會顯示為好人，但係實際立場係屬於古惑仔陣營。",
       detected: "good",
       img: "",
       actionOrder: null,
@@ -129,8 +138,9 @@ const characterData = {
       nameTC: "欺詐師",
       must: false,
       targetGroup: "nonWitch",
-      ability:
-        "Can choose a player each night to “frame.” This targeted player will appear as “bad” if checked by a Detector.",
+      ability: "You can target a player at night,and the targeted player will appear as “bad” to the detector.",
+      abilityTC:
+        "技能（完美偽裝）: “唔好意思，不過我係特登既” 每晚可以選擇“陷害”一位玩家。當偵探查看果個玩家果陣，會顯示做“衰人”。 ",
       detected: "bad",
       img: "/client/app/werewolf/[roomid]/data/image/scammer.jpg",
       actionOrder: 3,
@@ -139,7 +149,10 @@ const characterData = {
       nameTC: "賭徒",
       must: false,
       targetGroup: "nonWitch",
-      ability: "All or nothing",
+      ability:
+        "You can guess the role of a player at night,if correct: kill the targeted player,if wrong: your identity will be reveal to all player",
+      abilityTC:
+        "技能（賭命）: “唔係你死就係我死” 每晚可以賭一個人既真實身份，賭中對方出局；賭唔中就會自爆身份比所有人知。 ",
       detected: "bad",
       img: "/client/app/werewolf/[roomid]/data/image/twistedFate.jpg",
       actionOrder: 2,
@@ -147,11 +160,13 @@ const characterData = {
   },
   neutral: {
     vampire: {
-      nameTC: "吸血鬼",
+      nameTC: "彊屍",
       must: false,
       targetGroup: "all",
       ability:
-        "Can convert other players into Vampire Thralls. If a Vampire targets a Werewolf, the Werewolf dies.",
+        "You can target a player at night,if the targeted player faction is town,convert them into vampire,otherwise kill them.",
+      abilityTC:
+        "技能（Q親你對唔住）:  “CHU！我咁可愛你地唔係想殺左我下話？” 可以將其他玩家轉化為彊屍。如果彊屍攻擊古惑仔，古惑仔會死亡。 ",
       detected: "bad",
       img: "./image/vampire.jpg",
       actionOrder: 2,
@@ -160,7 +175,8 @@ const characterData = {
       nameTC: "謀略家",
       must: false,
       targetGroup: null,
-      ability: "Can manipulate events to get a selected player voted out.",
+      ability: "You have no ability,but your goal is to make the targeted player get voted out.",
+      abilityTC: "技能（金手指）: “呢個世界就係比有權力既人話事架啦” 諗盡計仔將某個特定目標比人票死。",
       detected: "good",
       img: "./image/conspirator.jpg",
       actionOrder: null,
@@ -169,18 +185,20 @@ const characterData = {
       nameTC: "小丑",
       must: false,
       targetGroup: "all",
-      ability:
-        "Tries to get voted out to “entertain” the others. When voted out, can kill one player who voted for them.",
+      ability: "Try to get voted out,if succeeded you can choose a player to kill in the following night.",
+      abilityTC:
+        "技能（娛樂至死）: “我既存在本身就係一個笑話，票死我，我就帶一個人同我攬炒，咁中意食花生呀拿！” 試圖叫人票死自己黎“取悅”大眾花生友。被人票殺之後，可以選擇殺死一個投票比佢既人。 ",
       detected: "good",
       img: "./image/joker.jpg",
       actionOrder: 2,
     },
     reminiscence: {
-      nameTC: "追憶者",
+      nameTC: "白痴",
       must: false,
       targetGroup: null,
-      ability:
-        "Can select a dead player once per game to inherit their role, faction, and mission. Their new identity will be revealed in chat.",
+      ability: "You can select a dead player and gain their ability,role,and target.",
+      abilityTC:
+        "技能（回憶）:  “我個頭好痛呀，我個頭好痛呀，我個頭好痛呀.....”  係遊戲入面只可以選擇一名已歸西既玩家，繼承佢既角色、陣營同任務。取代左既新身份將會聊天室到公開。 ",
       detected: "good",
       img: "",
       actionOrder: 3,

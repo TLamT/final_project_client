@@ -6,7 +6,7 @@ import { SocketConnection } from "../layout";
 import { Plus } from "lucide-react";
 
 // Create a Room function
-export function CreateRoom() {
+export function CreateRoom({ changeLanguage }) {
   const socket = useContext(SocketConnection);
   const [playerCount, setPlayerCount] = useState(6);
   const [roomId, setRoomId] = useState("");
@@ -26,14 +26,13 @@ export function CreateRoom() {
   };
 
   return (
-    <div className="flex justify-center">
-      <Link
-        onClick={handleCreateRoomSubmit}
-        className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300 text-center mb-3 flex flex-row justify-center"
-        href={{ pathname: `/werewolf/${roomId}` }}
-      >
-        <Plus className="mr-2 h-4 w-4 mt-1" /> Create Room
-      </Link>
-    </div>
+    <Link
+      onClick={handleCreateRoomSubmit}
+      className="text-white font-bold py-4 px-5 rounded hover:scale-110 transition duration-300 flex flex-row justify-center w-full"
+      href={{ pathname: `/werewolf/${roomId}` }}
+    >
+      <Plus className="mr-2 h-4 w-4 mt-2" />
+      {changeLanguage ? "Create Room" : "創建房間"}
+    </Link>
   );
 }
