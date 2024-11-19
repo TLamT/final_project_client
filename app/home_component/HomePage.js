@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Cookies from "universal-cookie";
+import homePageBg from "@/public/image/homePageBg.jpg";
+import Image from "next/image";
 
 export default function HomePage({ setAuth }) {
   const cookies = new Cookies();
@@ -11,8 +13,20 @@ export default function HomePage({ setAuth }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white flex items-center justify-center">
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={homePageBg}
+          width={0}
+          height={0}
+          sizes="100vw"
+          className="opacity-40"
+          alt="kowloon"
+        />
+      </div>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">HomePage</h1>
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+          HomePage
+        </h1>
         <div className="space-y-4">
           <Link
             href="../werewolf"

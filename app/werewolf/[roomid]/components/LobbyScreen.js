@@ -2,14 +2,38 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Cookies from "universal-cookie";
 import lobbyBG from "@/public/image/lobbyBG.png";
+import lobbyLight from "@/public/image/lobbyLight.jpg";
+import reaper from "@/public/image/reaper.jpg";
+import { useEffect, useState } from "react";
 
 const isSSR = typeof window === "undefined";
 
 const LobbyScreen = ({ roomId, playersData, position, socket }) => {
+  const [radiusX, setRadiusX] = useState(300); // Default radiusX
+  const [radiusY, setRadiusY] = useState(150); // Default radiusY
+
+  // Update radii based on screen size
+  useEffect(() => {
+    const updateRadius = () => {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      setRadiusX(screenWidth * 0.3); // 30% of screen width
+      setRadiusY(screenHeight * 0.2); // 20% of screen height
+    };
+
+    // Initial calculation
+    updateRadius();
+
+    // Recalculate on window resize
+    window.addEventListener("resize", updateRadius);
+    return () => window.removeEventListener("resize", updateRadius);
+  }, []);
+
   const router = useRouter();
   const cookies = new Cookies();
 
   const email = isSSR ? "no-email" : cookies.get("email");
+  const player = playersData.map((x) => x.name);
 
   function handleGameStart() {
     socket.emit("allRoleAssign", { roomId: roomId, data: playersData });
@@ -21,39 +45,109 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
     router.push(`/werewolf`);
   }
 
+  const OvalWithItems = ({ items, radiusX, radiusY }) => {
+    const centerX = radiusX * 1.65; // X coordinate of the oval center
+    const centerY = radiusY * 2.4; // Y coordinate of the oval center
+    return (
+      <svg width="100%" height="100%" className="absolute">
+        <ellipse
+          cx={centerX}
+          cy={centerY}
+          rx={radiusX}
+          ry={radiusY}
+          opacity="0.2"
+          fill={"white"}
+        />
+
+        {items.map((item, index) => {
+          const angle = (index / items.length) * 2 * Math.PI; // angle in radians
+          const x = centerX + radiusX * Math.cos(angle); // X position
+          const y = centerY + radiusY * Math.sin(angle); // Y position
+
+          return (
+            <g
+              key={item.id}
+              transform={`translate(${x}, ${y})`}
+              className="relative"
+            >
+              <text
+                x="0"
+                y="60"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill="white"
+              >
+                {item.name}
+              </text>
+              <image
+                href={
+                  "https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"
+                }
+                width="100"
+                height="100"
+                x="-50" // Center the image
+                y="-50" // Center the image
+                className="hover:scale-105 transition duration-150 ease-in-out cursor-pointer"
+              />
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
   return (
     // Game Content
-    <div className="flex-1 p-4 h-screen w-screen">
-      {/* Forest Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <Image src={lobbyBG} width={0} height={0} sizes="100vw" className="opacity-30" alt="kowloon" />
+    <div className="flex-1 p-2 h-screen w-screen">
+      {/* star Background */}
+      <div className="fixed inset-0 bg-black overflow-hidden">
+        <div className="absolute inset-0">
+          {[...Array(100)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                width: `${Math.random() * 2 + 1}px`,
+                height: `${Math.random() * 2 + 1}px`,
+                animation: `twinkle ${Math.random() * 5 + 5}s linear infinite`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
+        </div>
+        <style jsx>{`
+          @keyframes twinkle {
+            0% {
+              opacity: 0;
+            }
+            50% {
+              opacity: 1;
+            }
+            100% {
+              opacity: 0;
+            }
+          }
+        `}</style>
       </div>
 
-      <div className="flex flex-col h-full relative z-0">
+      <div className="flex flex-col items-center h-full w-full relative z-0 border-2">
         {/* Room Title */}
-        <h1 className="text-xl text-gray-800 mb-4">目前房間:{roomId}</h1>
+        <h1 className="flex justify-center text-xl text-white h-[8%] w-full border-2 z-10">
+          目前房間: {roomId}
+        </h1>
 
-        {/* Player Panel */}
-        <div className="w-64 bg-white/30 backdrop-blur-sm rounded-lg overflow-hidden">
-          Your name:{playersData[position]?.name}
-          <div className="p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800">
-              目前玩家:
-              {playersData.map((info) => (
-                <div key={info.id} className="py-1">
-                  {info.name}
-                </div>
-              ))}
-            </h2>
-          </div>
-          <div className="p-4">{/* Player list would go here */}</div>
+        <div className="h-[82%] w-full border-2 flex justify-center items-center">
+          <OvalWithItems
+            items={playersData}
+            radiusX={radiusX}
+            radiusY={radiusY}
+          />
         </div>
 
-        {/* Spacer to push buttons to bottom */}
-        <div className="flex-grow" />
-
         {/* Game Controls */}
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-center gap-2 h-[10%] w-full border-2 relative">
           {playersData[position]?.id === playersData[0]?.id && (
             <button
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded"

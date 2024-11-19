@@ -8,6 +8,7 @@ import DeadPlayerList from "./DeadPlayerList";
 import AllChatRoom from "./AllChatRooms";
 import WholeDayChatRoom from "./WholeDayChatRoom";
 import DayChatRoom from "./DayChatRoom";
+import dayBg from "@/public/image/dayBg.jpg";
 import RoleCard from "./RoleCard";
 
 export default function Day({
@@ -38,7 +39,7 @@ export default function Day({
   chooseSomeone,
   playerDiedLastNight,
 }) {
-  const [timer, setTimer] = useState(15);
+  const [timer, setTimer] = useState(60);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
@@ -56,6 +57,25 @@ export default function Day({
   const playerDataRef = useRef(playersData);
 
   const playerDied = [...new Set(playerDiedLastNight)];
+  const [radiusX, setRadiusX] = useState(300); // Default radiusX
+  const [radiusY, setRadiusY] = useState(150); // Default radiusY
+
+  // Update radii based on screen size
+  useEffect(() => {
+    const updateRadius = () => {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      setRadiusX(screenWidth * 0.3); // 30% of screen width
+      setRadiusY(screenHeight * 0.2); // 20% of screen height
+    };
+
+    // Initial calculation
+    updateRadius();
+
+    // Recalculate on window resize
+    window.addEventListener("resize", updateRadius);
+    return () => window.removeEventListener("resize", updateRadius);
+  }, []);
 
   useEffect(() => {
     setFade(true);
@@ -63,7 +83,9 @@ export default function Day({
       if (roomLeader) {
         socket.emit("dayChat", {
           roomId,
-          message: `${playersData[playerDied[currentDeadIndex]].name} has died last night!`,
+          message: `${
+            playersData[playerDied[currentDeadIndex]].name
+          } has died last night!`,
           name: "server",
         });
       }
@@ -78,7 +100,9 @@ export default function Day({
         setIsVisible(false);
       }, 2000);
 
-      setDeadMessage(`${playersData[playerDied[currentDeadIndex]].name} has died last night!`);
+      setDeadMessage(
+        `${playersData[playerDied[currentDeadIndex]].name} has died last night!`
+      );
       setIsVisible(true);
 
       return () => {
@@ -86,9 +110,11 @@ export default function Day({
         clearTimeout(animationTimeout);
       };
     } else {
-      setTimer(15);
+      setTimer(60);
 
-      setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
+      setPlayersData((prev) =>
+        prev.map((player) => ({ ...player, jailed: false }))
+      );
 
       if (roomLeader && days > 1) {
         socket.emit("dayChat", {
@@ -116,7 +142,7 @@ export default function Day({
           action: actionRef.current,
         });
         setFadeOut(true);
-      }, 15000);
+      }, timer * 1000);
 
       const dayTime = setInterval(() => {
         //(same votes:no one die)
@@ -129,7 +155,7 @@ export default function Day({
 
         setDays((prev) => prev + 1);
         socket.emit("sendSetDay", { roomId, dayTime: false });
-      }, 16000);
+      }, timer * 1000 + 1000);
 
       const clockTimer = setInterval(() => {
         setTimer((prev) => {
@@ -152,7 +178,9 @@ export default function Day({
     }
   }, [currentDeadIndex]);
 
-  const alivePlayerId = playersData.filter((player) => player.alive).map((player) => player.id);
+  const alivePlayerId = playersData
+    .filter((player) => player.alive)
+    .map((player) => player.id);
 
   useEffect(() => {
     targetRef.current = target;
@@ -169,7 +197,9 @@ export default function Day({
     const playersVote = playerDataRef.current.map((player) => player.vote);
     const maxVotes = Math.max(...playersVote);
     // console.log("maxVotes", maxVotes);
-    const highestVotePlayers = playerDataRef.current.filter((player) => player.vote === maxVotes);
+    const highestVotePlayers = playerDataRef.current.filter(
+      (player) => player.vote === maxVotes
+    );
     if (highestVotePlayers.length === 1) {
       const votedOutPlayer = highestVotePlayers[0];
       console.log("votedOutPlayer1", votedOutPlayer);
@@ -203,7 +233,9 @@ export default function Day({
           repeat: "no",
         });
       }
-      setPlayersData((preData) => preData.map((player) => ({ ...player, vote: 0 })));
+      setPlayersData((preData) =>
+        preData.map((player) => ({ ...player, vote: 0 }))
+      );
     }
   };
 
@@ -225,7 +257,9 @@ export default function Day({
         if (playerIndex !== null) {
           setPlayersData((prev) =>
             prev.map((player, index) =>
-              index === +playerIndex ? { ...player, vote: player.vote + 1 } : { ...player, vote: player.vote }
+              index === +playerIndex
+                ? { ...player, vote: player.vote + 1 }
+                : { ...player, vote: player.vote }
             )
           );
         }
@@ -235,10 +269,14 @@ export default function Day({
       dayTimeAction.forEach((actions) => {
         if (actions.action === "link with") {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, linked: true } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, linked: true } : player
+            )
           );
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.owner ? { ...player, linked: true } : player))
+            prev.map((player, index) =>
+              index === actions.owner ? { ...player, linked: true } : player
+            )
           );
           if (playersData[position].role === "cupid") {
             setCupidAbilityUsed(true);
@@ -246,7 +284,9 @@ export default function Day({
         }
         if (actions.action === "jail") {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, jailed: true } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, jailed: true } : player
+            )
           );
         }
       });
@@ -293,11 +333,11 @@ export default function Day({
   };
 
   const CircleWithItems = ({ items, radius }) => {
-    const centerX = 200; // X coordinate of the circle center
-    const centerY = 200; // Y coordinate of the circle center
+    const centerX = radiusX * 0.6; // X coordinate of the circle center
+    const centerY = radiusY * 1.7; // Y coordinate of the circle center
 
     return (
-      <svg width="400" height="400" className="absolute">
+      <svg width="600" height="600" className="absolute">
         <circle cx={centerX} cy={centerY} r={radius} opacity="0" fill="red" />
         {items.map((item, index) => {
           const angle = (index / items.length) * 2 * Math.PI; // angle in radians
@@ -305,7 +345,11 @@ export default function Day({
           const y = centerY + radius * Math.sin(angle); // Y position
 
           return (
-            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
+            <g
+              key={item.id}
+              transform={`translate(${x}, ${y})`}
+              className="relative"
+            >
               <text x="0" y="60" textAnchor="middle" dominantBaseline="middle">
                 {item.name}
               </text>
@@ -339,14 +383,22 @@ export default function Day({
 
   return (
     <div
-      className={`mainContainer flex flex-col  h-screen transition-all duration-1000 ease-in 
+      className={`mainContainer flex flex-col h-screen w-screen transition-all duration-1000 ease-in 
          ${fadeOut ? "bg-gray-700" : fade ? "bg-white" : "bg-gray-700"}`}
     >
-      <div className="text-3xl font-semibold text-center">{timer}</div>
-      <div className="text-xl font-bold text-center">DAY {`${days}`}</div>
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={dayBg}
+          alt="kowloon"
+          className="w-full h-full object-cover opacity-30"
+        />
+      </div>
+
       <div
         className={`flex flex-row justify-between h-screen
-          transition-opacity duration-1000 ${fade ? "opacity-100" : "opacity-0"}
+          transition-opacity duration-1000 relative ${
+            fade ? "opacity-100" : "opacity-0"
+          }
         `}
       >
         {/* left component */}
@@ -407,59 +459,81 @@ export default function Day({
         </div>
         {/* middle component*/}
         <div className="border-2 border-red-300 w-1/2 flex flex-col items-center justify-center relative">
-          <CircleWithItems items={playersData} radius={160} />
-
-          <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">
-            {targetRef && currAction && !cupidAbilityUsed && (
-              <div>{`you decide to ${currAction} ${target === null ? "no one" : playersData[target].name}`}</div>
-            )}
+          <div className="h-[5%]">
+            <div className="text-3xl font-semibold text-center">{timer}</div>
+            <div className="text-xl font-bold text-center">DAY {`${days}`}</div>
           </div>
 
-          <div className="transition-all duration-500 ease-in-out fade-in text-xl">
-            {!!detectiveAbilityInfo.name && role === "detective" && (
-              <span>
-                <span>{`${detectiveAbilityInfo.name} is `}</span>
-                <span className={clsx(detectiveAbilityInfo.detected === "good" ? "text-blue-600" : "text-red-600")}>
-                  {detectiveAbilityInfo.detected}
-                </span>
-                {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
-              </span>
-            )}
-          </div>
+          <div className="h-[95%] flex flex-col items-center justify-center pb-[80px]">
+            <CircleWithItems items={playersData} radius={240} />
 
-          <div>
-            {role === "sentinel" &&
-              sentinelAbilityInfo.map((players) => {
-                const owner = playersData[players.owner].name;
-                const visited = playersData[players.target].name;
-                return (
-                  <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">{`${owner} visited ${visited}`}</div>
-                );
-              })}
-          </div>
-
-          <div>{role === "conspirator" && <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>}</div>
-
-          <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in" key={personal}>
-            {days > 1 && (
-              <span>
-                You have voted
-                <span className="font-semibold text-rose-600 ml-2">
-                  {personal !== null ? playersData[personal]?.name : "no one"}
-                </span>
-              </span>
-            )}
-          </div>
-
-          {deadMessage && (
-            <div
-              className={`absolute border-2 border-black rounded p-4 fade-message text-5xl bg-white ${
-                isVisible ? "show" : ""
-              }`}
-            >
-              {deadMessage}
+            <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">
+              {targetRef && currAction && !cupidAbilityUsed && (
+                <div>{`you decide to ${currAction} ${
+                  target === null ? "no one" : playersData[target].name
+                }`}</div>
+              )}
             </div>
-          )}
+
+            <div className="transition-all duration-500 ease-in-out fade-in text-xl">
+              {!!detectiveAbilityInfo.name && role === "detective" && (
+                <span>
+                  <span>{`${detectiveAbilityInfo.name} is `}</span>
+                  <span
+                    className={clsx(
+                      detectiveAbilityInfo.detected === "good"
+                        ? "text-blue-600"
+                        : "text-red-600"
+                    )}
+                  >
+                    {detectiveAbilityInfo.detected}
+                  </span>
+                  {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
+                </span>
+              )}
+            </div>
+
+            <div>
+              {role === "sentinel" &&
+                sentinelAbilityInfo.map((players) => {
+                  const owner = playersData[players.owner].name;
+                  const visited = playersData[players.target].name;
+                  return (
+                    <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">{`${owner} visited ${visited}`}</div>
+                  );
+                })}
+            </div>
+
+            <div>
+              {role === "conspirator" && (
+                <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>
+              )}
+            </div>
+
+            <div
+              className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in"
+              key={personal}
+            >
+              {days > 1 && (
+                <span>
+                  You have voted
+                  <span className="font-semibold text-rose-600 ml-2">
+                    {personal !== null ? playersData[personal]?.name : "no one"}
+                  </span>
+                </span>
+              )}
+            </div>
+
+            {deadMessage && (
+              <div
+                className={`absolute border-2 border-black rounded p-4 fade-message text-5xl bg-white ${
+                  isVisible ? "show" : ""
+                }`}
+              >
+                {deadMessage}
+              </div>
+            )}
+          </div>
         </div>
         {/* right component */}
         <div className="border-2 border-red-300 w-1/4 flex flex-col justify-between rounded-lg shadow-md relative">

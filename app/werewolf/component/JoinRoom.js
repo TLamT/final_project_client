@@ -22,7 +22,7 @@ export function JoinRoom({ changeLanguage }) {
         router.push(`/werewolf/${roomId}`);
       }
       if (!gameJoin) {
-        setAlert("game already started");
+        setAlert(changeLanguage ? "game already started" : "遊戲已開始");
         setRoomId("");
         setTimeout(() => {
           setAlert("");
@@ -34,7 +34,9 @@ export function JoinRoom({ changeLanguage }) {
   return (
     <div className="flex gap-2">
       <input
-        placeholder={alert ? alert : "Enter Code"}
+        placeholder={
+          alert ? alert : !changeLanguage ? "請輸入房間號碼" : "Enter Code"
+        }
         className="bg-transparent border-2 border-white/20 rounded-xl p-4"
         value={roomId}
         onChange={(ev) => setRoomId(ev.target.value)}
