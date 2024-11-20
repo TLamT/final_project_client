@@ -47,14 +47,15 @@ export default function Night({
   initialVampire,
   roomLeader,
 }) {
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(10);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [twistedFateTarget, setTwistedFateTarget] = useState(null);
   const [fade, setFade] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
+  const { changeLanguage, handleOnLanguageChange } =
+    useContext(LanguageContext);
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
   const twistedFateTargetRef = useRef(twistedFateTarget);
@@ -63,7 +64,7 @@ export default function Night({
   );
 
   useEffect(() => {
-    setTimer(30);
+    setTimer(10);
     setFade(true);
     setCurrAction(actions[role]);
 
@@ -78,11 +79,11 @@ export default function Night({
         action: actionRef.current,
         twistedTarget: twistedFateTargetRef.current,
       });
+      setNights((prev) => prev + 1);
     }, timer * 1000);
 
     const nightTime = setInterval(() => {
       setFadeOut(true);
-      setNights((prev) => prev + 1);
       socket.emit("sendSetDay", { roomId, dayTime: true });
     }, timer * 1000 + 1000);
 
@@ -108,6 +109,29 @@ export default function Night({
     actionRef.current = currAction; // Update ref whenever state changes
     twistedFateTargetRef.current = twistedFateTarget;
   }, [target, currAction, twistedFateTarget]);
+
+  const actionsTC = (action) => {
+    switch (action) {
+      case "kill":
+        return "殺死";
+      case "detect":
+        return "查探";
+      case "protect":
+        return "保護";
+      case "lookOut":
+        return "竀探";
+      case "scam":
+        return "陷害";
+      case "remember":
+        return "繼承";
+      case "convert":
+        return "轉化";
+      case "vampireKill":
+        return "懷疑殭屍係";
+      case "destiny":
+        return "賭";
+    }
+  };
 
   const actions = {
     reaper: "kill",
@@ -159,7 +183,10 @@ export default function Night({
   function handleNightAction(actions, nightTimeAction) {
     if (actions.action === "kill") {
       const townFaction = Object.keys(characterData.town);
-      if (playersData[actions.target].linked === true && !playersData[actions.target].jailed) {
+      if (
+        playersData[actions.target].linked === true &&
+        !playersData[actions.target].jailed
+      ) {
         const linkedArr = [];
         playersData.forEach((player, index) => {
           if (player.linked === true) {
@@ -167,23 +194,42 @@ export default function Night({
           }
         });
         setPlayerDiedLastNight((prev) => [...prev, ...linkedArr]);
-        setPlayersData((prev) => prev.map((player) => (player.linked === true ? { ...player, alive: false } : player)));
         setPlayersData((prev) =>
-          prev.map((player, index) => (index === actions.owner ? { ...player, votedOut: false } : player))
+          prev.map((player) =>
+            player.linked === true ? { ...player, alive: false } : player
+          )
         );
-        if (playersData[actions.owner].role === "police" && townFaction.includes(playersData[actions.target].role)) {
+        setPlayersData((prev) =>
+          prev.map((player, index) =>
+            index === actions.owner ? { ...player, votedOut: false } : player
+          )
+        );
+        if (
+          playersData[actions.owner].role === "police" &&
+          townFaction.includes(playersData[actions.target].role)
+        ) {
           setCanShoot(false);
         }
       }
-      if (playersData[actions.target].linked === false && !playersData[actions.target].jailed) {
+      if (
+        playersData[actions.target].linked === false &&
+        !playersData[actions.target].jailed
+      ) {
         setPlayersData((prev) =>
-          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
+          prev.map((player, index) =>
+            index === actions.target ? { ...player, alive: false } : player
+          )
         );
         setPlayersData((prev) =>
-          prev.map((player, index) => (index === actions.owner ? { ...player, votedOut: false } : player))
+          prev.map((player, index) =>
+            index === actions.owner ? { ...player, votedOut: false } : player
+          )
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
-        if (playersData[position].role === "police" && townFaction.includes(playersData[actions.target].role)) {
+        if (
+          playersData[position].role === "police" &&
+          townFaction.includes(playersData[actions.target].role)
+        ) {
           setCanShoot(false);
         }
       }
@@ -202,7 +248,9 @@ export default function Night({
         console.log("you successfully protected someone");
       }
       setPlayersData((prev) =>
-        prev.map((player, index) => (index === actions.target ? { ...player, alive: true } : player))
+        prev.map((player, index) =>
+          index === actions.target ? { ...player, alive: true } : player
+        )
       );
     }
 
@@ -220,7 +268,9 @@ export default function Night({
     if (actions.action === "remember") {
       const targetRole = playersData[actions.target].role;
       setPlayersData((prev) =>
-        prev.map((player, index) => (index === actions.owner ? { ...player, role: targetRole } : player))
+        prev.map((player, index) =>
+          index === actions.owner ? { ...player, role: targetRole } : player
+        )
       );
     }
 
@@ -230,19 +280,25 @@ export default function Night({
       if (targetRole !== "vampireHunter") {
         if (witch.includes(targetRole)) {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, alive: false } : player
+            )
           );
           setPlayerDiedLastNight((prev) => [...prev, actions.target]);
         }
         if (!witch.includes(targetRole)) {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, role: "vampire" } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, role: "vampire" } : player
+            )
           );
         }
       }
       if (targetRole === "vampireHunter") {
         setPlayersData((prev) =>
-          prev.map((player, index) => (index === actions.owner ? { ...player, alive: false } : player))
+          prev.map((player, index) =>
+            index === actions.owner ? { ...player, alive: false } : player
+          )
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.owner]);
       }
@@ -253,7 +309,9 @@ export default function Night({
 
       if (targetRole === "vampire") {
         setPlayersData((prev) =>
-          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
+          prev.map((player, index) =>
+            index === actions.target ? { ...player, alive: false } : player
+          )
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       }
@@ -262,14 +320,20 @@ export default function Night({
     if (actions.action === "destiny") {
       if (actions.twistedTarget === playersData[actions.target].role) {
         setPlayersData((prev) =>
-          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
+          prev.map((player, index) =>
+            index === actions.target ? { ...player, alive: false } : player
+          )
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       } else if (roomLeader) {
         socket.emit("dayChat", {
           name: "server",
           message: `${playersData[actions.owner].name} 
-          ${changeLanguage ? "is twistedFate and is trying to kill" : "係賭徒，佢想賭你身份並殺你"}
+          ${
+            changeLanguage
+              ? "is twistedFate and is trying to kill"
+              : "係賭徒，佢想賭你身份並殺死你"
+          }
           
           ${playersData[actions.target].name}`,
           roomId: roomId,
@@ -291,7 +355,11 @@ export default function Night({
       }`}
     >
       <div className="absolute inset-0 z-0">
-        <Image src={nightBg} alt="kowloon" className="w-full h-full object-cover opacity-30" />
+        <Image
+          src={nightBg}
+          alt="kowloon"
+          className="w-full h-full object-cover opacity-30"
+        />
       </div>
       <div
         className={`w-screen h-screen flex flex-row justify-between transition-opacity duration-300 z-10 ${
@@ -397,7 +465,7 @@ export default function Night({
             <div className="h-[5%]">
               <div className="text-3xl font-semibold text-center">{timer}</div>
               <div className="text-xl font-bold text-center">
-                {changeLanguage ? `Night: ${nights} ` : `夜晚: 第${nights}日 `}
+                {changeLanguage ? `Night: ${nights} ` : `第${nights}晚 `}
               </div>
             </div>
             <div className="flex flex-col items-center justify-center h-[95%] pb-[64px]">
@@ -408,9 +476,15 @@ export default function Night({
                     onChange={(ev) => setTwistedFateTarget(ev.target.value)}
                     className="bg-gray-700"
                   >
-                    <option className="bg-gray-700">{changeLanguage ? "Select a Role" : "選擇一名角色"}</option>
+                    <option className="bg-gray-700">
+                      {changeLanguage ? "Select a Role" : "選擇一名角色"}
+                    </option>
                     {twistedFateDropDownList.map((role) => (
-                      <option value={role.roleName} key={role.roleName} className="bg-gray-700">
+                      <option
+                        value={role.roleName}
+                        key={role.roleName}
+                        className="bg-gray-700"
+                      >
                         {role.roleName}
                       </option>
                     ))}
@@ -423,28 +497,48 @@ export default function Night({
                 !playersData[position].jailed &&
                 playersData[position].role !== "joker" &&
                 !!canShoot && (
-                  <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
+                  <div
+                    className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
+                    key={target}
+                  >
                     <span>
                       {changeLanguage ? (
                         <>{`You decide to ${actionRef.current}`}</>
                       ) : (
-                        <>{`你選擇了 ${actionRef.current}`}</>
+                        <>{`你選擇 ${actionsTC(actionRef.current)}`}</>
                       )}
                       <span className="font-semibold text-rose-600 ml-2">
-                        {target === null ? (changeLanguage ? "no one" : " ") : playersData[target].name}
+                        {target === null
+                          ? changeLanguage
+                            ? "no one"
+                            : "______"
+                          : playersData[target].name}
                       </span>
                     </span>
                   </div>
                 )}
-              {playersData[position].role === "joker" && playersData[position].votedOut === true && (
-                <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
-                  {`You decide to ${actionRef.current} ${
-                    target === null ? (changeLanguage ? "no one" : " ") : playersData[target].name
-                  }`}
-                </div>
-              )}
+              {playersData[position].role === "joker" &&
+                playersData[position].votedOut === true && (
+                  <div
+                    className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
+                    key={target}
+                  >
+                    changeLanguage ? (
+                    {`You decide to ${actionRef.current} ${
+                      target === null ? "no one" : playersData[target].name
+                    }`}
+                    ):(
+                    {`你選擇${actionsTC(actionRef.current)} ${
+                      target === null ? "______" : playersData[target].name
+                    }`}
+                    )
+                  </div>
+                )}
               {playersData[position].jailed && (
-                <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key="jailed">
+                <div
+                  className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
+                  key="jailed"
+                >
                   {changeLanguage ? "You have been jailed" : "你今晚已被人囚禁"}
                 </div>
               )}

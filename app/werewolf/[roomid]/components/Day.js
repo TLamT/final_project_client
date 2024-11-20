@@ -11,6 +11,7 @@ import WholeDayChatRoom from "./WholeDayChatRoom";
 import DayChatRoom from "./DayChatRoom";
 import dayBg from "@/public/image/dayBg.jpg";
 import RoleCard from "./RoleCard";
+import StartRoleAnimation from "./StartRoleAnimation";
 
 export default function Day({
   socket,
@@ -40,8 +41,9 @@ export default function Day({
   chooseSomeone,
   playerDiedLastNight,
 }) {
-  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
-  const [timer, setTimer] = useState(60);
+  const { changeLanguage, handleOnLanguageChange } =
+    useContext(LanguageContext);
+  const [timer, setTimer] = useState(10);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
@@ -51,6 +53,8 @@ export default function Day({
   const [fadeOut, setFadeOut] = useState(false);
   const [currentDeadIndex, setCurrentDeadIndex] = useState(0);
   const [deadMessage, setDeadMessage] = useState("");
+  const [startRoleVisible, setStartRoleVisible] = useState(false);
+  const [startAnimationRendered, setStartAnimationRendered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [showRoles, setShowRoles] = useState(false);
 
@@ -81,26 +85,41 @@ export default function Day({
 
   useEffect(() => {
     setFade(true);
-    if (playerDied.length && currentDeadIndex < playerDied.length) {
+    if (days === 1 && !startAnimationRendered) {
+      setStartRoleVisible(true);
+
+      const startAnimationTimeout = setTimeout(() => {
+        setStartAnimationRendered(true);
+        setStartRoleVisible(false);
+      }, 4000);
+
+      return () => {
+        clearTimeout(startAnimationTimeout);
+      };
+    } else if (playerDied.length && currentDeadIndex < playerDied.length) {
       if (roomLeader) {
         socket.emit("dayChat", {
           roomId,
-          message: `${playersData[playerDied[currentDeadIndex]].name} has died last night!`,
+          message: `${
+            playersData[playerDied[currentDeadIndex]].name
+          } has died last night!`,
           name: "server",
         });
       }
-      const animationTimeout = setTimeout(() => {
+      const animation = setTimeout(() => {
         setTimeout(() => {
           setCurrentDeadIndex(currentDeadIndex + 1);
           setDeadMessage("");
         }, 1000); // Wait for fade-out to complete
       }, 3000);
 
-      const animation = setTimeout(() => {
+      const animationTimeout = setTimeout(() => {
         setIsVisible(false);
       }, 2000);
 
-      setDeadMessage(`${playersData[playerDied[currentDeadIndex]].name} has died last night!`);
+      setDeadMessage(
+        `${playersData[playerDied[currentDeadIndex]].name} has died last night!`
+      );
       setIsVisible(true);
 
       return () => {
@@ -108,14 +127,18 @@ export default function Day({
         clearTimeout(animationTimeout);
       };
     } else {
-      setTimer(60);
+      setTimer(10);
 
-      setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
+      setPlayersData((prev) =>
+        prev.map((player) => ({ ...player, jailed: false }))
+      );
 
-      if (roomLeader && days > 1) {
+      if (roomLeader && days > 1 && playerDiedLastNight.length === 0) {
         socket.emit("dayChat", {
           roomId,
-          message: changeLanguage ? `Last night was a safe night.` : "琴晚係一個和平既夜晚",
+          message: changeLanguage
+            ? `Last night was a safe night.`
+            : "琴晚係一個和平既夜晚",
           name: "server",
         });
       }
@@ -130,6 +153,11 @@ export default function Day({
       setRole(playersData[position].role);
 
       const action = setInterval(() => {
+        //(same votes:no one die)
+        // find who have the most vote
+        if (days > 1) {
+          calculateHighestVoted();
+        }
         socket.emit("dayAction", {
           days,
           position,
@@ -138,18 +166,10 @@ export default function Day({
           action: actionRef.current,
         });
         setFadeOut(true);
+        setDays((prev) => prev + 1);
       }, timer * 1000);
 
       const dayTime = setInterval(() => {
-        //(same votes:no one die)
-        // find who have the most vote
-        if (days > 1) {
-          calculateHighestVoted();
-        }
-
-        // Trigger fade-out effect before ending the day
-
-        setDays((prev) => prev + 1);
         socket.emit("sendSetDay", { roomId, dayTime: false });
       }, timer * 1000 + 1000);
 
@@ -172,9 +192,7 @@ export default function Day({
         clearInterval(clockTimer);
       };
     }
-  }, [currentDeadIndex]);
-
-  const alivePlayerId = playersData.filter((player) => player.alive).map((player) => player.id);
+  }, [currentDeadIndex, startAnimationRendered]);
 
   useEffect(() => {
     targetRef.current = target;
@@ -191,7 +209,9 @@ export default function Day({
     const playersVote = playerDataRef.current.map((player) => player.vote);
     const maxVotes = Math.max(...playersVote);
     // console.log("maxVotes", maxVotes);
-    const highestVotePlayers = playerDataRef.current.filter((player) => player.vote === maxVotes);
+    const highestVotePlayers = playerDataRef.current.filter(
+      (player) => player.vote === maxVotes
+    );
     if (highestVotePlayers.length === 1) {
       const votedOutPlayer = highestVotePlayers[0];
       // console.log("votedOutPlayer1", votedOutPlayer);
@@ -201,7 +221,9 @@ export default function Day({
       if (roomLeader) {
         socket.emit("dayChat", {
           name: "server",
-          message: `${votedOutPlayer.name}  ${changeLanguage ? "has been voted out." : "被投死了"}`,
+          message: `${votedOutPlayer.name}  ${
+            changeLanguage ? "has been voted out." : "被投死了"
+          }`,
           roomId: roomId,
           repeat: "no",
         });
@@ -220,12 +242,16 @@ export default function Day({
       if (roomLeader) {
         socket.emit("dayChat", {
           name: "server",
-          message: changeLanguage ? `It's a tie! No one is eliminated.` : `平票，無人死。`,
+          message: changeLanguage
+            ? `It's a tie! No one is eliminated.`
+            : `平票，無人死。`,
           roomId: roomId,
           repeat: "no",
         });
       }
-      setPlayersData((preData) => preData.map((player) => ({ ...player, vote: 0 })));
+      setPlayersData((preData) =>
+        preData.map((player) => ({ ...player, vote: 0 }))
+      );
     }
   };
 
@@ -247,7 +273,9 @@ export default function Day({
         if (playerIndex !== null) {
           setPlayersData((prev) =>
             prev.map((player, index) =>
-              index === +playerIndex ? { ...player, vote: player.vote + 1 } : { ...player, vote: player.vote }
+              index === +playerIndex
+                ? { ...player, vote: player.vote + 1 }
+                : { ...player, vote: player.vote }
             )
           );
         }
@@ -257,10 +285,14 @@ export default function Day({
       dayTimeAction.forEach((actions) => {
         if (actions.action === "link with") {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, linked: true } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, linked: true } : player
+            )
           );
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.owner ? { ...player, linked: true } : player))
+            prev.map((player, index) =>
+              index === actions.owner ? { ...player, linked: true } : player
+            )
           );
           if (playersData[position].role === "cupid") {
             setCupidAbilityUsed(true);
@@ -268,7 +300,9 @@ export default function Day({
         }
         if (actions.action === "jail") {
           setPlayersData((prev) =>
-            prev.map((player, index) => (index === actions.target ? { ...player, jailed: true } : player))
+            prev.map((player, index) =>
+              index === actions.target ? { ...player, jailed: true } : player
+            )
           );
         }
       });
@@ -327,7 +361,11 @@ export default function Day({
           const y = centerY + radius * Math.sin(angle); // Y position
 
           return (
-            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
+            <g
+              key={item.id}
+              transform={`translate(${x}, ${y})`}
+              className="relative"
+            >
               <text x="0" y="60" textAnchor="middle" dominantBaseline="middle">
                 {item.name}
               </text>
@@ -364,13 +402,31 @@ export default function Day({
       className={`mainContainer flex flex-col h-screen w-screen transition-all duration-1000 ease-in 
          ${fadeOut ? "bg-gray-700" : fade ? "bg-white" : "bg-gray-700"}`}
     >
+      {/* background image */}
       <div className="absolute inset-0 z-0">
-        <Image src={dayBg} alt="kowloon" className="w-full h-full object-cover opacity-30" />
+        <Image
+          src={dayBg}
+          alt="kowloon"
+          className="w-full h-full object-cover opacity-30"
+        />
       </div>
 
+      {/* open animation */}
+      <div
+        className={clsx(
+          "absolute inset-0 flex justify-center items-center",
+          startRoleVisible ? "z-50" : "z-0"
+        )}
+      >
+        {startRoleVisible && <StartRoleAnimation />}
+      </div>
+
+      {/* main component */}
       <div
         className={`flex flex-row justify-between h-screen
-          transition-opacity duration-1000 relative ${fade ? "opacity-100" : "opacity-0"}
+          transition-opacity duration-1000 relative ${
+            fade ? "opacity-100" : "opacity-0"
+          }
         `}
       >
         {/* left component */}
@@ -433,7 +489,9 @@ export default function Day({
         <div className="border-2 border-red-300 w-1/2 flex flex-col items-center justify-center relative">
           <div className="h-[5%]">
             <div className="text-3xl font-semibold text-center">{timer}</div>
-            <div className="text-xl font-bold text-center">{changeLanguage ? `Day${days}` : `朝早第${days}日`}</div>
+            <div className="text-xl font-bold text-center">
+              {changeLanguage ? `Day${days}` : `第${days}十`}
+            </div>
           </div>
 
           <div className="h-[95%] flex flex-col items-center justify-center pb-[80px]">
@@ -444,9 +502,13 @@ export default function Day({
                 currAction &&
                 !cupidAbilityUsed &&
                 (changeLanguage ? (
-                  <div>{`you decide to ${currAction} ${target === null ? "no one" : playersData[target].name}`}</div>
+                  <div>{`you decide to ${currAction} ${
+                    target === null ? "no one" : playersData[target].name
+                  }`}</div>
                 ) : (
-                  <div>{`你選擇了 ${currAction} ${target === null ? " " : playersData[target].name}`}</div>
+                  <div>{`你選擇了 ${currAction} ${
+                    target === null ? " " : playersData[target].name
+                  }`}</div>
                 ))}
             </div>
 
@@ -458,7 +520,13 @@ export default function Day({
                   ) : (
                     <span>{`${detectiveAbilityInfo.name} 係 `}</span>
                   )}
-                  <span className={clsx(detectiveAbilityInfo.detected === "good" ? "text-blue-600" : "text-red-600")}>
+                  <span
+                    className={clsx(
+                      detectiveAbilityInfo.detected === "good"
+                        ? "text-blue-600"
+                        : "text-red-600"
+                    )}
+                  >
                     {detectiveAbilityInfo.detected}
                   </span>
                   {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
@@ -477,14 +545,25 @@ export default function Day({
                 })}
             </div>
 
-            <div>{role === "conspirator" && <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>}</div>
+            <div>
+              {role === "conspirator" && (
+                <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>
+              )}
+            </div>
 
-            <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in" key={personal}>
+            <div
+              className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in"
+              key={personal}
+            >
               {days > 1 && (
                 <span>
                   {changeLanguage ? "You have voted" : "你投票了"}
                   <span className="font-semibold text-rose-600 ml-2">
-                    {personal !== null ? playersData[personal]?.name : changeLanguage ? "no one" : " "}
+                    {personal !== null
+                      ? playersData[personal]?.name
+                      : changeLanguage
+                      ? "no one"
+                      : "______"}
                   </span>
                 </span>
               )}

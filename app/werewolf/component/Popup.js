@@ -1,8 +1,9 @@
-import { useState } from "react";
-
-const Popup = ({ isOpen, onClose, changeLanguage }) => {
+import { useState, useContext } from "react";
+import { LanguageContext } from "../layout";
+const Popup = ({ isOpen, onClose }) => {
   const [selectedGroup, setSelectedGroup] = useState("Town");
-
+  const { changeLanguage, handleOnLanguageChange } =
+    useContext(LanguageContext);
   const factionArr = ["Town", "Witch", "Neutral"];
 
   const factionObj = {
@@ -22,7 +23,9 @@ const Popup = ({ isOpen, onClose, changeLanguage }) => {
         className="bg-white p-4 rounded shadow-lg w-full max-w-3xl h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the popup
       >
-        <div className="text-3xl text-black">{!changeLanguage ? "角色技能" : "Character Skills"}</div>
+        <div className="text-3xl text-black">
+          {!changeLanguage ? "角色技能" : "Character Skills"}
+        </div>
 
         {/* Buttons for group selection */}
         <div className="flex justify-center space-x-4">
@@ -32,7 +35,9 @@ const Popup = ({ isOpen, onClose, changeLanguage }) => {
                   key={group}
                   onClick={() => setSelectedGroup(group)}
                   className={`py-2 px-4 rounded-lg font-semibold transition duration-200 ${
-                    selectedGroup === group ? "bg-blue-600 text-white" : "bg-gray-300 hover:bg-gray-400"
+                    selectedGroup === group
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-300 hover:bg-gray-400"
                   }`}
                 >
                   {factionObj[group]}
@@ -43,7 +48,9 @@ const Popup = ({ isOpen, onClose, changeLanguage }) => {
                   key={group}
                   onClick={() => setSelectedGroup(group)}
                   className={`py-2 px-4 rounded-lg font-semibold transition duration-200 ${
-                    selectedGroup === group ? "bg-blue-600 text-white" : "bg-gray-300 hover:bg-gray-400"
+                    selectedGroup === group
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-300 hover:bg-gray-400"
                   }`}
                 >
                   {group}
@@ -56,12 +63,18 @@ const Popup = ({ isOpen, onClose, changeLanguage }) => {
           {changeLanguage
             ? characterData[selectedGroup].map((character, index) => (
                 <li key={index} className="mt-4 ">
-                  <strong className="font-semibold text-gray-900">{character.name}</strong>: {character.description}
+                  <strong className="font-semibold text-gray-900">
+                    {character.name}
+                  </strong>
+                  : {character.description}
                 </li>
               ))
             : characterDataEng[selectedGroup].map((character, index) => (
                 <li key={index} className="mt-4">
-                  <strong className="font-semibold text-gray-900">{character.name}</strong>: {character.description}
+                  <strong className="font-semibold text-gray-900">
+                    {character.name}
+                  </strong>
+                  : {character.description}
                 </li>
               ))}
         </ul>
@@ -173,11 +186,13 @@ const characterDataEng = {
   Town: [
     {
       name: "警察技能（膊頭有花）",
-      description: "對唔住，我係差人。可以每晚選擇射殺一個人，如果錯殺無菇市民，就會失去手槍，變成冇任何能力既廢柴。",
+      description:
+        "對唔住，我係差人。可以每晚選擇射殺一個人，如果錯殺無菇市民，就會失去手槍，變成冇任何能力既廢柴。",
     },
     {
       name: "偵探技能（花生專家）",
-      description: "等我八卦完再update你，頭號花生友一定係我～每晚可以八卦一名玩家既陣營係好人定係衰人。",
+      description:
+        "等我八卦完再update你，頭號花生友一定係我～每晚可以八卦一名玩家既陣營係好人定係衰人。",
     },
     {
       name: "金槍人技能（鐵布衫）",
@@ -186,7 +201,8 @@ const characterDataEng = {
     },
     {
       name: "龍婆技能（通靈）",
-      description: "龍婆既口號：‘死者之言，聲聲入耳。每晚都可以查看已歸西既玩家之間既對話",
+      description:
+        "龍婆既口號：‘死者之言，聲聲入耳。每晚都可以查看已歸西既玩家之間既對話",
     },
     {
       name: "如花技能（如花似玉）",
@@ -195,7 +211,8 @@ const characterDataEng = {
     },
     {
       name: "哨兵技能（放大鏡）",
-      description: "哇!好骨緻喎!!!每晚可以查看一名玩家。如果有其他人當晚拜訪了該玩家，他們的名字將會顯示給哨兵。",
+      description:
+        "哇!好骨緻喎!!!每晚可以查看一名玩家。如果有其他人當晚拜訪了該玩家，他們的名字將會顯示給哨兵。",
     },
     {
       name: "獄卒技能（畫地為牢）",
@@ -204,7 +221,8 @@ const characterDataEng = {
     },
     {
       name: "茅山道士技能（掌心雷法）",
-      description: "但凡係遺禍人間，塗毒生靈既妖孽，都由我黎解決。每晚選擇一名玩家。如果目標係彊屍，可以將佢殺死。",
+      description:
+        "但凡係遺禍人間，塗毒生靈既妖孽，都由我黎解決。每晚選擇一名玩家。如果目標係彊屍，可以將佢殺死。",
     },
   ],
   Witch: [
@@ -215,33 +233,40 @@ const characterDataEng = {
     },
     {
       name: "二五仔技能（專業卧底)",
-      description: "我係‘好人’，邊個知呀?當比偵探查看身分果陣，會顯示為好人，但係實際立場係屬於古惑仔陣營。",
+      description:
+        "我係‘好人’，邊個知呀?當比偵探查看身分果陣，會顯示為好人，但係實際立場係屬於古惑仔陣營。",
     },
     {
       name: "欺詐師技能（完美偽裝）",
-      description: "唔好意思，不過我係特登既。每晚可以選擇“陷害”一位玩家。當偵探查看果個玩家果陣，會顯示做“衰人”。",
+      description:
+        "唔好意思，不過我係特登既。每晚可以選擇“陷害”一位玩家。當偵探查看果個玩家果陣，會顯示做“衰人”。",
     },
     {
       name: "賭徒技能（賭命）",
-      description: "唔係你死就係我死!!!每晚可以賭一個人既真實身份，賭中對方出局；賭唔中就會自爆身份比所有人知。",
+      description:
+        "唔係你死就係我死!!!每晚可以賭一個人既真實身份，賭中對方出局；賭唔中就會自爆身份比所有人知。",
     },
   ],
   Neutral: [
     {
       name: "彊屍技能（Q親你對唔住）",
-      description: "呢個世界就係比有權力既人話事架啦。諗盡計仔將某個特定目標比人票死。",
+      description:
+        "呢個世界就係比有權力既人話事架啦。諗盡計仔將某個特定目標比人票死。",
     },
     {
       name: "謀略家技能（金手指）",
-      description: "CHU！我咁可愛你地唔係想殺左我下話？可以將其他玩家轉化為彊屍。如果彊屍攻擊古惑仔，古惑仔會死亡。",
+      description:
+        "CHU！我咁可愛你地唔係想殺左我下話？可以將其他玩家轉化為彊屍。如果彊屍攻擊古惑仔，古惑仔會死亡。",
     },
     {
       name: "小丑技能（娛樂至死）",
-      description: "我既存在本身就係一個笑話，票死我，我就帶一個人同我攬炒，咁中意食花生呀拿！",
+      description:
+        "我既存在本身就係一個笑話，票死我，我就帶一個人同我攬炒，咁中意食花生呀拿！",
     },
     {
       name: "白痴技能（回憶）",
-      description: "我個頭好痛呀，我個頭好痛呀，我個頭好痛呀.....繼承佢既角色、陣營同任務。",
+      description:
+        "我個頭好痛呀，我個頭好痛呀，我個頭好痛呀.....繼承佢既角色、陣營同任務。",
     },
   ],
 };

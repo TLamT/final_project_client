@@ -24,10 +24,13 @@ function SignUp({ setLogin }) {
   function validateEmail(email) {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-      setEmailError("Invalid email format. Please use a correct email address.");
-      return "Invalid email format. Please use a correct email address.";
+      setEmailError(
+        "Invalid email format. Please use a correct email address."
+      );
+      return false;
     }
-    return "";
+    setEmailError("");
+    return true;
   }
   function validatePassword(password) {
     if (!password || password.length < 6) {
@@ -38,7 +41,11 @@ function SignUp({ setLogin }) {
     return true;
   }
   async function signUp() {
-    if (!validateUsername(user.username) || !validateEmail(user.email) || !validatePassword(user.password)) {
+    if (
+      !validateUsername(user.username) ||
+      !validateEmail(user.email) ||
+      !validatePassword(user.password)
+    ) {
       setComment("Please correct the errors before submitting.");
       return;
     }
@@ -99,14 +106,19 @@ function SignUp({ setLogin }) {
       <div className="flex flex-row m-3 items-center">
         <button
           className={`border-2 cursor-pointer m-1 p-1 rounded-lg ${
-            usernameError || emailError || passwordError ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
+            usernameError || emailError || passwordError
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-500"
           }`}
           disabled={usernameError || emailError || passwordError}
           onClick={signUp}
         >
           Submit
         </button>
-        <div className="border-2 cursor-pointer m-1 p-1 rounded-lg" onClick={() => setLogin(true)}>
+        <div
+          className="border-2 cursor-pointer m-1 p-1 rounded-lg"
+          onClick={() => setLogin(true)}
+        >
           To Login
         </div>
       </div>

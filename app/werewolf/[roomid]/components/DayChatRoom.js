@@ -4,10 +4,19 @@ import { useEffect, useRef, useState, useContext } from "react";
 import { LanguageContext } from "../../layout";
 import EmojiPicker from "emoji-picker-react";
 
-function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, playersData, position, day }) {
+function DayChatRoom({
+  dayTimeChat,
+  message,
+  setMessage,
+  sentDayMessage,
+  playersData,
+  position,
+  day,
+}) {
   const scrollRef = useRef(null);
   const emojiPickerRef = useRef(null);
-  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
+  const { changeLanguage, handleOnLanguageChange } =
+    useContext(LanguageContext);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const onEmojiClick = (emojiData) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -29,7 +38,10 @@ function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, players
   };
 
   const handleClickOutside = (event) => {
-    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+    if (
+      emojiPickerRef.current &&
+      !emojiPickerRef.current.contains(event.target)
+    ) {
       setShowEmojiPicker(false); // Close the emoji picker
     }
   };
@@ -53,8 +65,16 @@ function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, players
         ref={scrollRef}
       >
         {dayTimeChat.map((allDayMessage, index) => (
-          <div key={index} className={`p-1 ${index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"} text-white`}>
-            <span className="font-semibold text-blue-300">{allDayMessage.name}:</span> {allDayMessage.message}
+          <div
+            key={index}
+            className={`p-1 ${
+              index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"
+            } text-white`}
+          >
+            <span className="font-semibold text-blue-300">
+              {allDayMessage.name}:
+            </span>{" "}
+            {allDayMessage.message}
           </div>
         ))}
       </div>
@@ -67,7 +87,10 @@ function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, players
             😊
           </button>
           {showEmojiPicker && (
-            <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-50 bg-white rounded-lg shadow-lg">
+            <div
+              ref={emojiPickerRef}
+              className="absolute bottom-14 left-0 z-50 bg-white rounded-lg shadow-lg"
+            >
               <EmojiPicker onEmojiClick={onEmojiClick} />
             </div>
           )}
@@ -76,25 +99,39 @@ function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, players
             onChange={(ev) => setMessage(ev.target.value)}
             onKeyDown={handleKeyDown}
             className={`w-full px-3 py-2 border border-cyan-300 rounded-lg 
-      ${day ? "bg-gray-700 text-white" : "bg-gray-600 text-gray-400 cursor-not-allowed"}
+      ${
+        day
+          ? "bg-gray-700 text-white"
+          : "bg-gray-600 text-gray-400 cursor-not-allowed"
+      }
       placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400`}
-            placeholder={changeLanguage ? "Please Type message here!" : "請輸入訊息..."}
+            placeholder={
+              changeLanguage ? "Please Type message here!" : "請輸入訊息..."
+            }
             disabled={!day} // Disable input if it's night
           />
 
           <button
             onClick={sentDayMessage}
             className={`font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out
-      ${day ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-500 text-gray-300 cursor-not-allowed"}`}
+      ${
+        day
+          ? "bg-blue-500 hover:bg-blue-600 text-white"
+          : "bg-gray-500 text-gray-300 cursor-not-allowed"
+      }`}
             disabled={!day} // Disable send button if it's night
           >
-            {changeLanguage ? "send" : "送出"}
+            {changeLanguage ? "send" : <span className="text-sm">送出</span>}
           </button>
         </div>
       ) : (
         <div className="h-1/5 flex items-center justify-center text-gray-500">
           {changeLanguage ? (
-            <>{day ? "You cannot send messages here." : "Day Chat is read-only at night."}</>
+            <>
+              {day
+                ? "You cannot send messages here."
+                : "Day Chat is read-only at night."}
+            </>
           ) : (
             <>{day ? "你已被禁止輸入任何對話" : "日頭聊天室係夜晚睇唔到。"}</>
           )}

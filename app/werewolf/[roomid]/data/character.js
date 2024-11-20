@@ -27,7 +27,8 @@ const characterData = {
       nameTC: "警察",
       must: true,
       targetGroup: "all",
-      ability: "Shoot a player at night,if the targeted player is innocent,you will lost the ability to shoot.",
+      ability:
+        "Shoot a player at night,if the targeted player is innocent,you will lost the ability to shoot.",
       abilityTC:
         '技能（膊頭有花）: "對唔住，我係差人。" 可以每晚選擇射殺一個人，如果錯殺無菇市民，就會失去手槍，變成冇任何能力既廢柴。',
       detected: "good",
@@ -60,8 +61,10 @@ const characterData = {
       nameTC: "龍婆",
       must: false,
       targetGroup: null,
-      ability: "You can see the deadplayer chatroom at night,but you cannot talk to deadplayer.",
-      abilityTC: "技能（通靈）: “龍婆既口號：‘死者之言，聲聲入耳。' 每晚都可以查看已歸西既玩家之間既對話。",
+      ability:
+        "You can see the deadplayer chatroom at night,but you cannot talk to deadplayer.",
+      abilityTC:
+        "技能（通靈）: “龍婆既口號：‘死者之言，聲聲入耳。' 每晚都可以查看已歸西既玩家之間既對話。",
       detected: "good",
       img: "/client/app/werewolf/[roomid]/data/image/medium.jpg",
       actionOrder: null,
@@ -82,8 +85,10 @@ const characterData = {
       nameTC: "哨兵",
       must: false,
       targetGroup: "all",
-      ability: "You can choose a player at night and see which player visited them.",
-      abilityTC: "技能（放大鏡）: 每晚可以查看一名玩家。如果有其他人當晚拜訪了該玩家，他們的名字將會顯示給哨兵。",
+      ability:
+        "You can choose a player at night and see which player visited them.",
+      abilityTC:
+        "技能（放大鏡）: 每晚可以查看一名玩家。如果有其他人當晚拜訪了該玩家，他們的名字將會顯示給哨兵。",
       detected: "good",
       img: "",
       actionOrder: 5,
@@ -92,7 +97,8 @@ const characterData = {
       nameTC: "獄卒",
       must: false,
       targetGroup: null,
-      ability: "You can jail a player at day and the player cannot use their night ability.",
+      ability:
+        "You can jail a player at day and the player cannot use their night ability.",
       abilityTC:
         "技能（畫地為牢）: “想搞搞震？畫個圈圈詛咒你，拖你入黑房面壁思過！”  選擇一名玩家將其關入黑房，阻止果個玩家當晚使用技能。被人困住既玩家係黑房面壁思過期間唔會被殺。",
       detected: "good",
@@ -129,7 +135,8 @@ const characterData = {
       must: false,
       targetGroup: null,
       ability: "Appears as “good” when checked by a Detector.",
-      abilityTC: "技能（專業卧底）: 當比偵探查看身分果陣，會顯示為好人，但係實際立場係屬於古惑仔陣營。",
+      abilityTC:
+        "技能（專業卧底）: 當比偵探查看身分果陣，會顯示為好人，但係實際立場係屬於古惑仔陣營。",
       detected: "good",
       img: "",
       actionOrder: null,
@@ -138,7 +145,8 @@ const characterData = {
       nameTC: "欺詐師",
       must: false,
       targetGroup: "nonWitch",
-      ability: "You can target a player at night,and the targeted player will appear as “bad” to the detector.",
+      ability:
+        "You can target a player at night,and the targeted player will appear as “bad” to the detector.",
       abilityTC:
         "技能（完美偽裝）: “唔好意思，不過我係特登既” 每晚可以選擇“陷害”一位玩家。當偵探查看果個玩家果陣，會顯示做“衰人”。 ",
       detected: "bad",
@@ -152,7 +160,7 @@ const characterData = {
       ability:
         "You can guess the role of a player at night,if correct: kill the targeted player,if wrong: your identity will be reveal to all player",
       abilityTC:
-        "技能（賭命）: “唔係你死就係我死” 每晚可以賭一個人既真實身份，賭中對方出局；賭唔中就會自爆身份比所有人知。 ",
+        "技能（賭命）: “唔係你死就係我死” 每晚可以賭一個人既真實身份，賭中對方死亡；賭唔中就會自爆身份比所有人知。 ",
       detected: "bad",
       img: "/client/app/werewolf/[roomid]/data/image/twistedFate.jpg",
       actionOrder: 2,
@@ -175,8 +183,10 @@ const characterData = {
       nameTC: "謀略家",
       must: false,
       targetGroup: null,
-      ability: "You have no ability,but your goal is to make the targeted player get voted out.",
-      abilityTC: "技能（金手指）: “呢個世界就係比有權力既人話事架啦” 諗盡計仔將某個特定目標比人票死。",
+      ability:
+        "You have no ability,but your goal is to make the targeted player get voted out.",
+      abilityTC:
+        "技能（金手指）: “呢個世界就係比有權力既人話事架啦” 諗盡計仔將某個特定目標比人票死。",
       detected: "good",
       img: "./image/conspirator.jpg",
       actionOrder: null,
@@ -185,7 +195,8 @@ const characterData = {
       nameTC: "小丑",
       must: false,
       targetGroup: "all",
-      ability: "Try to get voted out,if succeeded you can choose a player to kill in the following night.",
+      ability:
+        "Try to get voted out,if succeeded you can choose a player to kill in the following night.",
       abilityTC:
         "技能（娛樂至死）: “我既存在本身就係一個笑話，票死我，我就帶一個人同我攬炒，咁中意食花生呀拿！” 試圖叫人票死自己黎“取悅”大眾花生友。被人票殺之後，可以選擇殺死一個投票比佢既人。 ",
       detected: "good",
@@ -196,7 +207,8 @@ const characterData = {
       nameTC: "白痴",
       must: false,
       targetGroup: null,
-      ability: "You can select a dead player and gain their ability,role,and target.",
+      ability:
+        "You can select a dead player and gain their ability,role,and target.",
       abilityTC:
         "技能（回憶）:  “我個頭好痛呀，我個頭好痛呀，我個頭好痛呀.....”  係遊戲入面只可以選擇一名已歸西既玩家，繼承佢既角色、陣營同任務。取代左既新身份將會聊天室到公開。 ",
       detected: "good",
