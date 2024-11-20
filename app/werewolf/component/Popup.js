@@ -1,9 +1,9 @@
 import { useState, useContext } from "react";
-import { LanguageContext } from "../layout";
+import { useStore } from "@/app/werewolf/store";
+
 const Popup = ({ isOpen, onClose }) => {
   const [selectedGroup, setSelectedGroup] = useState("Town");
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const factionArr = ["Town", "Witch", "Neutral"];
 
   const factionObj = {
@@ -24,12 +24,12 @@ const Popup = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside the popup
       >
         <div className="text-3xl text-black">
-          {!changeLanguage ? "角色技能" : "Character Skills"}
+          {!language ? "角色技能" : "Character Skills"}
         </div>
 
         {/* Buttons for group selection */}
         <div className="flex justify-center space-x-4">
-          {!changeLanguage
+          {!language
             ? factionArr.map((group) => (
                 <button
                   key={group}
@@ -60,7 +60,7 @@ const Popup = ({ isOpen, onClose }) => {
 
         {/* Character list based on selected group */}
         <ul className="space-y-6 text-left text-gray-700 leading-6 mt-6">
-          {changeLanguage
+          {language
             ? characterData[selectedGroup].map((character, index) => (
                 <li key={index} className="mt-4 ">
                   <strong className="font-semibold text-gray-900">
@@ -84,7 +84,7 @@ const Popup = ({ isOpen, onClose }) => {
           onClick={onClose}
           className="mt-6 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition duration-200"
         >
-          {!changeLanguage ? "關閉" : "Close"}
+          {!language ? "關閉" : "Close"}
         </button>
       </div>
     </div>

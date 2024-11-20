@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useContext } from "react";
-import { SocketConnection } from "../layout";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
+import { useStore } from "@/app/werewolf/store";
 
 // Create a Room function
-export function CreateRoom({ changeLanguage }) {
-  const socket = useContext(SocketConnection);
+export function CreateRoom({ language }) {
+  const { socket } = useStore();
   const [playerCount, setPlayerCount] = useState(6);
   const [roomId, setRoomId] = useState("");
 
@@ -32,7 +32,7 @@ export function CreateRoom({ changeLanguage }) {
       href={{ pathname: `/werewolf/${roomId}` }}
     >
       <Plus className="mr-2 h-4 w-4 mt-2" />
-      {changeLanguage ? "Create Room" : "創建房間"}
+      {language ? "Create Room" : "創建房間"}
     </Link>
   );
 }

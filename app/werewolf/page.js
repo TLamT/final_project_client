@@ -1,7 +1,6 @@
 "use client";
 import Popup from "./component/Popup";
-import { useEffect, useState, useContext } from "react";
-import { LanguageContext } from "./layout";
+import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import lobbyBG from "@/public/image/lobbyBG.png";
 import Image from "next/image";
@@ -17,14 +16,14 @@ import {
 import { CreateRoom } from "./component/CreateRoom";
 import { JoinRoom } from "./component/JoinRoom";
 import Rule from "./component/Rule";
+import { useStore } from "@/app/werewolf/store";
 const cookies = new Cookies();
 
 export default function Page() {
   const [playerName, setPlayerName] = useState("");
   const [errorMessage, setErrorMessage] = useState(""); // Error message state
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const [displayLobby, setDisplayLobby] = useState(true);
   const handleOnChange = () => {
     setDisplayLobby((prevState) => !prevState);
@@ -97,7 +96,7 @@ export default function Page() {
       {displayLobby && (
         <div className="relative mx-auto mb-4 border-2 p-10 rounded-lg text-2xl">
           {/* Player name input */}
-          {changeLanguage ? "Player Name:" : "你的名字:"}
+          {language ? "Player Name:" : "你的名字:"}
           <div className="flex flex-row mb-8 mt-4">
             <User className="text-gray-400 mt-4 mr-2" />
             <input
@@ -116,16 +115,13 @@ export default function Page() {
                 <Users className="w-8 h-8" />
               </div>
               <span className="text-2xl flex-grow">
-                {changeLanguage ? "Host" : "主持人:"}
+                {language ? "Host" : "主持人:"}
               </span>
               <div
                 variant="outline"
                 className="border-2 rounded-xl border-gray-300 min-w-48"
               >
-                <CreateRoom
-                  playerName={playerName}
-                  changeLanguage={changeLanguage}
-                />
+                <CreateRoom playerName={playerName} language={language} />
               </div>
             </div>
 
@@ -135,10 +131,10 @@ export default function Page() {
                 <Lock className="w-8 h-8" />
               </div>
               <span className="text-2xl flex-grow">
-                {changeLanguage ? "PRIVATE" : "私人房間:"}
+                {language ? "PRIVATE" : "私人房間:"}
               </span>
               <div className="flex gap-2">
-                <JoinRoom changeLanguage={changeLanguage} />
+                <JoinRoom language={language} />
               </div>
             </div>
           </div>
@@ -146,10 +142,7 @@ export default function Page() {
       )}
       {!displayLobby && (
         <div className="mx-auto mb-4 p-10 rounded-lg">
-          <Rule
-            changeLanguage={changeLanguage}
-            handleOnLanguageChange={handleOnLanguageChange}
-          />
+          <Rule language={language} changeLanguage={changeLanguage} />
         </div>
       )}
       {/* Bottom buttons */}
@@ -157,7 +150,7 @@ export default function Page() {
         <a variant="ghost" className="text-white flex flex-row" href="./">
           <ArrowLeft className="w-6 h-6" />
           <span className="ml-2">
-            {changeLanguage ? "Back to home" : "回到選擇遊戲頁面"}
+            {language ? "Back to home" : "回到選擇遊戲頁面"}
           </span>
         </a>
       </div>
@@ -165,9 +158,9 @@ export default function Page() {
         {/* language */}
         <div
           className="flex flex-row justify-center items-center cursor-pointer"
-          onClick={handleOnLanguageChange}
+          onClick={changeLanguage}
         >
-          {changeLanguage ? "中文" : "English"}
+          {language ? "中文" : "English"}
           <div
             variant="outline"
             className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
@@ -181,10 +174,10 @@ export default function Page() {
           onClick={() => handleOnChange((prev) => !prev)}
         >
           {displayLobby
-            ? changeLanguage
+            ? language
               ? "Game Introduction"
               : "遊戲簡介"
-            : changeLanguage
+            : language
             ? "Lobby"
             : "遊戲大廳"}
           <div
@@ -199,7 +192,7 @@ export default function Page() {
           className="flex flex-row justify-center items-center cursor-pointer"
           onClick={() => setIsPopupOpen(!isPopupOpen)}
         >
-          {changeLanguage ? "Character Info" : "角色說明"}
+          {language ? "Character Info" : "角色說明"}
           <div
             variant="outline"
             className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
@@ -209,7 +202,7 @@ export default function Page() {
           <Popup
             isOpen={isPopupOpen}
             onClose={togglePopup}
-            changeLanguage={changeLanguage}
+            language={language}
           />
         </div>
       </div>

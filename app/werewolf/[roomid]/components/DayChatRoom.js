@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useContext } from "react";
-import { LanguageContext } from "../../layout";
+import { useEffect, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
-
+import { useStore } from "@/app/werewolf/store";
 function DayChatRoom({
   dayTimeChat,
   message,
@@ -15,8 +14,7 @@ function DayChatRoom({
 }) {
   const scrollRef = useRef(null);
   const emojiPickerRef = useRef(null);
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const onEmojiClick = (emojiData) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -106,7 +104,7 @@ function DayChatRoom({
       }
       placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400`}
             placeholder={
-              changeLanguage ? "Please Type message here!" : "請輸入訊息..."
+              language ? "Please Type message here!" : "請輸入訊息..."
             }
             disabled={!day} // Disable input if it's night
           />
@@ -121,12 +119,12 @@ function DayChatRoom({
       }`}
             disabled={!day} // Disable send button if it's night
           >
-            {changeLanguage ? "send" : <span className="text-sm">送出</span>}
+            {language ? "send" : <span className="text-sm">送出</span>}
           </button>
         </div>
       ) : (
         <div className="h-1/5 flex items-center justify-center text-gray-500">
-          {changeLanguage ? (
+          {language ? (
             <>
               {day
                 ? "You cannot send messages here."

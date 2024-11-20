@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import Image from "next/image";
 import clsx from "clsx";
-import { LanguageContext } from "../../layout";
 import AliveChatAndTarget from "./AliveChatAndTarget";
 import DeadPlayerList from "./DeadPlayerList";
 import AllChatRoom from "./AllChatRooms";
@@ -14,7 +13,7 @@ import RoleCard from "./RoleCard";
 import StartRoleAnimation from "./StartRoleAnimation";
 import { Globe2, HelpCircle } from "lucide-react";
 import Popup from "../../component/Popup";
-
+import { useStore } from "@/app/werewolf/store";
 export default function Day({
   socket,
   roomId,
@@ -43,8 +42,7 @@ export default function Day({
   chooseSomeone,
   playerDiedLastNight,
 }) {
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const [timer, setTimer] = useState(10);
@@ -143,7 +141,7 @@ export default function Day({
       if (roomLeader && days > 1 && playerDiedLastNight.length === 0) {
         socket.emit("dayChat", {
           roomId,
-          message: changeLanguage
+          message: language
             ? `Last night was a safe night.`
             : "琴晚係一個和平既夜晚",
           name: "server",
@@ -229,7 +227,7 @@ export default function Day({
         socket.emit("dayChat", {
           name: "server",
           message: `${votedOutPlayer.name}  ${
-            changeLanguage ? "has been voted out." : "已比人票死咗"
+            language ? "has been voted out." : "已比人票死咗"
           }`,
           roomId: roomId,
           repeat: "no",
@@ -249,7 +247,7 @@ export default function Day({
       if (roomLeader) {
         socket.emit("dayChat", {
           name: "server",
-          message: changeLanguage
+          message: language
             ? `It's a tie! No one is eliminated.`
             : `打個和super，無人死。`,
           roomId: roomId,
@@ -425,7 +423,9 @@ export default function Day({
           startRoleVisible ? "z-50" : "z-0"
         )}
       >
-        {startRoleVisible && <StartRoleAnimation />}
+        {startRoleVisible && (
+          <StartRoleAnimation playersData={playersData} position={position} />
+        )}
       </div>
 
       {/* main component */}
@@ -497,7 +497,7 @@ export default function Day({
           <div className="h-[5%]">
             <div className="text-3xl font-semibold text-center">{timer}</div>
             <div className="text-xl font-bold text-center">
-              {changeLanguage ? `Day${days}` : `第${days}日`}
+              {language ? `Day${days}` : `第${days}日`}
             </div>
           </div>
 
@@ -508,7 +508,7 @@ export default function Day({
               {targetRef &&
                 currAction &&
                 !cupidAbilityUsed &&
-                (changeLanguage ? (
+                (language ? (
                   <div>{`you decide to ${currAction} ${
                     target === null ? "no one" : playersData[target].name
                   }`}</div>
@@ -522,7 +522,7 @@ export default function Day({
             <div className="transition-all duration-500 ease-in-out fade-in text-xl">
               {!!detectiveAbilityInfo.name && role === "detective" && (
                 <span>
-                  {changeLanguage ? (
+                  {language ? (
                     <span>{`${detectiveAbilityInfo.name} is `}</span>
                   ) : (
                     <span>{`${detectiveAbilityInfo.name} 係 `}</span>
@@ -564,49 +564,16 @@ export default function Day({
             >
               {days > 1 && (
                 <span>
-                  {changeLanguage ? "You have voted" : "你投票了"}
+                  {language ? "You have voted" : "你投票了"}
                   <span className="font-semibold text-rose-600 ml-2">
                     {personal !== null
                       ? playersData[personal]?.name
-                      : changeLanguage
+                      : language
                       ? "no one"
                       : "______"}
                   </span>
                 </span>
               )}
-              <div className="fixed bottom-6 right-6 flex gap-4">
-                {/* language */}
-                <div
-                  className="flex flex-row justify-center items-center cursor-pointer"
-                  onClick={handleOnLanguageChange}
-                >
-                  {changeLanguage ? "中文" : "English"}
-                  <div
-                    variant="outline"
-                    className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
-                  >
-                    <Globe2 className="w-6 h-6" />
-                  </div>
-                </div>
-                {/* character info */}
-                <div
-                  className="flex flex-row justify-center items-center cursor-pointer"
-                  onClick={() => setIsPopupOpen(!isPopupOpen)}
-                >
-                  {changeLanguage ? "Character Info" : "角色說明"}
-                  <div
-                    variant="outline"
-                    className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
-                  >
-                    <HelpCircle className="w-6 h-6" />
-                  </div>
-                  <Popup
-                    isOpen={isPopupOpen}
-                    onClose={togglePopup}
-                    changeLanguage={changeLanguage}
-                  />
-                </div>
-              </div>
             </div>
 
             {deadMessage && (

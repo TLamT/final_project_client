@@ -1,6 +1,6 @@
 import fungPlayerData from "../data/fungPlayerData";
 import { useContext } from "react";
-import { LanguageContext } from "../../layout";
+import { useStore } from "@/app/werewolf/store";
 const AliveChatAndTarget = ({
   playersData,
   position,
@@ -20,6 +20,7 @@ const AliveChatAndTarget = ({
       setTarget(index);
     }
   };
+  const { language, changeLanguage } = useStore();
   const roleNameTC = (role) => {
     switch (role) {
       case "reaper":
@@ -58,8 +59,6 @@ const AliveChatAndTarget = ({
         return;
     }
   };
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
   let myPlayer = fungPlayerData.find(
     (player) => player.roleName === playersData[position].role
   );
@@ -140,7 +139,7 @@ const AliveChatAndTarget = ({
   return (
     <div className="border-2 border-rose-600 h-full p-4 overflow-y-scroll">
       <div className="font-bold text-3xl mb-2">
-        {changeLanguage ? "Alive Player" : "生存玩家"}
+        {language ? "Alive Player" : "生存玩家"}
       </div>
       <div className="flex flex-col">
         {targetPlayer.map(
@@ -150,7 +149,7 @@ const AliveChatAndTarget = ({
                 <div className="mr-2">{`${index + 1} ${player.name} `}</div>
                 {player.showRole && (
                   <span className="text-sm italic mr-2">
-                    {changeLanguage
+                    {language
                       ? `[${player.role}]`
                       : `[${roleNameTC(player.role)}]`}
                   </span>
@@ -168,7 +167,7 @@ const AliveChatAndTarget = ({
                       onClick={() => handlePlayerClick(index)}
                       className="bg-blue-500 text-white font-bold py-1 px-2 rounded transition-transform transform hover:scale-105 active:scale-95"
                     >
-                      {changeLanguage ? "target" : "目標"}
+                      {language ? "target" : "目標"}
                     </button>
                   )}
                 {player.canTarget &&
@@ -191,7 +190,7 @@ const AliveChatAndTarget = ({
                       onClick={() => handlePlayerClick(index)}
                       className="bg-blue-500 text-white font-bold py-1 px-2 rounded transition-transform transform hover:scale-105 active:scale-95"
                     >
-                      {changeLanguage ? "target" : "目標"}
+                      {language ? "target" : "目標"}
                     </button>
                   )}
 
@@ -203,7 +202,7 @@ const AliveChatAndTarget = ({
                       onClick={() => handlePlayerClick(index)}
                       className="bg-blue-500 text-white font-bold py-1 px-2 rounded transition-transform transform hover:scale-105 active:scale-95"
                     >
-                      {changeLanguage ? "target" : "目標"}
+                      {language ? "target" : "目標"}
                     </button>
                   )}
 
@@ -215,7 +214,7 @@ const AliveChatAndTarget = ({
                       onClick={() => handleVote(index)}
                       className="btn btn-sm btn-accent btn-outline"
                     >
-                      {changeLanguage ? "Vote" : "投票"}
+                      {language ? "Vote" : "投票"}
                     </button>
                   )}
 

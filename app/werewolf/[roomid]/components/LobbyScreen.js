@@ -2,14 +2,13 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Cookies from "universal-cookie";
 
-import { useEffect, useState, useContext } from "react";
-import { LanguageContext } from "../../layout";
+import { useEffect, useState } from "react";
+import { useStore } from "@/app/werewolf/store";
 
 const isSSR = typeof window === "undefined";
 
 const LobbyScreen = ({ roomId, playersData, position, socket }) => {
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const [radiusX, setRadiusX] = useState(300); // Default radiusX
   const [radiusY, setRadiusY] = useState(150); // Default radiusY
   // Update radii based on screen size
@@ -134,7 +133,7 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
       <div className="flex flex-col items-center h-full w-full relative z-0 border-2">
         {/* Room Title */}
         <h1 className="flex justify-center text-xl text-white h-[8%] w-full border-2 z-10">
-          {changeLanguage ? "Room ID: " : "目前房間: "}
+          {language ? "Room ID: " : "目前房間: "}
           {roomId}
         </h1>
 
@@ -153,14 +152,14 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded"
               onClick={handleGameStart}
             >
-              {changeLanguage ? "Start Game " : "開始遊戲 "}
+              {language ? "Start Game " : "開始遊戲 "}
             </button>
           )}
           <button
             className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded"
             onClick={handleLogout}
           >
-            {changeLanguage ? "Leave Room" : "離開房間 "}
+            {language ? "Leave Room" : "離開房間 "}
           </button>
         </div>
       </div>
@@ -170,22 +169,22 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
 
 // <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-6 text-lg">
 //   <div className="flex justify-between items-center mb-6">
-//     <h1 className="text-2xl font-bold">{changeLanguage ? "Game Lobby" : "遊戲大廳"}</h1>
+//     <h1 className="text-2xl font-bold">{language ? "Game Lobby" : "遊戲大廳"}</h1>
 //     <button
 //       onClick={handleOnChange}
 //       className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
 //     >
-//       {changeLanguage ? "中文" : "English"}
+//       {language ? "中文" : "English"}
 //     </button>
 //   </div>
 //   <div className="mb-4">
-//     <span className="font-semibold">{changeLanguage ? "Room ID: " : "房間號碼: "}</span> {roomid}
+//     <span className="font-semibold">{language ? "Room ID: " : "房間號碼: "}</span> {roomid}
 //   </div>
 //   <div className="mb-4">
-//     <span className="font-semibold">{changeLanguage ? "Name:" : "名稱:"}:</span> {name}
+//     <span className="font-semibold">{language ? "Name:" : "名稱:"}:</span> {name}
 //   </div>
 //   <div className="mb-6">
-//     <h2 className="text-lg font-semibold mb-2">{changeLanguage ? "Player: " : "玩家: "}</h2>
+//     <h2 className="text-lg font-semibold mb-2">{language ? "Player: " : "玩家: "}</h2>
 //     <div className="max-h-40 overflow-y-auto border rounded-md p-2">
 //       {players.map((info) => (
 //         <div key={info.id} className="py-1">
@@ -199,7 +198,7 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
 //       onClick={handleGameStart}
 //       className="w-full py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors mb-4"
 //     >
-//       {changeLanguage ? "Start Game" : "開始遊戲"}
+//       {language ? "Start Game" : "開始遊戲"}
 //     </button>
 //   )}
 //   {typeof playersData === "string" && <div className="text-red-500 mb-4">{playersData}</div>}
@@ -207,13 +206,13 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
 //     onClick={handleLogout}
 //     className="w-full py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors mb-6"
 //   >
-//     {changeLanguage ? "Leave Room" : "離開房間"}
+//     {language ? "Leave Room" : "離開房間"}
 //   </button>
 //   <div>
 //     <h2 className="text-xl font-bold mb-2">
-//       {changeLanguage ? "Role introduction & Victory Condition" : "角色資料&勝利條件"}
+//       {language ? "Role introduction & Victory Condition" : "角色資料&勝利條件"}
 //     </h2>
-//     <CharacterSkill changeLanguage={changeLanguage} />
+//     <CharacterSkill language={language} />
 //   </div>
 // </div>
 

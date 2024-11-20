@@ -1,11 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useContext } from "react";
-import { SocketConnection } from "../layout";
+import { useState, useEffect } from "react";
 import { LogIn } from "lucide-react";
+import { useSocket } from "@/app/werewolf/useSocket";
+import { useStore } from "@/app/werewolf/store";
 
-export function JoinRoom({ changeLanguage }) {
-  const socket = useContext(SocketConnection);
+export function JoinRoom() {
+  const { socket, language } = useStore();
   const router = useRouter();
   const [roomId, setRoomId] = useState("");
   const [alert, setAlert] = useState("");
@@ -16,13 +17,13 @@ export function JoinRoom({ changeLanguage }) {
     }
   };
 
-  useEffect(() => {
+  useSocket(() => {
     socket.on("gameStarted", ({ gameJoin, roomId }) => {
       if (gameJoin) {
         router.push(`/werewolf/${roomId}`);
       }
       if (!gameJoin) {
-        setAlert(changeLanguage ? "game already started" : "遊戲已開始");
+        setAlert(language ? "game already started" : "遊戲已開始");
         setRoomId("");
         setTimeout(() => {
           setAlert("");
@@ -35,7 +36,7 @@ export function JoinRoom({ changeLanguage }) {
     <div className="flex gap-2">
       <input
         placeholder={
-          alert ? alert : !changeLanguage ? "請輸入房間號碼" : "Enter Code"
+          alert ? alert : !language ? "請輸入房間號碼" : "Enter Code"
         }
         className="bg-transparent border-2 border-white/20 rounded-xl p-4"
         value={roomId}
@@ -47,7 +48,7 @@ export function JoinRoom({ changeLanguage }) {
           className="text-white font-bold py-4 px-8 rounded hover:scale-110 transition duration-300 flex flex-row justify-center w-full"
         >
           <LogIn className="mr-2 h-4 w-4 mt-2" />
-          {changeLanguage ? "Join Room" : "加入房間"}
+          {language ? "Join Room" : "加入房間"}
         </button>
       </div>
     </div>

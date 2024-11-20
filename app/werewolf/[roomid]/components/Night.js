@@ -8,11 +8,13 @@ import DeadPlayerList from "./DeadPlayerList";
 import AllChatRoom from "./AllChatRooms";
 import Image from "next/image";
 import nightBg from "@/public/image/nightBg.jpg";
-import { LanguageContext } from "../../layout";
+import { useStore } from "@/app/werewolf/store";
 // import WholeDayChatRoom from "./WholeDayChatRoom";
 // import DayChatRoom from "./DayChatRoom";
 // import NightChatRoom from "./NightChatRoom";
 import RoleCard from "./RoleCard";
+import Popup from "../../component/Popup";
+import { Globe2, HelpCircle } from "lucide-react";
 
 export default function Night({
   socket,
@@ -47,6 +49,8 @@ export default function Night({
   initialVampire,
   roomLeader,
 }) {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const [timer, setTimer] = useState(10);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(null);
@@ -54,8 +58,7 @@ export default function Night({
   const [twistedFateTarget, setTwistedFateTarget] = useState(null);
   const [fade, setFade] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
   const twistedFateTargetRef = useRef(twistedFateTarget);
@@ -330,7 +333,7 @@ export default function Night({
           name: "server",
           message: `${playersData[actions.owner].name} 
           ${
-            changeLanguage
+            language
               ? "is twistedFate and is trying to kill"
               : "係賭徒，佢想賭你身份並殺死你"
           }
@@ -342,7 +345,9 @@ export default function Night({
       }
     }
   }
-
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
   function handleDeadPlayerMessageSent() {
     socket.emit("deadPlayerChat", { name, roomId, message });
     setMessage("");
@@ -465,9 +470,10 @@ export default function Night({
             <div className="h-[5%]">
               <div className="text-3xl font-semibold text-center">{timer}</div>
               <div className="text-xl font-bold text-center">
-                {changeLanguage ? `Night: ${nights} ` : `第${nights}晚 `}
+                {language ? `Night: ${nights} ` : `第${nights}晚 `}
               </div>
             </div>
+
             <div className="flex flex-col items-center justify-center h-[95%] pb-[64px]">
               {playersData[position].role === "twistedFate" && (
                 <div>
@@ -477,7 +483,7 @@ export default function Night({
                     className="bg-gray-700"
                   >
                     <option className="bg-gray-700">
-                      {changeLanguage ? "Select a Role" : "選擇一名角色"}
+                      {language ? "Select a Role" : "選擇一名角色"}
                     </option>
                     {twistedFateDropDownList.map((role) => (
                       <option
@@ -502,14 +508,14 @@ export default function Night({
                     key={target}
                   >
                     <span>
-                      {changeLanguage ? (
+                      {language ? (
                         <>{`You decide to ${actionRef.current}`}</>
                       ) : (
                         <>{`你選擇 ${actionsTC(actionRef.current)}`}</>
                       )}
                       <span className="font-semibold text-rose-600 ml-2">
                         {target === null
-                          ? changeLanguage
+                          ? language
                             ? "no one"
                             : "______"
                           : playersData[target].name}
@@ -517,13 +523,14 @@ export default function Night({
                     </span>
                   </div>
                 )}
+
               {playersData[position].role === "joker" &&
                 playersData[position].votedOut === true && (
                   <div
                     className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
                     key={target}
                   >
-                    changeLanguage ? (
+                    language ? (
                     {`You decide to ${actionRef.current} ${
                       target === null ? "no one" : playersData[target].name
                     }`}
@@ -539,12 +546,12 @@ export default function Night({
                   className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
                   key="jailed"
                 >
-                  {changeLanguage ? "You have been jailed" : "你今晚已被人囚禁"}
+                  {language ? "You have been jailed" : "你今晚已被人囚禁"}
                 </div>
               )}
               {!canShoot && (
                 <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in">
-                  {changeLanguage
+                  {language
                     ? " You shot an innocent person thus lost the ability to shoot"
                     : "你因對市民開槍，所以你被沒收了槍"}
                 </div>

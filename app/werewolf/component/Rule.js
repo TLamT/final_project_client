@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
-import { LanguageContext } from "../layout";
+import { useStore } from "@/app/werewolf/store";
+
 const Rule = () => {
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const [isOpen, setIsOpen] = useState({
     objective: false,
     rules: false,
@@ -375,7 +375,7 @@ const Rule = () => {
       </>
     );
   };
-  return <div className="relative">{!changeLanguage ? TC() : EN()}</div>;
+  return <div className="relative">{!language ? TC() : EN()}</div>;
 };
 
 export default Rule;

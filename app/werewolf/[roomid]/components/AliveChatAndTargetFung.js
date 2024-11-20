@@ -1,11 +1,12 @@
 import characterData from "../data/character";
-import { LanguageContext } from "../../layout";
-import { useContext } from "react";
+import { useStore } from "@/app/werewolf/store";
 const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
-  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
   const deadList = playersData.filter((player) => !player.alive);
   const allPlayersData = playersData.map((player) => {
-    const characterInfo = allCharactersInfo.find((char) => char.roleName === player.role);
+    const characterInfo = allCharactersInfo.find(
+      (char) => char.roleName === player.role
+    );
     return {
       ...player,
       characterInfo,
@@ -34,7 +35,9 @@ const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
     }
     return {
       ...player,
-      showRole: currPlayer.characterInfo.faction === "witch" && player.characterInfo.faction === "witch",
+      showRole:
+        currPlayer.characterInfo.faction === "witch" &&
+        player.characterInfo.faction === "witch",
       canTarget,
     };
   });
@@ -46,7 +49,7 @@ const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
           {player.showRole && <span className="mr-4">[{player.role}]</span>}
           {player.canTarget && (
             <button className="ml-4" onClick={() => setTarget(index)}>
-              {changeLanguage ? "target" : "目標"}
+              {language ? "target" : "目標"}
             </button>
           )}
         </li>

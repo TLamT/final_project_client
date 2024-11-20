@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
-import { LanguageContext } from "../../layout";
+import { useStore } from "@/app/werewolf/store";
+
 import characterData from "../data/character";
 import fungPlayerData from "../data/fungPlayerData";
 import Image from "next/image";
@@ -24,8 +25,7 @@ const RoleCard = ({ playersData, position }) => {
   const myPlayer = fungPlayerData.find(
     (player) => player.roleName === playersData[position].role
   );
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
+  const { language, changeLanguage } = useStore();
 
   const imageRole = (role) => {
     switch (role) {
@@ -158,13 +158,13 @@ const RoleCard = ({ playersData, position }) => {
       </ul> */}
       <div className="flex flex-col justify-center items-center text-center">
         <button
-          onClick={handleOnLanguageChange}
+          onClick={changeLanguage}
           className="text-xl text- border-2 border-black"
         >
-          {changeLanguage ? "中文" : "English"}
+          {language ? "中文" : "English"}
         </button>
         <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative h-1/6">
-          {changeLanguage ? (
+          {language ? (
             <>
               Role : {myPlayer.roleName}, Faction :{" "}
               {myPlayer.faction.toUpperCase()}
@@ -184,7 +184,7 @@ const RoleCard = ({ playersData, position }) => {
           />
         </div>
         <ul className="flex flex-col items-center justify-center mt-4 h-1/6">
-          {changeLanguage ? (
+          {language ? (
             <li className="text-xl">Ability : {`${myPlayer.ability}`}</li>
           ) : (
             <li className="text-xl"> {`${myPlayer.abilityTC}`}</li>

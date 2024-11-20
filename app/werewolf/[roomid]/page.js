@@ -3,7 +3,6 @@
 import { useParams, useRouter } from "next/navigation";
 import Cookies from "universal-cookie";
 import { useState, useEffect, useContext, useRef } from "react";
-import { SocketConnection, LanguageContext } from "../layout";
 import Day from "./components/Day";
 import Night from "./components/Night";
 import playerRoleList from "./components/DealCardMachine";
@@ -13,14 +12,13 @@ import CharacterSkill from "../component/CharacterSkill";
 import LobbyScreen from "./components/LobbyScreen";
 import { Globe2, HelpCircle } from "lucide-react";
 import Popup from "../component/Popup";
+import { useStore } from "@/app/werewolf/store";
+import { useSocket } from "@/app/werewolf/useSocket";
 
 const isSSR = typeof window === "undefined";
 
 export default function () {
-  // default
-  const { changeLanguage, handleOnLanguageChange } =
-    useContext(LanguageContext);
-  const socket = useContext(SocketConnection);
+  const { socket, language, changeLanguage } = useStore();
   const cookies = new Cookies();
   const router = useRouter();
   const { roomId } = useParams();
@@ -64,7 +62,7 @@ export default function () {
     positionRef.current = position;
   }, [position]);
 
-  useEffect(() => {
+  useSocket(() => {
     return () => {
       socket.emit("killThePlayer", {
         roomId: roomId,
@@ -190,7 +188,7 @@ export default function () {
     });
   };
 
-  useEffect(() => {
+  useSocket(() => {
     const cookieName = cookies.get("userName");
     if (cookieName) {
       setName(cookieName);
@@ -202,7 +200,7 @@ export default function () {
     }
   }, []);
 
-  useEffect(() => {
+  useSocket(() => {
     socket.on("playerList", (list) => {
       setPlayers(list);
     });
@@ -225,7 +223,7 @@ export default function () {
         )
       );
     });
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     let roles = playerRoleList(players.length);
@@ -278,9 +276,9 @@ export default function () {
             {/* language */}
             <div
               className="flex flex-row justify-center items-center cursor-pointer"
-              onClick={handleOnLanguageChange}
+              onClick={changeLanguage}
             >
-              {changeLanguage ? "中文" : "English"}
+              {language ? "中文" : "English"}
               <div
                 variant="outline"
                 className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
@@ -293,7 +291,7 @@ export default function () {
               className="flex flex-row justify-center items-center cursor-pointer"
               onClick={() => setIsPopupOpen(!isPopupOpen)}
             >
-              {changeLanguage ? "Character Info" : "角色說明"}
+              {language ? "Character Info" : "角色說明"}
               <div
                 variant="outline"
                 className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
@@ -303,7 +301,7 @@ export default function () {
               <Popup
                 isOpen={isPopupOpen}
                 onClose={togglePopup}
-                changeLanguage={changeLanguage}
+                language={language}
               />
             </div>
           </div>
