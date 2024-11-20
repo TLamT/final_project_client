@@ -106,7 +106,7 @@ const RoleCard = ({ playersData, position }) => {
       case "witch":
         return "邪惡";
       case "town":
-        return "城鎮居民";
+        return "蘑菇居民";
       case "neutral":
         return "中立";
     }

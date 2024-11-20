@@ -7,7 +7,7 @@ const Popup = ({ isOpen, onClose }) => {
   const factionArr = ["Town", "Witch", "Neutral"];
 
   const factionObj = {
-    Town: "無菇市民",
+    Town: "蘑菇市民",
     Witch: "古惑仔",
     Neutral: "中立陣營",
   };

@@ -12,6 +12,8 @@ import DayChatRoom from "./DayChatRoom";
 import dayBg from "@/public/image/dayBg.jpg";
 import RoleCard from "./RoleCard";
 import StartRoleAnimation from "./StartRoleAnimation";
+import { Globe2, HelpCircle } from "lucide-react";
+import Popup from "../../component/Popup";
 
 export default function Day({
   socket,
@@ -43,6 +45,8 @@ export default function Day({
 }) {
   const { changeLanguage, handleOnLanguageChange } =
     useContext(LanguageContext);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const [timer, setTimer] = useState(10);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
@@ -83,6 +87,9 @@ export default function Day({
     return () => window.removeEventListener("resize", updateRadius);
   }, []);
 
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
   useEffect(() => {
     setFade(true);
     if (days === 1 && !startAnimationRendered) {
@@ -222,7 +229,7 @@ export default function Day({
         socket.emit("dayChat", {
           name: "server",
           message: `${votedOutPlayer.name}  ${
-            changeLanguage ? "has been voted out." : "被投死了"
+            changeLanguage ? "has been voted out." : "已比人票死咗"
           }`,
           roomId: roomId,
           repeat: "no",
@@ -244,7 +251,7 @@ export default function Day({
           name: "server",
           message: changeLanguage
             ? `It's a tie! No one is eliminated.`
-            : `平票，無人死。`,
+            : `打個和super，無人死。`,
           roomId: roomId,
           repeat: "no",
         });
@@ -490,7 +497,7 @@ export default function Day({
           <div className="h-[5%]">
             <div className="text-3xl font-semibold text-center">{timer}</div>
             <div className="text-xl font-bold text-center">
-              {changeLanguage ? `Day${days}` : `第${days}十`}
+              {changeLanguage ? `Day${days}` : `第${days}日`}
             </div>
           </div>
 
