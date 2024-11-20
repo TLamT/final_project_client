@@ -574,6 +574,39 @@ export default function Day({
                   </span>
                 </span>
               )}
+              <div className="fixed bottom-6 right-6 flex gap-4">
+                {/* language */}
+                <div
+                  className="flex flex-row justify-center items-center cursor-pointer"
+                  onClick={handleOnLanguageChange}
+                >
+                  {changeLanguage ? "中文" : "English"}
+                  <div
+                    variant="outline"
+                    className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
+                  >
+                    <Globe2 className="w-6 h-6" />
+                  </div>
+                </div>
+                {/* character info */}
+                <div
+                  className="flex flex-row justify-center items-center cursor-pointer"
+                  onClick={() => setIsPopupOpen(!isPopupOpen)}
+                >
+                  {changeLanguage ? "Character Info" : "角色說明"}
+                  <div
+                    variant="outline"
+                    className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
+                  >
+                    <HelpCircle className="w-6 h-6" />
+                  </div>
+                  <Popup
+                    isOpen={isPopupOpen}
+                    onClose={togglePopup}
+                    changeLanguage={changeLanguage}
+                  />
+                </div>
+              </div>
             </div>
 
             {deadMessage && (
