@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import characterData from "../data/character";
 import AliveChatAndTarget from "./AliveChatAndTarget";
 import fungPlayerData from "../data/fungPlayerData";
@@ -8,6 +8,7 @@ import DeadPlayerList from "./DeadPlayerList";
 import AllChatRoom from "./AllChatRooms";
 import Image from "next/image";
 import nightBg from "@/public/image/nightBg.jpg";
+import { LanguageContext } from "../../layout";
 // import WholeDayChatRoom from "./WholeDayChatRoom";
 // import DayChatRoom from "./DayChatRoom";
 // import NightChatRoom from "./NightChatRoom";
@@ -53,7 +54,7 @@ export default function Night({
   const [twistedFateTarget, setTwistedFateTarget] = useState(null);
   const [fade, setFade] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
-
+  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
   const targetRef = useRef(target);
   const actionRef = useRef(currAction);
   const twistedFateTargetRef = useRef(twistedFateTarget);
@@ -158,10 +159,7 @@ export default function Night({
   function handleNightAction(actions, nightTimeAction) {
     if (actions.action === "kill") {
       const townFaction = Object.keys(characterData.town);
-      if (
-        playersData[actions.target].linked === true &&
-        !playersData[actions.target].jailed
-      ) {
+      if (playersData[actions.target].linked === true && !playersData[actions.target].jailed) {
         const linkedArr = [];
         playersData.forEach((player, index) => {
           if (player.linked === true) {
@@ -169,42 +167,23 @@ export default function Night({
           }
         });
         setPlayerDiedLastNight((prev) => [...prev, ...linkedArr]);
+        setPlayersData((prev) => prev.map((player) => (player.linked === true ? { ...player, alive: false } : player)));
         setPlayersData((prev) =>
-          prev.map((player) =>
-            player.linked === true ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.owner ? { ...player, votedOut: false } : player))
         );
-        setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.owner ? { ...player, votedOut: false } : player
-          )
-        );
-        if (
-          playersData[actions.owner].role === "police" &&
-          townFaction.includes(playersData[actions.target].role)
-        ) {
+        if (playersData[actions.owner].role === "police" && townFaction.includes(playersData[actions.target].role)) {
           setCanShoot(false);
         }
       }
-      if (
-        playersData[actions.target].linked === false &&
-        !playersData[actions.target].jailed
-      ) {
+      if (playersData[actions.target].linked === false && !playersData[actions.target].jailed) {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.target ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
         );
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.owner ? { ...player, votedOut: false } : player
-          )
+          prev.map((player, index) => (index === actions.owner ? { ...player, votedOut: false } : player))
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
-        if (
-          playersData[position].role === "police" &&
-          townFaction.includes(playersData[actions.target].role)
-        ) {
+        if (playersData[position].role === "police" && townFaction.includes(playersData[actions.target].role)) {
           setCanShoot(false);
         }
       }
@@ -223,9 +202,7 @@ export default function Night({
         console.log("you successfully protected someone");
       }
       setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.target ? { ...player, alive: true } : player
-        )
+        prev.map((player, index) => (index === actions.target ? { ...player, alive: true } : player))
       );
     }
 
@@ -243,9 +220,7 @@ export default function Night({
     if (actions.action === "remember") {
       const targetRole = playersData[actions.target].role;
       setPlayersData((prev) =>
-        prev.map((player, index) =>
-          index === actions.owner ? { ...player, role: targetRole } : player
-        )
+        prev.map((player, index) => (index === actions.owner ? { ...player, role: targetRole } : player))
       );
     }
 
@@ -255,25 +230,19 @@ export default function Night({
       if (targetRole !== "vampireHunter") {
         if (witch.includes(targetRole)) {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, alive: false } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
           );
           setPlayerDiedLastNight((prev) => [...prev, actions.target]);
         }
         if (!witch.includes(targetRole)) {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, role: "vampire" } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, role: "vampire" } : player))
           );
         }
       }
       if (targetRole === "vampireHunter") {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.owner ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.owner ? { ...player, alive: false } : player))
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.owner]);
       }
@@ -284,9 +253,7 @@ export default function Night({
 
       if (targetRole === "vampire") {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.target ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       }
@@ -295,19 +262,16 @@ export default function Night({
     if (actions.action === "destiny") {
       if (actions.twistedTarget === playersData[actions.target].role) {
         setPlayersData((prev) =>
-          prev.map((player, index) =>
-            index === actions.target ? { ...player, alive: false } : player
-          )
+          prev.map((player, index) => (index === actions.target ? { ...player, alive: false } : player))
         );
         setPlayerDiedLastNight((prev) => [...prev, actions.target]);
       } else if (roomLeader) {
         socket.emit("dayChat", {
           name: "server",
-          message: `${
-            playersData[actions.owner].name
-          } is twistedFate and is trying to kill ${
-            playersData[actions.target].name
-          }`,
+          message: `${playersData[actions.owner].name} 
+          ${changeLanguage ? "is twistedFate and is trying to kill" : "係賭徒，佢想賭你身份並殺你"}
+          
+          ${playersData[actions.target].name}`,
           roomId: roomId,
           repeat: "no",
         });
@@ -327,11 +291,7 @@ export default function Night({
       }`}
     >
       <div className="absolute inset-0 z-0">
-        <Image
-          src={nightBg}
-          alt="kowloon"
-          className="w-full h-full object-cover opacity-30"
-        />
+        <Image src={nightBg} alt="kowloon" className="w-full h-full object-cover opacity-30" />
       </div>
       <div
         className={`w-screen h-screen flex flex-row justify-between transition-opacity duration-300 z-10 ${
@@ -437,7 +397,7 @@ export default function Night({
             <div className="h-[5%]">
               <div className="text-3xl font-semibold text-center">{timer}</div>
               <div className="text-xl font-bold text-center">
-                Night {`${nights}`}
+                {changeLanguage ? `Night: ${nights} ` : `夜晚: 第${nights}日 `}
               </div>
             </div>
             <div className="flex flex-col items-center justify-center h-[95%] pb-[64px]">
@@ -448,13 +408,9 @@ export default function Night({
                     onChange={(ev) => setTwistedFateTarget(ev.target.value)}
                     className="bg-gray-700"
                   >
-                    <option className="bg-gray-700">Select a Role</option>
+                    <option className="bg-gray-700">{changeLanguage ? "Select a Role" : "選擇一名角色"}</option>
                     {twistedFateDropDownList.map((role) => (
-                      <option
-                        value={role.roleName}
-                        key={role.roleName}
-                        className="bg-gray-700"
-                      >
+                      <option value={role.roleName} key={role.roleName} className="bg-gray-700">
                         {role.roleName}
                       </option>
                     ))}
@@ -467,40 +423,36 @@ export default function Night({
                 !playersData[position].jailed &&
                 playersData[position].role !== "joker" &&
                 !!canShoot && (
-                  <div
-                    className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
-                    key={target}
-                  >
+                  <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
                     <span>
-                      {`You decide to ${actionRef.current}`}
+                      {changeLanguage ? (
+                        <>{`You decide to ${actionRef.current}`}</>
+                      ) : (
+                        <>{`你選擇了 ${actionRef.current}`}</>
+                      )}
                       <span className="font-semibold text-rose-600 ml-2">
-                        {target === null ? "no one" : playersData[target].name}
+                        {target === null ? (changeLanguage ? "no one" : " ") : playersData[target].name}
                       </span>
                     </span>
                   </div>
                 )}
-              {playersData[position].role === "joker" &&
-                playersData[position].votedOut === true && (
-                  <div
-                    className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
-                    key={target}
-                  >
-                    {`You decide to ${actionRef.current} ${
-                      target === null ? "no one" : playersData[target].name
-                    }`}
-                  </div>
-                )}
+              {playersData[position].role === "joker" && playersData[position].votedOut === true && (
+                <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
+                  {`You decide to ${actionRef.current} ${
+                    target === null ? (changeLanguage ? "no one" : " ") : playersData[target].name
+                  }`}
+                </div>
+              )}
               {playersData[position].jailed && (
-                <div
-                  className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in"
-                  key="jailed"
-                >
-                  You have been jailed
+                <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key="jailed">
+                  {changeLanguage ? "You have been jailed" : "你今晚已被人囚禁"}
                 </div>
               )}
               {!canShoot && (
                 <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in">
-                  You shot an innocent person thus lost the ability to shoot
+                  {changeLanguage
+                    ? " You shot an innocent person thus lost the ability to shoot"
+                    : "你因對市民開槍，所以你被沒收了槍"}
                 </div>
               )}
             </div>

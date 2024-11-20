@@ -3,8 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import Cookies from "universal-cookie";
 import { useState, useEffect, useContext, useRef } from "react";
-import { SocketConnection } from "../layout";
-
+import { SocketConnection, LanguageContext } from "../layout";
 import Day from "./components/Day";
 import Night from "./components/Night";
 import playerRoleList from "./components/DealCardMachine";
@@ -17,6 +16,7 @@ const isSSR = typeof window === "undefined";
 
 export default function () {
   // default
+  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
   const socket = useContext(SocketConnection);
   const cookies = new Cookies();
   const router = useRouter();
@@ -162,7 +162,7 @@ export default function () {
       );
     });
     socket.on("quitWhenGameStart", (data) => {
-      console.log(data);
+      // console.log(data);
       setPlayersData((prev) => prev.map((player, index) => (index === data ? { ...player, alive: false } : player)));
     });
   }, [socket]);
@@ -211,6 +211,7 @@ export default function () {
       )}
 
       {/* when the game started and daytime */}
+
       {!gameEnd && gameStart && day && (
         <Day
           socket={socket}
@@ -240,7 +241,6 @@ export default function () {
           playerDiedLastNight={playerDiedLastNight}
         />
       )}
-
       {/* when the game started and nighttime */}
       {!gameEnd && gameStart && !day && (
         <Night
@@ -275,7 +275,6 @@ export default function () {
           initialVampire={initialVampire}
         />
       )}
-
       {/* when the game end */}
       {gameEnd && (
         <div className="flex flex-col justify-center items-center">

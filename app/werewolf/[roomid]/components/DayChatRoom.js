@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
+import { LanguageContext } from "../../layout";
 import EmojiPicker from "emoji-picker-react";
 
 function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, playersData, position, day }) {
   const scrollRef = useRef(null);
   const emojiPickerRef = useRef(null);
+  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const onEmojiClick = (emojiData) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -76,7 +78,7 @@ function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, players
             className={`w-full px-3 py-2 border border-cyan-300 rounded-lg 
       ${day ? "bg-gray-700 text-white" : "bg-gray-600 text-gray-400 cursor-not-allowed"}
       placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400`}
-            placeholder="Type your message..."
+            placeholder={changeLanguage ? "Please Type message here!" : "請輸入訊息..."}
             disabled={!day} // Disable input if it's night
           />
 
@@ -86,12 +88,16 @@ function DayChatRoom({ dayTimeChat, message, setMessage, sentDayMessage, players
       ${day ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-500 text-gray-300 cursor-not-allowed"}`}
             disabled={!day} // Disable send button if it's night
           >
-            Send
+            {changeLanguage ? "send" : "送出"}
           </button>
         </div>
       ) : (
         <div className="h-1/5 flex items-center justify-center text-gray-500">
-          {day ? "You cannot send messages here." : "Day Chat is read-only at night."}
+          {changeLanguage ? (
+            <>{day ? "You cannot send messages here." : "Day Chat is read-only at night."}</>
+          ) : (
+            <>{day ? "你已被禁止輸入任何對話" : "日頭聊天室係夜晚睇唔到。"}</>
+          )}
         </div>
       )}
     </div>

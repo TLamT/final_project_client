@@ -4,14 +4,15 @@ import Cookies from "universal-cookie";
 import lobbyBG from "@/public/image/lobbyBG.png";
 import lobbyLight from "@/public/image/lobbyLight.jpg";
 import reaper from "@/public/image/reaper.jpg";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { LanguageContext } from "../../layout";
 
 const isSSR = typeof window === "undefined";
 
 const LobbyScreen = ({ roomId, playersData, position, socket }) => {
+  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
   const [radiusX, setRadiusX] = useState(300); // Default radiusX
   const [radiusY, setRadiusY] = useState(150); // Default radiusY
-
   // Update radii based on screen size
   useEffect(() => {
     const updateRadius = () => {
@@ -50,14 +51,7 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
     const centerY = radiusY * 2.4; // Y coordinate of the oval center
     return (
       <svg width="100%" height="100%" className="absolute">
-        <ellipse
-          cx={centerX}
-          cy={centerY}
-          rx={radiusX}
-          ry={radiusY}
-          opacity="0.2"
-          fill={"white"}
-        />
+        <ellipse cx={centerX} cy={centerY} rx={radiusX} ry={radiusY} opacity="0.2" fill={"white"} />
 
         {items.map((item, index) => {
           const angle = (index / items.length) * 2 * Math.PI; // angle in radians
@@ -65,24 +59,12 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
           const y = centerY + radiusY * Math.sin(angle); // Y position
 
           return (
-            <g
-              key={item.id}
-              transform={`translate(${x}, ${y})`}
-              className="relative"
-            >
-              <text
-                x="0"
-                y="60"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill="white"
-              >
+            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
+              <text x="0" y="60" textAnchor="middle" dominantBaseline="middle" fill="white">
                 {item.name}
               </text>
               <image
-                href={
-                  "https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"
-                }
+                href={"https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"}
                 width="100"
                 height="100"
                 x="-50" // Center the image
@@ -131,19 +113,18 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
           }
         `}</style>
       </div>
-
       <div className="flex flex-col items-center h-full w-full relative z-0 border-2">
+        <button onClick={handleOnLanguageChange} className="text-xl text-white h-[8%] w-full border-2 z-10">
+          {changeLanguage ? "中文" : "English"}
+        </button>
         {/* Room Title */}
         <h1 className="flex justify-center text-xl text-white h-[8%] w-full border-2 z-10">
-          目前房間: {roomId}
+          {changeLanguage ? "Room ID: " : "目前房間: "}
+          {roomId}
         </h1>
 
         <div className="h-[82%] w-full border-2 flex justify-center items-center">
-          <OvalWithItems
-            items={playersData}
-            radiusX={radiusX}
-            radiusY={radiusY}
-          />
+          <OvalWithItems items={playersData} radiusX={radiusX} radiusY={radiusY} />
         </div>
 
         {/* Game Controls */}
@@ -153,14 +134,14 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded"
               onClick={handleGameStart}
             >
-              StartGame
+              {changeLanguage ? "Start Game " : "開始遊戲 "}
             </button>
           )}
           <button
             className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded"
             onClick={handleLogout}
           >
-            LeaveRoom
+            {changeLanguage ? "Leave Room" : "離開房間 "}
           </button>
         </div>
       </div>

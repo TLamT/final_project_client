@@ -4,15 +4,7 @@ import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 import lobbyBG from "@/public/image/lobbyBG.png";
 import Image from "next/image";
-import {
-  Globe2,
-  Users,
-  Lock,
-  ArrowLeft,
-  HelpCircle,
-  User,
-  Info,
-} from "lucide-react";
+import { Globe2, Users, Lock, ArrowLeft, HelpCircle, User, Info } from "lucide-react";
 import { CreateRoom } from "./component/CreateRoom";
 import { JoinRoom } from "./component/JoinRoom";
 import Rule from "./component/Rule";
@@ -61,9 +53,7 @@ export default function Page() {
 
     if (!regex.test(value)) {
       // Check for invalid characters
-      setErrorMessage(
-        "Player name can only contain letters, numbers, spaces, and Chinese characters."
-      );
+      setErrorMessage("Player name can only contain letters, numbers, spaces, and Chinese characters.");
       return;
     }
 
@@ -85,10 +75,11 @@ export default function Page() {
       <div className="absolute inset-0 z-0">
         <Image
           src={lobbyBG}
+          layout="responsive"
           width={0}
           height={0}
           sizes="100vw"
-          className="opacity-30"
+          className="opacity-30 object-cover"
           alt="kowloon"
         />
       </div>
@@ -115,17 +106,9 @@ export default function Page() {
               <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center">
                 <Users className="w-8 h-8" />
               </div>
-              <span className="text-2xl flex-grow">
-                {changeLanguage ? "Host" : "主持人:"}
-              </span>
-              <div
-                variant="outline"
-                className="border-2 rounded-xl border-gray-300 min-w-48"
-              >
-                <CreateRoom
-                  playerName={playerName}
-                  changeLanguage={changeLanguage}
-                />
+              <span className="text-2xl flex-grow">{changeLanguage ? "Host" : "主持人:"}</span>
+              <div variant="outline" className="border-2 rounded-xl border-gray-300 min-w-48">
+                <CreateRoom playerName={playerName} changeLanguage={changeLanguage} />
               </div>
             </div>
 
@@ -134,9 +117,7 @@ export default function Page() {
               <div className="w-16 h-16 rounded-full bg-gray-700 flex items-center justify-center">
                 <Lock className="w-8 h-8" />
               </div>
-              <span className="text-2xl flex-grow">
-                {changeLanguage ? "PRIVATE" : "私人房間:"}
-              </span>
+              <span className="text-2xl flex-grow">{changeLanguage ? "PRIVATE" : "私人房間:"}</span>
               <div className="flex gap-2">
                 <JoinRoom changeLanguage={changeLanguage} />
               </div>
@@ -146,19 +127,14 @@ export default function Page() {
       )}
       {!displayLobby && (
         <div className="mx-auto mb-4 p-10 rounded-lg">
-          <Rule
-            changeLanguage={changeLanguage}
-            handleOnLanguageChange={handleOnLanguageChange}
-          />
+          <Rule changeLanguage={changeLanguage} handleOnLanguageChange={handleOnLanguageChange} />
         </div>
       )}
       {/* Bottom buttons */}
       <div className="fixed bottom-6 left-6">
         <a variant="ghost" className="text-white flex flex-row" href="./">
           <ArrowLeft className="w-6 h-6" />
-          <span className="ml-2">
-            {changeLanguage ? "Back to home" : "回到選擇遊戲頁面"}
-          </span>
+          <span className="ml-2">{changeLanguage ? "Back to home" : "回到選擇遊戲頁面"}</span>
         </a>
       </div>
       <div className="fixed bottom-6 right-6 flex gap-4">
@@ -168,10 +144,7 @@ export default function Page() {
           onClick={() => setChangeLanguage((prev) => !prev)}
         >
           {changeLanguage ? "中文" : "English"}
-          <div
-            variant="outline"
-            className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
-          >
+          <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
             <Globe2 className="w-6 h-6" />
           </div>
         </div>
@@ -180,17 +153,8 @@ export default function Page() {
           className="flex flex-row justify-center items-center cursor-pointer"
           onClick={() => handleOnChange((prev) => !prev)}
         >
-          {displayLobby
-            ? changeLanguage
-              ? "Game Introduction"
-              : "遊戲簡介"
-            : changeLanguage
-            ? "Lobby"
-            : "遊戲大廳"}
-          <div
-            variant="outline"
-            className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
-          >
+          {displayLobby ? (changeLanguage ? "Game Introduction" : "遊戲簡介") : changeLanguage ? "Lobby" : "遊戲大廳"}
+          <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
             <Info className="w-6 h-6" />
           </div>
         </div>
@@ -200,17 +164,10 @@ export default function Page() {
           onClick={() => setIsPopupOpen(!isPopupOpen)}
         >
           {changeLanguage ? "Character Info" : "角色說明"}
-          <div
-            variant="outline"
-            className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
-          >
+          <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
             <HelpCircle className="w-6 h-6" />
           </div>
-          <Popup
-            isOpen={isPopupOpen}
-            onClose={togglePopup}
-            changeLanguage={changeLanguage}
-          />
+          <Popup isOpen={isPopupOpen} onClose={togglePopup} changeLanguage={changeLanguage} />
         </div>
       </div>
     </div>

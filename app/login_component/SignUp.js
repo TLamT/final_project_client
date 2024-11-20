@@ -24,9 +24,7 @@ function SignUp({ setLogin }) {
   function validateEmail(email) {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-      setEmailError(
-        "Invalid email format. Please use a correct email address."
-      );
+      setEmailError("Invalid email format. Please use a correct email address.");
       return "Invalid email format. Please use a correct email address.";
     }
     return "";
@@ -40,11 +38,7 @@ function SignUp({ setLogin }) {
     return true;
   }
   async function signUp() {
-    if (
-      !validateUsername(user.username) ||
-      !validateEmail(user.email) ||
-      !validatePassword(user.password)
-    ) {
+    if (!validateUsername(user.username) || !validateEmail(user.email) || !validatePassword(user.password)) {
       setComment("Please correct the errors before submitting.");
       return;
     }
@@ -69,7 +63,7 @@ function SignUp({ setLogin }) {
       <div className="text-3xl m-2">Register</div>
       <input
         className="border-2 border-black rounded-lg p-1 m-1"
-        placeholder="please enter username"
+        placeholder="Please enter username"
         onChange={(ev) => {
           const username = ev.target.value;
           // Only update the username if it follows the regex
@@ -81,7 +75,7 @@ function SignUp({ setLogin }) {
       {usernameError && <div className="text-red-500">{usernameError}</div>}
       <input
         className="border-2 border-black rounded-lg p-1 m-1"
-        placeholder="please enter email"
+        placeholder="Please enter email"
         onChange={(ev) => {
           const email = ev.target.value;
           // Only update the email if it follows the regex
@@ -93,7 +87,7 @@ function SignUp({ setLogin }) {
       {emailError && <div className="text-red-500">{emailError}</div>}
       <input
         className="border-2 border-black rounded-lg p-1 m-1"
-        placeholder="please enter password"
+        placeholder="Please enter password"
         type="password"
         onChange={(ev) => {
           const password = ev.target.value;
@@ -105,19 +99,14 @@ function SignUp({ setLogin }) {
       <div className="flex flex-row m-3 items-center">
         <button
           className={`border-2 cursor-pointer m-1 p-1 rounded-lg ${
-            usernameError || emailError || passwordError
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500"
+            usernameError || emailError || passwordError ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500"
           }`}
           disabled={usernameError || emailError || passwordError}
           onClick={signUp}
         >
           Submit
         </button>
-        <div
-          className="border-2 cursor-pointer m-1 p-1 rounded-lg"
-          onClick={() => setLogin(true)}
-        >
+        <div className="border-2 cursor-pointer m-1 p-1 rounded-lg" onClick={() => setLogin(true)}>
           To Login
         </div>
       </div>

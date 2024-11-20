@@ -1,6 +1,8 @@
 import characterData from "../data/character";
-
+import { LanguageContext } from "../../layout";
+import { useContext } from "react";
 const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
+  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
   const deadList = playersData.filter((player) => !player.alive);
   const allPlayersData = playersData.map((player) => {
     const characterInfo = allCharactersInfo.find((char) => char.roleName === player.role);
@@ -44,7 +46,7 @@ const AliveChatAndTargetFung = ({ playersData, position, setTarget }) => {
           {player.showRole && <span className="mr-4">[{player.role}]</span>}
           {player.canTarget && (
             <button className="ml-4" onClick={() => setTarget(index)}>
-              Target
+              {changeLanguage ? "target" : "目標"}
             </button>
           )}
         </li>

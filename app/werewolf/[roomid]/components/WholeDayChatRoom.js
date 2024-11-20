@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
+import { LanguageContext } from "../../layout";
 import EmojiPicker from "emoji-picker-react";
 
 function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat, playersData, position }) {
   const scrollRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -55,12 +57,12 @@ function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat
         {deadChat.length > 0 ? (
           deadChat.map((allDeadMessage, index) => (
             <div key={index} className={`p-1 ${index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"}`}>
-              <span className="font-semibold text-blue-300">Unknown: </span>
+              <span className="font-semibold text-blue-300">{changeLanguage ? "Unknown" : "不記名玩家"}</span>
               <span className="text-gray-100">{allDeadMessage.message}</span>
             </div>
           ))
         ) : (
-          <p className="text-gray-400">No messages yet.</p>
+          <p className="text-gray-400">{changeLanguage ? "No messages yet." : "仲未有訊息"}</p>
         )}
       </div>
 
@@ -88,7 +90,7 @@ function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat
                 : "bg-gray-700 text-white"
             } 
             placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500`}
-          placeholder="Type your message..."
+          placeholder={changeLanguage ? "Type your message..." : "輸入你的訊息"}
           disabled={isMedium && playersData[position]?.alive} // Disable input if medium role is alive
         />
 

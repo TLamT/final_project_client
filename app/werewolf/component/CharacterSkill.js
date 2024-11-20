@@ -110,7 +110,7 @@ const CharacterSkill = ({ changeLanguage }) => {
       case "option1":
         setDisplayContent(
           <div className="border-2 border-sky-500">
-            <div className="text-center mt-4">蘑菇市民陣營:</div>
+            <div className="text-center mt-4">無菇市民陣營:</div>
             <div>
               <span className="font-bold text-lg">目標:</span> KO囇所有彊屍和古惑仔陣營，恢復香港和平。
             </div>
@@ -126,7 +126,7 @@ const CharacterSkill = ({ changeLanguage }) => {
           <div className="border-2 border-rose-500 ">
             <div className="text-center mt-4">古惑仔陣營</div>
             <div>
-              <span className="font-bold text-lg">目標: </span> 透過隊冧班香港蘑菇市民或者其他敵對陣營黎掌控香港。
+              <span className="font-bold text-lg">目標: </span> 透過隊冧班香港無菇市民或者其他敵對陣營黎掌控香港。
             </div>
             <div>
               <span className="font-bold text-lg">勝利條件: </span>

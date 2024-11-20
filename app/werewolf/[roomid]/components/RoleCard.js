@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { LanguageContext } from "../../layout";
 import characterData from "../data/character";
 import fungPlayerData from "../data/fungPlayerData";
 import Image from "next/image";
@@ -17,9 +18,9 @@ import vampire from "@/public/image/vampire.jpg";
 import vampireHunter from "@/public/image/vampireHunter.jpg";
 
 const RoleCard = ({ playersData, position }) => {
-  const myPlayer = fungPlayerData.find(
-    (player) => player.roleName === playersData[position].role
-  );
+  const myPlayer = fungPlayerData.find((player) => player.roleName === playersData[position].role);
+  const { changeLanguage, handleOnLanguageChange } = useContext(LanguageContext);
+
   const imageRole = (role) => {
     switch (role) {
       case "reaper":
@@ -48,6 +49,44 @@ const RoleCard = ({ playersData, position }) => {
         return vampireHunter;
       case "detective":
         return detective;
+      case "default":
+        return;
+    }
+  };
+  const roleNameTC = (role) => {
+    switch (role) {
+      case "reaper":
+        return "金牌打手";
+      case "conspirator":
+        return "謀略家";
+      case "cupid":
+        return "如花";
+      case "defender":
+        return "金槍人";
+      case "jailor":
+        return "獄卒";
+      case "joker":
+        return "小丑";
+      case "medium":
+        return "龍婆";
+      case "police":
+        return "警察";
+      case "scammer":
+        return "欺詐師";
+      case "vampireHunter":
+        return "茅山道士";
+      case "detective":
+        return "偵探";
+      case "cultist":
+        return "二五仔";
+      case "sentinel":
+        return "哨兵";
+      case "twistedFate":
+        return "賭徒";
+      case "vampire":
+        return "彊屍";
+      case "reminiscence":
+        return "白痴";
       case "default":
         return;
     }
@@ -108,20 +147,29 @@ const RoleCard = ({ playersData, position }) => {
         <li>技能 :</li>
       </ul> */}
       <div className="flex flex-col justify-center items-center text-center">
+        <button onClick={handleOnLanguageChange} className="text-xl text- border-2 border-black">
+          {changeLanguage ? "中文" : "English"}
+        </button>
         <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative h-1/6">
-          Role : {myPlayer.roleName}, Faction : {myPlayer.faction.toUpperCase()}
+          {changeLanguage ? (
+            <>
+              Role : {myPlayer.roleName}, Faction : {myPlayer.faction.toUpperCase()}
+            </>
+          ) : (
+            <>
+              角色 : {roleNameTC(myPlayer.roleName)}, 陣營 : {factionRoleTC(myPlayer.faction)}
+            </>
+          )}
         </div>
         <div className="flex h-4/6 w-1/3">
-          <Image
-            src={imageRole(myPlayer.roleName)}
-            alt={`${myPlayer.roleName}`}
-            className="object-contain"
-          />
+          <Image src={imageRole(myPlayer.roleName)} alt={`${myPlayer.roleName}`} className="object-contain" />
         </div>
         <ul className="flex flex-col items-center justify-center mt-4 h-1/6">
-          <li className="border-2 border-yellow-500">
-            Ability : {`${myPlayer.ability}`}
-          </li>
+          {changeLanguage ? (
+            <li className="border-2 border-yellow-500">Ability : {`${myPlayer.ability}`}</li>
+          ) : (
+            <li className="border-2 border-yellow-500"> {`${myPlayer.abilityTC}`}</li>
+          )}
         </ul>
       </div>
     </>
