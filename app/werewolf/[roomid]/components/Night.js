@@ -51,7 +51,7 @@ export default function Night({
 }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(60);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
@@ -67,7 +67,7 @@ export default function Night({
   );
 
   useEffect(() => {
-    setTimer(10);
+    setTimer(60);
     setFade(true);
     setCurrAction(actions[role]);
 

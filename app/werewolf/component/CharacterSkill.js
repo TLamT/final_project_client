@@ -410,8 +410,8 @@ const CharacterSkill = ({ language }) => {
       case "optionI": // Reaper
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-orange-100 text-orange-800 shadow">
-            <strong>金牌打手技能（收保護費）</strong>:
-            “金牌打手：‘12點之後，呢到我話事”
+            <strong>金牌打手技能（收保護費）</strong>: “金牌打手：‘12點之後
+            ’，呢到我話事”
             每晚可以殺死一名玩家。如果金牌打手死亡，將會隨機選擇一名古惑仔升級做金牌打手。
           </div>
         );

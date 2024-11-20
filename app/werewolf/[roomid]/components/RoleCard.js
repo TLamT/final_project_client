@@ -54,9 +54,9 @@ const RoleCard = ({ playersData, position }) => {
       case "vampireHunter":
         return vampireHunter;
       case "detective":
-        return sentinel;
+        return detective;
       case "sentinel":
-        return reminiscence;
+        return sentinel;
       case "cultist":
         return cultist;
       case "default":

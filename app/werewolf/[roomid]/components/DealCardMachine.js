@@ -11,7 +11,6 @@ const condition = {
 };
 
 export default function playerRoleList(playerCount) {
-  return ["cultist", "scammer", "twistedFate", "reaper", "defender"];
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
 

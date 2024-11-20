@@ -15,7 +15,5 @@ export default function RootLayout({ children }) {
     setSocket(socketNow);
   }, []);
 
-  console.log(socket);
-
   return children;
 }

@@ -125,7 +125,7 @@ const characterData = {
       targetGroup: "nonWitch",
       ability: "Can kill a player each night.",
       abilityTC:
-        "“技能（收保護費）: “金牌打手：‘12點之後，呢到我話事”  每晚可以殺死一名玩家。如果金牌打手死亡，將會隨機選擇一名古惑仔升級做金牌打手。",
+        "“技能（收保護費）: ”12點之後，呢到我話事”  每晚可以殺死一名玩家。如果金牌打手死亡，將會隨機選擇一名古惑仔升級做金牌打手。",
       detected: "bad",
       img: "../data/image/reaper.jpg",
       actionOrder: 2,
