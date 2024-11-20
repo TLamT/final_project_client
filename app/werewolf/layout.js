@@ -21,7 +21,7 @@ const LanguageProvider = ({ children }) => {
   );
 };
 export default function RootLayout({ children }) {
-  const socket = io.connect(process.env.NEXT_PUBLIC_BACKEND_URL, {
+  const socket = io.connect(process.env.NEXT_PUBLIC_SOCKET_URL, {
     path: "/ws/",
     transports: ["websocket"],
   });
