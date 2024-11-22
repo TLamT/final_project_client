@@ -14,6 +14,7 @@ import StartRoleAnimation from "./StartRoleAnimation";
 import { Globe2, HelpCircle } from "lucide-react";
 import Popup from "../../component/Popup";
 import { useStore } from "@/app/werewolf/store";
+
 export default function Day({
   socket,
   roomId,
@@ -41,11 +42,12 @@ export default function Day({
   deadPlayerMessageSent,
   chooseSomeone,
   playerDiedLastNight,
+  initialVampire,
 }) {
   const { language, changeLanguage } = useStore();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(10);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
@@ -105,9 +107,7 @@ export default function Day({
       if (roomLeader) {
         socket.emit("dayChat", {
           roomId,
-          message: `${
-            playersData[playerDied[currentDeadIndex]].name
-          } has died last night!`,
+          message: `${playersData[playerDied[currentDeadIndex]].name} has died last night!`,
           name: "server",
         });
       }
@@ -122,9 +122,7 @@ export default function Day({
         setIsVisible(false);
       }, 2000);
 
-      setDeadMessage(
-        `${playersData[playerDied[currentDeadIndex]].name} has died last night!`
-      );
+      setDeadMessage(`${playersData[playerDied[currentDeadIndex]].name} has died last night!`);
       setIsVisible(true);
 
       return () => {
@@ -132,18 +130,14 @@ export default function Day({
         clearTimeout(animationTimeout);
       };
     } else {
-      setTimer(60);
+      setTimer(10);
 
-      setPlayersData((prev) =>
-        prev.map((player) => ({ ...player, jailed: false }))
-      );
+      setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
 
       if (roomLeader && days > 1 && playerDiedLastNight.length === 0) {
         socket.emit("dayChat", {
           roomId,
-          message: language
-            ? `Last night was a safe night.`
-            : "琴晚係一個和平既夜晚",
+          message: language ? `Last night was a safe night.` : "琴晚係一個和平既夜晚",
           name: "server",
         });
       }
@@ -214,9 +208,7 @@ export default function Day({
     const playersVote = playerDataRef.current.map((player) => player.vote);
     const maxVotes = Math.max(...playersVote);
     // console.log("maxVotes", maxVotes);
-    const highestVotePlayers = playerDataRef.current.filter(
-      (player) => player.vote === maxVotes
-    );
+    const highestVotePlayers = playerDataRef.current.filter((player) => player.vote === maxVotes);
     if (highestVotePlayers.length === 1) {
       const votedOutPlayer = highestVotePlayers[0];
       // console.log("votedOutPlayer1", votedOutPlayer);
@@ -226,9 +218,7 @@ export default function Day({
       if (roomLeader) {
         socket.emit("dayChat", {
           name: "server",
-          message: `${votedOutPlayer.name}  ${
-            language ? "has been voted out." : "已比人票死咗"
-          }`,
+          message: `${votedOutPlayer.name}  ${language ? "has been voted out." : "已比人票死咗"}`,
           roomId: roomId,
           repeat: "no",
         });
@@ -247,16 +237,12 @@ export default function Day({
       if (roomLeader) {
         socket.emit("dayChat", {
           name: "server",
-          message: language
-            ? `It's a tie! No one is eliminated.`
-            : `打個和super，無人死。`,
+          message: language ? `It's a tie! No one is eliminated.` : `打個和super，無人死。`,
           roomId: roomId,
           repeat: "no",
         });
       }
-      setPlayersData((preData) =>
-        preData.map((player) => ({ ...player, vote: 0 }))
-      );
+      setPlayersData((preData) => preData.map((player) => ({ ...player, vote: 0 })));
     }
   };
 
@@ -278,9 +264,7 @@ export default function Day({
         if (playerIndex !== null) {
           setPlayersData((prev) =>
             prev.map((player, index) =>
-              index === +playerIndex
-                ? { ...player, vote: player.vote + 1 }
-                : { ...player, vote: player.vote }
+              index === +playerIndex ? { ...player, vote: player.vote + 1 } : { ...player, vote: player.vote }
             )
           );
         }
@@ -290,14 +274,10 @@ export default function Day({
       dayTimeAction.forEach((actions) => {
         if (actions.action === "link with") {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, linked: true } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, linked: true } : player))
           );
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.owner ? { ...player, linked: true } : player
-            )
+            prev.map((player, index) => (index === actions.owner ? { ...player, linked: true } : player))
           );
           if (playersData[position].role === "cupid") {
             setCupidAbilityUsed(true);
@@ -305,9 +285,7 @@ export default function Day({
         }
         if (actions.action === "jail") {
           setPlayersData((prev) =>
-            prev.map((player, index) =>
-              index === actions.target ? { ...player, jailed: true } : player
-            )
+            prev.map((player, index) => (index === actions.target ? { ...player, jailed: true } : player))
           );
         }
       });
@@ -366,11 +344,7 @@ export default function Day({
           const y = centerY + radius * Math.sin(angle); // Y position
 
           return (
-            <g
-              key={item.id}
-              transform={`translate(${x}, ${y})`}
-              className="relative"
-            >
+            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
               <text x="0" y="60" textAnchor="middle" dominantBaseline="middle">
                 {item.name}
               </text>
@@ -409,45 +383,26 @@ export default function Day({
     >
       {/* background image */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src={dayBg}
-          alt="kowloon"
-          className="w-full h-full object-cover opacity-30"
-        />
+        <Image src={dayBg} alt="kowloon" className="w-full h-full object-cover opacity-30" />
       </div>
 
       {/* open animation */}
-      <div
-        className={clsx(
-          "absolute inset-0 flex justify-center items-center",
-          startRoleVisible ? "z-50" : "z-0"
-        )}
-      >
-        {startRoleVisible && (
-          <StartRoleAnimation playersData={playersData} position={position} />
-        )}
+      <div className={clsx("absolute inset-0 flex justify-center items-center", startRoleVisible ? "z-50" : "z-0")}>
+        {startRoleVisible && <StartRoleAnimation playersData={playersData} position={position} />}
       </div>
 
       {/* main component */}
       <div
         className={`flex flex-row justify-between h-screen
-          transition-opacity duration-1000 relative ${
-            fade ? "opacity-100" : "opacity-0"
-          }
+          transition-opacity duration-1000 relative ${fade ? "opacity-100" : "opacity-0"}
         `}
       >
         {/* left component */}
-        <div className="border-2 border-red-300 w-1/4 h-full">
-          <div className="h-1/2">
-            <DeadPlayerList
-              playersData={playersData}
-              position={position}
-              day={day}
-              setTarget={setTarget}
-              target={target}
-            />
+        <div className="w-1/4 h-full">
+          <div className="h-1/2 w-full">
+            <RoleCard playersData={playersData} position={position} />
           </div>
-          <div className="h-1/2 border-2 border-red-300">
+          <div className="h-1/2 border-2">
             {/*day chat room in here*/}
             <AllChatRoom
               show={{
@@ -493,121 +448,115 @@ export default function Day({
           </div>
         </div>
         {/* middle component*/}
-        <div className="border-2 border-red-300 w-1/2 flex flex-col items-center justify-center relative">
-          <div className="h-[5%]">
-            <div className="text-3xl font-semibold text-center">{timer}</div>
-            <div className="text-xl font-bold text-center">
-              {language ? `Day${days}` : `第${days}日`}
-            </div>
-          </div>
-
-          <div className="h-[95%] flex flex-col items-center justify-center pb-[80px]">
-            <CircleWithItems items={playersData} radius={240} />
-
-            <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">
-              {targetRef &&
-                currAction &&
-                !cupidAbilityUsed &&
-                (language ? (
-                  <div>{`you decide to ${currAction} ${
-                    target === null ? "no one" : playersData[target].name
-                  }`}</div>
-                ) : (
-                  <div>{`你選擇了 ${currAction} ${
-                    target === null ? " " : playersData[target].name
-                  }`}</div>
-                ))}
+        <div className="w-1/2 flex flex-col items-center justify-center relative">
+          <div className="flex flex-col h-full w-full">
+            <div className="h-[5%]">
+              <div className="text-3xl font-semibold text-center">{timer}</div>
+              <div className="text-xl font-bold text-center">{language ? `Day${days}` : `第${days}日`}</div>
             </div>
 
-            <div className="transition-all duration-500 ease-in-out fade-in text-xl">
-              {!!detectiveAbilityInfo.name && role === "detective" && (
-                <span>
-                  {language ? (
-                    <span>{`${detectiveAbilityInfo.name} is `}</span>
+            <div className="h-[95%] flex flex-col items-center justify-center pb-[80px]">
+              <CircleWithItems items={playersData} radius={240} />
+
+              <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">
+                {targetRef &&
+                  currAction &&
+                  !cupidAbilityUsed &&
+                  (language ? (
+                    <div>{`you decide to ${currAction} ${target === null ? "no one" : playersData[target].name}`}</div>
                   ) : (
-                    <span>{`${detectiveAbilityInfo.name} 係 `}</span>
-                  )}
-                  <span
-                    className={clsx(
-                      detectiveAbilityInfo.detected === "good"
-                        ? "text-blue-600"
-                        : "text-red-600"
-                    )}
-                  >
-                    {detectiveAbilityInfo.detected}
-                  </span>
-                  {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
-                </span>
-              )}
-            </div>
-
-            <div>
-              {role === "sentinel" &&
-                sentinelAbilityInfo.map((players) => {
-                  const owner = playersData[players.owner].name;
-                  const visited = playersData[players.target].name;
-                  return (
-                    <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">{`${owner} visited ${visited}`}</div>
-                  );
-                })}
-            </div>
-
-            <div>
-              {role === "conspirator" && (
-                <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>
-              )}
-            </div>
-
-            <div
-              className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in"
-              key={personal}
-            >
-              {days > 1 && (
-                <span>
-                  {language ? "You have voted" : "你投票了"}
-                  <span className="font-semibold text-rose-600 ml-2">
-                    {personal !== null
-                      ? playersData[personal]?.name
-                      : language
-                      ? "no one"
-                      : "______"}
-                  </span>
-                </span>
-              )}
-            </div>
-
-            {deadMessage && (
-              <div
-                className={`absolute border-2 border-black rounded p-4 fade-message text-5xl bg-white ${
-                  isVisible ? "show" : ""
-                }`}
-              >
-                {deadMessage}
+                    <div>{`你選擇了 ${currAction} ${target === null ? " " : playersData[target].name}`}</div>
+                  ))}
               </div>
-            )}
+
+              <div className="transition-all duration-500 ease-in-out fade-in text-xl">
+                {!!detectiveAbilityInfo.name && role === "detective" && (
+                  <span>
+                    {language ? (
+                      <span>{`${detectiveAbilityInfo.name} is `}</span>
+                    ) : (
+                      <span>{`${detectiveAbilityInfo.name} 係 `}</span>
+                    )}
+                    <span className={clsx(detectiveAbilityInfo.detected === "good" ? "text-blue-600" : "text-red-600")}>
+                      {detectiveAbilityInfo.detected}
+                    </span>
+                    {/* <span className="font-semibold text-rose-600 ml-2">{detectiveAbilityInfo.detected}</span> */}
+                  </span>
+                )}
+              </div>
+
+              <div>
+                {role === "sentinel" &&
+                  sentinelAbilityInfo.map((players) => {
+                    const owner = playersData[players.owner].name;
+                    const visited = playersData[players.target].name;
+                    return (
+                      <div className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in">{`${owner} visited ${visited}`}</div>
+                    );
+                  })}
+              </div>
+
+              <div>{role === "conspirator" && <div>{`you target is ${playersData[chooseSomeone]?.name}`}</div>}</div>
+
+              <div
+                className="text-2xl text-gray-800 mt-4 transition-all duration-500 ease-in-out fade-in"
+                key={personal}
+              >
+                {days > 1 && (
+                  <span>
+                    {language ? "You have voted" : "你投票了"}
+                    <span className="font-semibold text-rose-600 ml-2">
+                      {personal !== null ? playersData[personal]?.name : language ? "no one" : "______"}
+                    </span>
+                  </span>
+                )}
+              </div>
+
+              {deadMessage && (
+                <div
+                  className={`absolute border-2 rounded p-4 fade-message text-5xl bg-white gameBorder ${
+                    isVisible ? "show" : ""
+                  }`}
+                >
+                  {deadMessage}
+                </div>
+              )}
+
+              <div className="absolute bottom-6 right-6 flex gap-4 z-20">
+                {/* language */}
+                <div className="flex flex-row justify-center items-center cursor-pointer" onClick={changeLanguage}>
+                  {language ? "中文" : "English"}
+                  <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
+                    <Globe2 className="w-6 h-6" />
+                  </div>
+                </div>
+                {/* character info */}
+                <div
+                  className="flex flex-row justify-center items-center cursor-pointer"
+                  onClick={() => setIsPopupOpen(!isPopupOpen)}
+                >
+                  {language ? "Character Info" : "角色說明"}
+                  <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
+                    <HelpCircle className="w-6 h-6" />
+                  </div>
+                  <Popup isOpen={isPopupOpen} onClose={togglePopup} language={language} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         {/* right component */}
-        <div className="border-2 border-red-300 w-1/4 flex flex-col justify-between rounded-lg shadow-md relative">
-          {/* <div className="h-1/2 "> */}
-          {/* <div className="overflow-hidden w-full top-5">
-              <Image
-                className="absolute h-1/2 w-full object-cover opacity-30 rounded-lg top-20 -translate-y-20"
-                src={reaper}
-                alt="reaper"
-              />
-            </div> */}
-          {/* {console.log(playersData[position])} */}
-          <RoleCard playersData={playersData} position={position} />
-          {/* <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative">
-              {role}
-            </div> */}
+        <div className="w-1/4 flex flex-col justify-between rounded-lg shadow-md relative">
+          <div className="h-1/2 gameBorder">
+            <DeadPlayerList
+              playersData={playersData}
+              position={position}
+              day={day}
+              setTarget={setTarget}
+              target={target}
+            />
+          </div>
 
-          {/* <div className=" text-base text-center p-4 rounded-md border-2 border-rose-500 ">
-              <RoleCard playersData={playersData} position={position} />
-            </div> */}
-          {/* <RoleCard playersData={playerDataRef} position={position} /> */}
-          {/* </div> */}
           <div className="h-1/2">
             <AliveChatAndTarget
               playersData={playerDataRef.current}
@@ -618,6 +567,7 @@ export default function Day({
               days={days}
               handleVote={handleVote}
               target={target}
+              initialVampire={initialVampire}
             />
           </div>
         </div>

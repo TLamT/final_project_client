@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useStore } from "@/app/werewolf/store";
+import { useSocket } from "../useSocket";
 
 // Create a Room function
 export function CreateRoom({ language }) {
   const { socket } = useStore();
-  const [playerCount, setPlayerCount] = useState(6);
   const [roomId, setRoomId] = useState("");
 
   useEffect(() => {
@@ -22,6 +22,7 @@ export function CreateRoom({ language }) {
   // };
 
   const handleCreateRoomSubmit = () => {
+    console.log(socket);
     socket.emit("joinRoom", { roomId });
   };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function SignUp({ setLogin }) {
   const [user, setUser] = useState({ username: "", email: "", password: "" });
@@ -8,6 +8,13 @@ function SignUp({ setLogin }) {
   const [usernameError, setUsernameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.6; // Adjust this value to set the speed (e.g., 0.5 is half speed)
+    }
+  }, []);
 
   function validateUsername(username) {
     // Regex for the username
@@ -24,9 +31,7 @@ function SignUp({ setLogin }) {
   function validateEmail(email) {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-      setEmailError(
-        "Invalid email format. Please use a correct email address."
-      );
+      setEmailError("Invalid email format. Please use a correct email address.");
       return false;
     }
     setEmailError("");
@@ -41,11 +46,7 @@ function SignUp({ setLogin }) {
     return true;
   }
   async function signUp() {
-    if (
-      !validateUsername(user.username) ||
-      !validateEmail(user.email) ||
-      !validatePassword(user.password)
-    ) {
+    if (!validateUsername(user.username) || !validateEmail(user.email) || !validatePassword(user.password)) {
       setComment("Please correct the errors before submitting.");
       return;
     }
@@ -66,63 +67,90 @@ function SignUp({ setLogin }) {
   }
 
   return (
-    <div className="flex flex-col items-center m-5">
-      <div className="text-3xl m-2">Register</div>
-      <input
-        className="border-2 border-black rounded-lg p-1 m-1"
-        placeholder="Please enter username"
-        onChange={(ev) => {
-          const username = ev.target.value;
-          // Only update the username if it follows the regex
-          if (validateUsername(username)) {
-            setUser((prev) => ({ ...prev, username }));
-          }
-        }}
-      />
-      {usernameError && <div className="text-red-500">{usernameError}</div>}
-      <input
-        className="border-2 border-black rounded-lg p-1 m-1"
-        placeholder="Please enter email"
-        onChange={(ev) => {
-          const email = ev.target.value;
-          // Only update the email if it follows the regex
-          if (validateEmail(email)) {
-            setUser((prev) => ({ ...prev, email }));
-          }
-        }}
-      />
-      {emailError && <div className="text-red-500">{emailError}</div>}
-      <input
-        className="border-2 border-black rounded-lg p-1 m-1"
-        placeholder="Please enter password"
-        type="password"
-        onChange={(ev) => {
-          const password = ev.target.value;
-          setUser((prev) => ({ ...prev, password }));
-          validatePassword(password);
-        }}
-      />
-      {passwordError && <div className="text-red-500">{passwordError}</div>}
-      <div className="flex flex-row m-3 items-center">
-        <button
-          className={`border-2 cursor-pointer m-1 p-1 rounded-lg ${
-            usernameError || emailError || passwordError
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-blue-500"
-          }`}
-          disabled={usernameError || emailError || passwordError}
-          onClick={signUp}
-        >
-          Submit
-        </button>
-        <div
-          className="border-2 cursor-pointer m-1 p-1 rounded-lg"
-          onClick={() => setLogin(true)}
-        >
-          To Login
+    <div className="flex flex-col items-center justify-center h-screen ">
+      <video
+        className="absolute inset-0 object-cover w-full h-full z-[-1] opacity-80"
+        ref={videoRef}
+        autoPlay
+        muted
+        loop
+      >
+        <source src="/video/signUp.mp4" type="video/mp4" />
+      </video>
+
+      <div className=" shadow-lg rounded-lg p-6 max-w-full z-50 border-2 borderTest h-auto w-1/4">
+        <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
+        <div className="space-y-4">
+          {/* Username Input */}
+          <div>
+            <input
+              className="w-full px-3 py-2 border border-white/20 rounded-md shadow-md focus:ring-2 bg-transparent transition duration-300"
+              placeholder="Enter username"
+              onChange={(ev) => {
+                const username = ev.target.value;
+                if (validateUsername(username)) {
+                  setUser((prev) => ({ ...prev, username }));
+                }
+              }}
+            />
+            {usernameError && <p className="text-sm text-red-500 mt-1">{usernameError}</p>}
+          </div>
+
+          {/* Email Input */}
+          <div>
+            <input
+              className="w-full px-3 py-2 border border-white/20 rounded-md shadow-md focus:ring-2 bg-transparent transition duration-300"
+              placeholder="Enter email"
+              onChange={(ev) => {
+                const email = ev.target.value;
+                if (validateEmail(email)) {
+                  setUser((prev) => ({ ...prev, email }));
+                }
+              }}
+            />
+            {emailError && <p className="text-sm text-red-500 mt-1">{emailError}</p>}
+          </div>
+
+          {/* Password Input */}
+          <div>
+            <input
+              className="w-full px-3 py-2 border border-white/20 rounded-md shadow-md focus:ring-2 bg-transparent transition duration-300"
+              type="password"
+              placeholder="Enter password"
+              onChange={(ev) => {
+                const password = ev.target.value;
+                setUser((prev) => ({ ...prev, password }));
+                validatePassword(password);
+              }}
+            />
+            {passwordError && <p className="text-sm text-red-500 mt-1">{passwordError}</p>}
+          </div>
         </div>
+
+        {/* Buttons */}
+        <div className="flex justify-between gap-4 mt-8">
+          <button
+            className={`flex-1 border-2 py-2 rounded-lg font-semibold  ${
+              usernameError || emailError || passwordError
+                ? "bg-gray-300 cursor-not-allowed"
+                : "hover:bg-gray-200 transition duration-200"
+            }`}
+            disabled={usernameError || emailError || passwordError}
+            onClick={signUp}
+          >
+            Submit
+          </button>
+          <button
+            className="flex-1 border-2 py-2 rounded-lg font-semibold hover:bg-gray-200 transition duration-200"
+            onClick={() => setLogin(true)}
+          >
+            Back to Login
+          </button>
+        </div>
+
+        {/* Comment/Error Message */}
+        {comment && <p className="text-center text-red-500 mt-4">{comment}</p>}
       </div>
-      {comment && <div className="text-red-500">{comment}</div>}
     </div>
   );
 }

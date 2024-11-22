@@ -72,3 +72,21 @@
 .custom-scrollbar::-webkit-scrollbar-track {
   background: #1a202c;
 }
+
+.borderTest {
+  border: 40px solid white;
+  border-image-repeat: round;
+  border-image-slice: 180;
+  border-image-source: url(../public/image/borderTest.png);
+  /* border-image-source: url("https://img.freepik.com/free-vector/elegant-background-with-decorative-gold-frame-design_1048-15490.jpg?t=st=1732263289~exp=1732266889~hmac=0f3a6847ea505794b2030343a74aa78275b1d63c74441e5ec7bc691d0ff99943&w=740"); */
+}
+
+.gameBorder {
+  border-image-slice: 98 80 98 80;
+  border-image-width: 20px 20px 20px 20px;
+  border-image-outset: 8px 8px 8px 8px;
+  border-image-repeat: repeat;
+  /* border-image-source: url(../public/borderImg/border1.png); */
+  border-style: solid;
+  border-image-source: url("https://img.freepik.com/premium-vector/frame-vintage_273893-4308.jpg?w=740");
+}

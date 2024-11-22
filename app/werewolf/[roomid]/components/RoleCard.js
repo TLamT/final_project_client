@@ -22,9 +22,7 @@ import sentinel from "@/public/image/sentinel.jpg";
 import cultist from "@/public/image/cultist.jpg";
 
 const RoleCard = ({ playersData, position }) => {
-  const myPlayer = fungPlayerData.find(
-    (player) => player.roleName === playersData[position].role
-  );
+  const myPlayer = fungPlayerData.find((player) => player.roleName === playersData[position].role);
   const { language, changeLanguage } = useStore();
 
   const imageRole = (role) => {
@@ -59,6 +57,8 @@ const RoleCard = ({ playersData, position }) => {
         return sentinel;
       case "cultist":
         return cultist;
+      case "reminiscence":
+        return reminiscence;
       case "default":
         return;
     }
@@ -113,75 +113,21 @@ const RoleCard = ({ playersData, position }) => {
   };
   const [showCard, setShowCard] = useState(true);
   return (
-    // <>
-    //   <div
-    //     className="border-2 border-green-500 w-[300px] h-[300px] relative overflow-hidden"
-    //     onMouseEnter={() => setShowCard(true)} //
-    //     onMouseLeave={() => setShowCard(false)}
-    //   >
-    //     {showCard ? (
-    //       <ul className="flex flex-col items-center justify-center  h-full">
-    //         <li>Faction : {`${myPlayer.faction.toUpperCase()}`}</li>
-    //         <li>陣營: {factionRoleTC(myPlayer.faction)}</li>
-    //         <li>Abilty : {`${myPlayer.ability}`}</li>
-    //         <li>技能 :</li>
-    //       </ul>
-    //     ) : (
-    //       <Image
-    //         src={imageRole(myPlayer.roleName)}
-    //         alt={`${myPlayer.roleName}`}
-    //         layout="intrinsic"
-    //         className="object-cover  "
-    //         quality={100}
-    //       />
-    //     )}
-    //   </div>
-    // </>
-
     <>
-      {/* <div className="overflow-hidden w-full top-5">
-        <Image
-          className="absolute h-1/2 w-full object-cover opacity-50 rounded-lg top-20 -translate-y-20"
-          src={imageRole(myPlayer.roleName)}
-          alt={`${myPlayer.roleName}`}
-        />
-      </div> */}
-      {/* <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative">
-        {myPlayer.roleName}
-      </div> */}
-      {/* <ul className="flex flex-col items-center justify-center  h-full">
-        <li>Role : {`${myPlayer.roleName}`}</li>
-        <li>Factiom : {`${myPlayer.faction.toUpperCase()}`}</li>
-        <li>陣營: {factionRoleTC(myPlayer.faction)}</li>
-        <li>Abilty : {`${myPlayer.ability}`}</li>
-        <li>技能 :</li>
-      </ul> */}
-      <div className="flex flex-col justify-center items-center text-center">
-        <button
-          onClick={changeLanguage}
-          className="text-xl text- border-2 border-black"
-        >
-          {language ? "中文" : "English"}
-        </button>
+      <div className="flex flex-col justify-center items-center text-center overflow-y-scroll h-full w-full">
         <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative h-1/6">
           {language ? (
             <>
-              Role : {myPlayer.roleName}, Faction :{" "}
-              {myPlayer.faction.toUpperCase()}
+              Role : {myPlayer.roleName}, Faction : {myPlayer.faction.toUpperCase()}
             </>
           ) : (
             <>
-              角色 : {roleNameTC(myPlayer.roleName)}, 陣營 :{" "}
-              {factionRoleTC(myPlayer.faction)}
+              角色 : {roleNameTC(myPlayer.roleName)}, 陣營 : {factionRoleTC(myPlayer.faction)}
             </>
           )}
         </div>
-        <div className="flex h-4/6 w-1/3">
-          <Image
-            src={imageRole(myPlayer.roleName)}
-            alt={`${myPlayer.roleName}`}
-            className="object-contain"
-          />
+        <div className="flex h-4/6">
+          <Image src={imageRole(myPlayer.roleName)} alt={`${myPlayer.roleName}`} className="object-contain" />
         </div>
         <ul className="flex flex-col items-center justify-center mt-4 h-1/6">
           {language ? (

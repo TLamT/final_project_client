@@ -5,14 +5,7 @@ import { useStore } from "@/app/werewolf/store";
 
 import EmojiPicker from "emoji-picker-react";
 
-function NightChatRoom({
-  nightTimeChat,
-  message,
-  setMessage,
-  sentNightMessage,
-  playersData,
-  position,
-}) {
+function NightChatRoom({ nightTimeChat, message, setMessage, sentNightMessage, playersData, position }) {
   const scrollRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -36,10 +29,7 @@ function NightChatRoom({
   };
 
   const handleClickOutside = (event) => {
-    if (
-      emojiPickerRef.current &&
-      !emojiPickerRef.current.contains(event.target)
-    ) {
+    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
       setShowEmojiPicker(false); // Close the emoji picker
     }
   };
@@ -66,15 +56,8 @@ function NightChatRoom({
         ref={scrollRef}
       >
         {nightTimeChat.map((allNightMessage, index) => (
-          <div
-            key={index}
-            className={`p-1 ${
-              index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"
-            } text-white`}
-          >
-            <span className="font-semibold text-blue-300">
-              {allNightMessage.name}:
-            </span>{" "}
+          <div key={index} className={`p-1 ${index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"} text-white`}>
+            <span className="font-semibold text-blue-300">{allNightMessage.name}:</span>
             {allNightMessage.message}
           </div>
         ))}
@@ -90,10 +73,7 @@ function NightChatRoom({
             😊
           </button>
           {showEmojiPicker && (
-            <div
-              ref={emojiPickerRef}
-              className="absolute bottom-14 left-0 z-50 bg-white rounded-lg shadow-lg"
-            >
+            <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-50 bg-white rounded-lg shadow-lg">
               <EmojiPicker onEmojiClick={onEmojiClick} />
             </div>
           )}
@@ -115,9 +95,7 @@ function NightChatRoom({
         </div>
       ) : (
         <div className="h-1/5 mt-2 text-center text-gray-500">
-          {language
-            ? "Night Chat: You cannot send messages here."
-            : "你已被禁止輸入任何對話"}
+          {language ? "Night Chat: You cannot send messages here." : "你已被禁止輸入任何對話"}
         </div>
       )}
     </div>

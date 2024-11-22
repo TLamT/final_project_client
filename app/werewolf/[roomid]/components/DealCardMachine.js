@@ -9,7 +9,6 @@ const condition = {
   11: { town: 6, witch: 3, neutral: 2 },
   12: { town: 7, witch: 3, neutral: 2 },
 };
-
 export default function playerRoleList(playerCount) {
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
@@ -33,8 +32,7 @@ export default function playerRoleList(playerCount) {
 
     while (groupSelected.length < conditions[group]) {
       // create a random number which exclude the must index
-      const randomIndex =
-        Math.floor(Math.random() * (array.length - mustCount)) + mustCount;
+      const randomIndex = Math.floor(Math.random() * (array.length - mustCount)) + mustCount;
 
       // no duplicate and not VampireHunter or Vampire
       if (
