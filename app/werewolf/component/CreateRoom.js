@@ -27,13 +27,16 @@ export function CreateRoom({ language }) {
   };
 
   return (
-    <Link
-      onClick={handleCreateRoomSubmit}
-      className="text-white font-bold py-4 px-5 rounded hover:scale-110 transition duration-300 flex flex-row justify-center w-full"
-      href={{ pathname: `/werewolf/${roomId}` }}
-    >
-      <Plus className="mr-2 h-4 w-4 mt-2" />
-      {language ? "Create Room" : "創建房間"}
-    </Link>
+    <>
+      <button onClick={handleCreateRoomSubmit}>hi</button>
+      <Link
+        onClick={handleCreateRoomSubmit}
+        className="text-white font-bold py-4 px-5 rounded hover:scale-110 transition duration-300 flex flex-row justify-center w-full"
+        href={{ pathname: `/werewolf/${roomId}` }}
+      >
+        <Plus className="mr-2 h-4 w-4 mt-2" />
+        {language ? "Create Room" : "創建房間"}
+      </Link>
+    </>
   );
 }
