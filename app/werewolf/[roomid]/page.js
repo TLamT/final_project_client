@@ -145,6 +145,8 @@ export default function () {
   };
 
   useSocket(() => {
+    socket.emit("joinRoom", { roomId });
+
     const cookieName = cookies.get("userName");
     if (cookieName) {
       setName(cookieName);

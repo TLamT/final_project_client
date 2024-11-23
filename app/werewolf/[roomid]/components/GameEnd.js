@@ -151,7 +151,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             <div>{language ? gameEndMessage[0].toUpperCase() : "平手"}</div>
             {playersData.map((player, index) => {
               return (
-                <div key={index} className="flex">
+                <div key={index} className="flex mt-1">
                   <span className="mr-2">{player.name}</span>:
                   <span className="ml-2">{language ? player.role : roleNameTC(player.role)}</span>
                 </div>

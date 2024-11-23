@@ -21,16 +21,9 @@ export function CreateRoom({ language }) {
   //   setPlayerCount(parseInt(event.target.value));
   // };
 
-  const handleCreateRoomSubmit = () => {
-    console.log(socket);
-    socket.emit("joinRoom", { roomId });
-  };
-
   return (
     <>
-      <button onClick={handleCreateRoomSubmit}>hi</button>
       <Link
-        onClick={handleCreateRoomSubmit}
         className="text-white font-bold py-4 px-5 rounded hover:scale-110 transition duration-300 flex flex-row justify-center w-full"
         href={{ pathname: `/werewolf/${roomId}` }}
       >
