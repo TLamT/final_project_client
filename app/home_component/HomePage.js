@@ -31,7 +31,6 @@ export default function HomePage({ setAuth }) {
         <Image src={homePageBg} width={0} height={0} sizes="100vw" className="opacity-40" alt="kowloon" />
       </div>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">HomePage</h1>
         <div className="space-y-4">
           <Link
             href="../werewolf"
@@ -39,12 +38,12 @@ export default function HomePage({ setAuth }) {
           >
             國際大刀會 (香港版狼人殺)
           </Link>
-          <Link
+          {/* <Link
             href="../battle21"
             className="block w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md text-center transition duration-300 ease-in-out transform hover:scale-105"
           >
             BlackJack
-          </Link>
+          </Link> */}
           <button
             onClick={handleLogOut}
             className="w-full py-3 px-4 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md transition duration-300 ease-in-out transform hover:scale-105"

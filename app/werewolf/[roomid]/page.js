@@ -1,6 +1,6 @@
 "use client";
 import GameEnd from "./components/GameEnd";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Cookies from "universal-cookie";
 import { useState, useEffect, useRef } from "react";
 import Day from "./components/Day";
@@ -17,10 +17,12 @@ import { useSocket } from "@/app/werewolf/useSocket";
 const isSSR = typeof window === "undefined";
 
 export default function () {
+  const searchParams = useSearchParams();
   const { socket, language, changeLanguage } = useStore();
   const cookies = new Cookies();
   const router = useRouter();
-  const { roomId } = useParams();
+  const roomId = searchParams.get("roomId");
+  // const { roomId } = useParams();
   const email = isSSR ? "no-email" : cookies.get("email");
   // check player exist and current name
   const [name, setName] = useState("");
@@ -56,12 +58,10 @@ export default function () {
   const [canShoot, setCanShoot] = useState(true);
 
   const positionRef = useRef(position);
-  const roomIdRef = useRef(roomId);
 
   useEffect(() => {
     positionRef.current = position;
-    roomIdRef.current = roomId;
-  }, [position, roomId]);
+  }, [position]);
 
   useSocket(() => {
     return () => {
@@ -146,10 +146,12 @@ export default function () {
     });
   };
 
-  console.log(roomIdRef.current);
+  console.log(roomId);
+
   useSocket(() => {
-    console.log(roomIdRef.current);
-    socket.emit("joinRoom", { roomId: roomIdRef.current });
+    console.log(roomId);
+
+    socket.emit("joinRoom", { roomId: roomId });
 
     const cookieName = cookies.get("userName");
     if (cookieName) {
