@@ -56,10 +56,12 @@ export default function () {
   const [canShoot, setCanShoot] = useState(true);
 
   const positionRef = useRef(position);
+  const roomIdRef = useRef(roomId);
 
   useEffect(() => {
     positionRef.current = position;
-  }, [position]);
+    roomIdRef.current = roomId;
+  }, [position, roomId]);
 
   useSocket(() => {
     return () => {
@@ -144,12 +146,10 @@ export default function () {
     });
   };
 
-  console.log(roomId);
-
+  console.log(roomIdRef.current);
   useSocket(() => {
-    console.log(roomId);
-
-    socket.emit("joinRoom", { roomId: roomId });
+    console.log(roomIdRef.current);
+    socket.emit("joinRoom", { roomId: roomIdRef.current });
 
     const cookieName = cookies.get("userName");
     if (cookieName) {
