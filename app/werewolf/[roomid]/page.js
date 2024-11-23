@@ -159,7 +159,16 @@ export default function () {
   }, []);
 
   useSocket(() => {
+    socket.on("gameStarted", ({ gameJoin, roomId }) => {
+      if (gameJoin) {
+        console.log(roomId);
+      }
+      if (!gameJoin) {
+        router.push(`/werewolf`);
+      }
+    });
     socket.on("playerList", (list) => {
+      console.log(list);
       setPlayers(list);
     });
     socket.on("returnGameStart", (data) => {
@@ -174,10 +183,9 @@ export default function () {
       );
     });
     socket.on("quitWhenGameStart", (data) => {
-      // console.log(data);
       setPlayersData((prev) => prev.map((player, index) => (index === data ? { ...player, alive: false } : player)));
     });
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     let roles = playerRoleList(players.length);
