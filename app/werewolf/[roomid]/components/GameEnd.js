@@ -117,7 +117,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
           <div>
             <div>
               <div className="flex justify-center">{language ? gameEndMessage[0].toUpperCase() : "彊屍陣營勝利"}</div>
-              <div className="border-2 border-rose-800 w-[250px]">
+              <div className="mt-1">
                 {currVampire.map((player, index) => {
                   return (
                     <div key={index}>
@@ -200,7 +200,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
               .map((player, index) => {
                 return (
                   <div key={index} className="mt-1">
-                    <span className="mr-2 text-rose-800 dllm stop typing">{player.name}</span>:
+                    <span className="mr-2">{player.name}</span>:
                     <span className="ml-2">{language ? player.role : roleNameTC(player.role)}</span>
                   </div>
                 );
@@ -222,7 +222,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
         {language ? "Exit" : "回到大廳"}
       </Link>
       <div
-        className="flex flex-row justify-center items-center cursor-pointer text-rose-800 z-50"
+        className="flex flex-row justify-center items-center cursor-pointer text-black z-50"
         onClick={changeLanguage}
       >
         {language ? "中文" : "English"}

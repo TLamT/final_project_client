@@ -16,11 +16,6 @@ export function CreateRoom({ language }) {
     setRoomId(roomId);
   }, []);
 
-  // Set a limit of player
-  // const handlePlayerCountChange = (event) => {
-  //   setPlayerCount(parseInt(event.target.value));
-  // };
-
   return (
     <>
       <Link
