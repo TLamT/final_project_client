@@ -144,7 +144,11 @@ export default function () {
     });
   };
 
+  console.log(roomId);
+
   useSocket(() => {
+    console.log(roomId);
+
     socket.emit("joinRoom", { roomId: roomId });
 
     const cookieName = cookies.get("userName");
