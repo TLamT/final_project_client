@@ -399,10 +399,10 @@ export default function Day({
       >
         {/* left component */}
         <div className="w-1/4 h-full">
-          <div className="h-1/2 w-full">
+          <div className="h-1/2 w-full gameBorderDaySmall">
             <RoleCard playersData={playersData} position={position} />
           </div>
-          <div className="h-1/2 border-2">
+          <div className="h-1/2 ">
             {/*day chat room in here*/}
             <AllChatRoom
               show={{
@@ -448,7 +448,7 @@ export default function Day({
           </div>
         </div>
         {/* middle component*/}
-        <div className="w-1/2 flex flex-col items-center justify-center relative">
+        <div className="w-1/2 flex flex-col items-center justify-center relative p-5 gameBorderDayBig">
           <div className="flex flex-col h-full w-full">
             <div className="h-[5%]">
               <div className="text-3xl font-semibold text-center">{timer}</div>
@@ -513,11 +513,7 @@ export default function Day({
               </div>
 
               {deadMessage && (
-                <div
-                  className={`absolute border-2 rounded p-4 fade-message text-5xl bg-white gameBorder ${
-                    isVisible ? "show" : ""
-                  }`}
-                >
+                <div className={`absolute rounded p-4 fade-message text-5xl bg-white ${isVisible ? "show" : ""}`}>
                   {deadMessage}
                 </div>
               )}
@@ -546,8 +542,8 @@ export default function Day({
           </div>
         </div>
         {/* right component */}
-        <div className="w-1/4 flex flex-col justify-between rounded-lg shadow-md relative">
-          <div className="h-1/2 gameBorder">
+        <div className="w-1/4 flex flex-col justify-between rounded-lg shadow-md relative ">
+          <div className="h-1/2 gameBorderDaySmall p-5">
             <DeadPlayerList
               playersData={playersData}
               position={position}
@@ -557,7 +553,7 @@ export default function Day({
             />
           </div>
 
-          <div className="h-1/2">
+          <div className="h-1/2 gameBorderDaySmall">
             <AliveChatAndTarget
               playersData={playerDataRef.current}
               position={position}

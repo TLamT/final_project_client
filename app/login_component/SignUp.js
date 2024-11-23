@@ -12,12 +12,11 @@ function SignUp({ setLogin }) {
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.playbackRate = 0.6; // Adjust this value to set the speed (e.g., 0.5 is half speed)
+      videoRef.current.playbackRate = 2.0; // Adjust this value to set the speed
     }
   }, []);
 
   function validateUsername(username) {
-    // Regex for the username
     const regex = /^(?! )[a-zA-Z0-9\u4e00-\u9fa5 ]{1,12}$/;
     if (!regex.test(username)) {
       setUsernameError(
@@ -28,6 +27,7 @@ function SignUp({ setLogin }) {
     setUsernameError("");
     return true;
   }
+
   function validateEmail(email) {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
@@ -37,6 +37,7 @@ function SignUp({ setLogin }) {
     setEmailError("");
     return true;
   }
+
   function validatePassword(password) {
     if (!password || password.length < 6) {
       setPasswordError("Password must be at least 6 characters long.");
@@ -45,6 +46,7 @@ function SignUp({ setLogin }) {
     setPasswordError("");
     return true;
   }
+
   async function signUp() {
     if (!validateUsername(user.username) || !validateEmail(user.email) || !validatePassword(user.password)) {
       setComment("Please correct the errors before submitting.");
@@ -66,6 +68,13 @@ function SignUp({ setLogin }) {
     if (data.acknowledged) setLogin(true);
   }
 
+  function handleKeyDown(event) {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevents default form submission
+      signUp();
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-screen ">
       <video
@@ -75,16 +84,21 @@ function SignUp({ setLogin }) {
         muted
         loop
       >
-        <source src="/video/signUp.mp4" type="video/mp4" />
+        <source src="/video/signUp3.mp4" type="video/mp4" />
       </video>
 
-      <div className=" shadow-lg rounded-lg p-6 max-w-full z-50 border-2 borderTest h-auto w-1/4">
-        <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
+      <div
+        className="shadow-lg rounded-lg p-6 max-w-full z-50 border-2 borderTest h-auto w-1/4 bg-slate-200 opacity-65"
+        onKeyDown={handleKeyDown} // Add the keydown event handler
+      >
+        <h1 className="text-2xl font-bold text-center mb-6 text-gray-900" id="title">
+          Register
+        </h1>
         <div className="space-y-4">
           {/* Username Input */}
           <div>
             <input
-              className="w-full px-3 py-2 border border-white/20 rounded-md shadow-md focus:ring-2 bg-transparent transition duration-300"
+              className="w-full px-3 py-2 border-2 border-gray-800 rounded-md shadow-md focus:ring-2 text-gray-900 bg-transparent placeholder-gray-800 transition duration-300"
               placeholder="Enter username"
               onChange={(ev) => {
                 const username = ev.target.value;
@@ -99,7 +113,7 @@ function SignUp({ setLogin }) {
           {/* Email Input */}
           <div>
             <input
-              className="w-full px-3 py-2 border border-white/20 rounded-md shadow-md focus:ring-2 bg-transparent transition duration-300"
+              className="w-full px-3 py-2 border-2 border-gray-800 rounded-md shadow-md focus:ring-2 text-gray-900 bg-transparent placeholder-gray-800 transition duration-300"
               placeholder="Enter email"
               onChange={(ev) => {
                 const email = ev.target.value;
@@ -114,7 +128,7 @@ function SignUp({ setLogin }) {
           {/* Password Input */}
           <div>
             <input
-              className="w-full px-3 py-2 border border-white/20 rounded-md shadow-md focus:ring-2 bg-transparent transition duration-300"
+              className="w-full px-3 py-2 border-2 border-gray-800 rounded-md shadow-md focus:ring-2 text-gray-900 bg-transparent placeholder-gray-800 transition duration-300"
               type="password"
               placeholder="Enter password"
               onChange={(ev) => {
@@ -133,7 +147,7 @@ function SignUp({ setLogin }) {
             className={`flex-1 border-2 py-2 rounded-lg font-semibold  ${
               usernameError || emailError || passwordError
                 ? "bg-gray-300 cursor-not-allowed"
-                : "hover:bg-gray-200 transition duration-200"
+                : "flex-1 border-2 py-2 rounded-lg border-gray-700 font-semibold text-black hover:bg-gray-500 transition duration-200"
             }`}
             disabled={usernameError || emailError || passwordError}
             onClick={signUp}
@@ -141,7 +155,7 @@ function SignUp({ setLogin }) {
             Submit
           </button>
           <button
-            className="flex-1 border-2 py-2 rounded-lg font-semibold hover:bg-gray-200 transition duration-200"
+            className="flex-1 border-2 py-2 rounded-lg border-gray-700 font-semibold text-black hover:bg-gray-500 transition duration-200"
             onClick={() => setLogin(true)}
           >
             Back to Login

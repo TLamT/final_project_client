@@ -1,6 +1,6 @@
 "use client";
 import GameEnd from "./components/GameEnd";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Cookies from "universal-cookie";
 import { useState, useEffect, useRef } from "react";
 import Day from "./components/Day";
@@ -22,7 +22,6 @@ export default function () {
   const cookies = new Cookies();
   const router = useRouter();
   const roomId = searchParams.get("roomId");
-  // const { roomId } = useParams();
   const email = isSSR ? "no-email" : cookies.get("email");
   // check player exist and current name
   const [name, setName] = useState("");
@@ -80,7 +79,6 @@ export default function () {
     // 當遊戲開始後才進行
     if (gameStart) {
       const originReaper = playersData.find((player) => player.role === "reaper");
-      const existingReaper = playersData.find((player) => player.role === "reaper");
 
       // 設定當reaper死後才進行
 
@@ -113,9 +111,11 @@ export default function () {
   const checkWon = () => {
     const townArr = [...Object.keys(characterData.town)];
     const witchArr = [...Object.keys(characterData.witch)];
+
     const currTown = playersData.filter((player) => townArr.includes(player.role) && player.alive === true);
     const currWitch = playersData.filter((player) => witchArr.includes(player.role) && player.alive === true);
     const currVampire = playersData.filter((player) => player.role === "vampire");
+
     if (currWitch.length === 0 && currVampire.length === 0 && currTown.length > 0) {
       setGameEndMessage((prev) => [...prev, "town win"]);
       setGameEnd(true);
@@ -138,19 +138,18 @@ export default function () {
 
     playersData.map((player) => {
       if (player.role === "joker" && player.votedOut === true) {
-        setGameEndMessage((prev) => [...prev, `${player.name} has won as joker`]);
+        setGameEndMessage((prev) => [...prev, `${player.name} is joker! Joker Win`]);
       }
       if (player.role === "conspirator" && playersData[chooseSomeone]?.votedOut === true) {
-        setGameEndMessage((prev) => [...prev, `${player.name} has achieved their goal and wins!`]);
+        setGameEndMessage((prev) => [
+          ...prev,
+          `${player.name} is conspirator. Conspirator has achieved their goal and wins!`,
+        ]);
       }
     });
   };
 
-  console.log(roomId);
-
   useSocket(() => {
-    console.log(roomId);
-
     socket.emit("joinRoom", { roomId: roomId });
 
     const cookieName = cookies.get("userName");
@@ -326,7 +325,7 @@ export default function () {
       )}
       {/* when the game end */}
       {gameEnd && (
-        <div className="flex h-screen justify-center items-center bg-gray-100">
+        <div className="flex h-screen justify-center items-center z-50">
           <GameEnd gameEndMessage={gameEndMessage} playersData={playersData} />
         </div>
       )}

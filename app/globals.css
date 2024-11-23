@@ -11,6 +11,10 @@
   background-color: grey;
 }
 
+#title {
+  font-family: var(--font-eduFont);
+}
+
 .fade-message {
   opacity: 0;
   transition: opacity 1s ease-in-out;
@@ -81,12 +85,22 @@
   /* border-image-source: url("https://img.freepik.com/free-vector/elegant-background-with-decorative-gold-frame-design_1048-15490.jpg?t=st=1732263289~exp=1732266889~hmac=0f3a6847ea505794b2030343a74aa78275b1d63c74441e5ec7bc691d0ff99943&w=740"); */
 }
 
-.gameBorder {
-  border-image-slice: 98 80 98 80;
+.gameBorderDaySmall {
+  border-image-slice: 58 66 56 69;
   border-image-width: 20px 20px 20px 20px;
-  border-image-outset: 8px 8px 8px 8px;
-  border-image-repeat: repeat;
+  border-image-outset: 0px 0px 0px 0px;
+  border-image-repeat: repeat repeat;
   /* border-image-source: url(../public/borderImg/border1.png); */
   border-style: solid;
-  border-image-source: url("https://img.freepik.com/premium-vector/frame-vintage_273893-4308.jpg?w=740");
+  border-image-source: url(../public/borderImg/border3.png);
+}
+
+.gameBorderDayBig {
+  border-image-slice: 58 66 56 69;
+  border-image-width: 20px 20px 20px 20px;
+  border-image-outset: 0px 0px 0px 0px;
+  border-image-repeat: repeat repeat;
+  /* border-image-source: url(../public/borderImg/border1.png); */
+  border-style: solid;
+  border-image-source: url(../public/borderImg/border4.png);
 }

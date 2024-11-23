@@ -327,12 +327,12 @@ export default function Night({
           fade ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div className="border-2 border-red-300 w-1/4">
-          <div className="h-1/2 w-full">
+        <div className="w-1/4">
+          <div className="h-1/2 w-full gameBorderDaySmall">
             <RoleCard playersData={playersData} position={position} />
           </div>
 
-          <div className="h-1/2 border-2 border-red-300">
+          <div className="h-1/2">
             <AllChatRoom
               show={{
                 day: true,
@@ -358,7 +358,7 @@ export default function Night({
             />
           </div>
         </div>
-        <div className="border-2 border-red-300 w-1/2 flex flex-col items-center justify-center relative">
+        <div className="w-1/2 flex flex-col items-center justify-center relative gameBorderDayBig p-5">
           <div className="flex flex-col h-full w-full">
             <div className="h-[5%]">
               <div className="text-3xl font-semibold text-center">{timer}</div>
@@ -366,7 +366,7 @@ export default function Night({
             </div>
 
             <div className="flex flex-col items-center justify-center h-[95%] pb-[64px]">
-              {playersData[position].role === "twistedFate" && (
+              {playersData[position].role === "twistedFate" && playersData[position].alive && (
                 <div>
                   <select
                     value={twistedFateTarget}
@@ -387,7 +387,8 @@ export default function Night({
                 currAction &&
                 !playersData[position].jailed &&
                 playersData[position].role !== "joker" &&
-                !!canShoot && (
+                !!canShoot &&
+                playersData[position].alive && (
                   <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
                     <span>
                       {language ? (
@@ -402,21 +403,25 @@ export default function Night({
                   </div>
                 )}
 
-              {playersData[position].role === "joker" && playersData[position].votedOut === true && (
-                <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
-                  {language
-                    ? `You decide to ${actionRef.current} ${target === null ? "no one" : playersData[target].name}`
-                    : `你選擇${actionsTC(actionRef.current)} ${target === null ? "______" : playersData[target].name}`}
-                </div>
-              )}
+              {playersData[position].role === "joker" &&
+                playersData[position].votedOut === true &&
+                !playersData[position].alive && (
+                  <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key={target}>
+                    {language
+                      ? `You decide to ${actionRef.current} ${target === null ? "no one" : playersData[target].name}`
+                      : `你選擇${actionsTC(actionRef.current)} ${
+                          target === null ? "______" : playersData[target].name
+                        }`}
+                  </div>
+                )}
 
-              {playersData[position].jailed && (
+              {playersData[position].jailed && playersData[position].alive && (
                 <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in" key="jailed">
                   {language ? "You have been jailed" : "你今晚已被人囚禁"}
                 </div>
               )}
 
-              {!canShoot && playersData[position].role === "police" && (
+              {!canShoot && playersData[position].role === "police" && playersData[position].alive && (
                 <div className="text-2xl mt-4 transition-all duration-500 ease-in-out fade-in">
                   {language
                     ? " You shot an innocent person thus lost the ability to shoot"
@@ -447,8 +452,8 @@ export default function Night({
             </div>
           </div>
         </div>
-        <div className="border-2 border-red-300 w-1/4 h-full flex flex-col justify-between p-2 rounded-lg shadow-md">
-          <div className="h-1/2">
+        <div className="w-1/4 h-full flex flex-col justify-between rounded-lg shadow-md">
+          <div className="h-1/2 gameBorderDaySmall p-5">
             <DeadPlayerList
               setTarget={setTarget}
               playersData={playersData}
@@ -457,7 +462,7 @@ export default function Night({
               target={target}
             />
           </div>
-          <div className="h-1/2">
+          <div className="h-1/2 gameBorderDaySmall">
             <AliveChatAndTarget
               playersData={playersData}
               position={position}

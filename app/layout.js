@@ -3,6 +3,7 @@
 import localFont from "next/font/local";
 import { useEffect } from "react";
 import { K2D } from "next/font/google";
+import { Edu_AU_VIC_WA_NT_Hand } from "next/font/google";
 import { io } from "socket.io-client";
 import { useStore } from "./werewolf/store";
 import "./globals.css";
@@ -22,6 +23,11 @@ const k2d = K2D({
   weight: "300",
   variable: "--font-k2d",
 });
+const eduFont = Edu_AU_VIC_WA_NT_Hand({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--font-eduFont",
+});
 
 export default function RootLayout({ children }) {
   const { socket, setSocket } = useStore();
@@ -36,7 +42,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${k2d.variable} antialiased`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${k2d.variable} ${eduFont.variable} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }

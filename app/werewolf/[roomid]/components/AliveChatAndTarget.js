@@ -120,7 +120,7 @@ const AliveChatAndTarget = ({
   // retern 番 player既資料同埋canTarget, 再加上係壞人就會show番佢地既角色
 
   return (
-    <div className="border-2 border-rose-600 h-full p-4 overflow-y-scroll">
+    <div className="h-full p-4 overflow-y-scroll">
       <div className="font-bold text-3xl mb-2">{language ? "Alive Player" : "生存玩家"}</div>
       <div className="flex flex-col">
         {targetPlayer.map(

@@ -63,6 +63,7 @@ const RoleCard = ({ playersData, position }) => {
         return;
     }
   };
+
   const roleNameTC = (role) => {
     switch (role) {
       case "reaper":
@@ -114,8 +115,8 @@ const RoleCard = ({ playersData, position }) => {
   const [showCard, setShowCard] = useState(true);
   return (
     <>
-      <div className="flex flex-col justify-center items-center text-center overflow-y-scroll h-full w-full">
-        <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative h-1/6">
+      <div className="flex flex-col justify-center items-center text-center overflow-y-scroll h-full w-full p-5">
+        <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative h-[12%]">
           {language ? (
             <>
               Role : {myPlayer.roleName}, Faction : {myPlayer.faction.toUpperCase()}
@@ -126,10 +127,10 @@ const RoleCard = ({ playersData, position }) => {
             </>
           )}
         </div>
-        <div className="flex h-4/6">
+        <div className="flex h-[60%]">
           <Image src={imageRole(myPlayer.roleName)} alt={`${myPlayer.roleName}`} className="object-contain" />
         </div>
-        <ul className="flex flex-col items-center justify-center mt-4 h-1/6">
+        <ul className="flex flex-col items-center justify-center mt-4 h-[12%]">
           {language ? (
             <li className="text-xl">Ability : {`${myPlayer.ability}`}</li>
           ) : (
