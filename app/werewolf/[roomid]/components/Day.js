@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState, useRef, useContext, useCallback } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import AliveChatAndTarget from "./AliveChatAndTarget";
@@ -14,6 +14,7 @@ import StartRoleAnimation from "./StartRoleAnimation";
 import { Globe2, HelpCircle } from "lucide-react";
 import Popup from "../../component/Popup";
 import { useStore } from "@/app/werewolf/store";
+// import deadPlayerImg from "@/public/image/deadPlayer";
 
 export default function Day({
   socket,
@@ -47,7 +48,7 @@ export default function Day({
   const { language, changeLanguage } = useStore();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(30);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
@@ -130,7 +131,7 @@ export default function Day({
         clearTimeout(animationTimeout);
       };
     } else {
-      setTimer(10);
+      setTimer(30);
 
       setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
 
@@ -361,6 +362,15 @@ export default function Day({
                 className="hover:scale-105 transition duration-150 ease-in-out cursor-pointer"
                 onClick={handleImage}
               />
+              {/* <Image
+                src={item.alive ? playerAlive : deadPlayerImg}
+                alt={item.alive ? "playerAlive" : "deadPlayerImg"}
+                width="100"
+                height="100"
+                style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
+                className="hover:scale-105 transition duration-150 ease-in-out cursor-pointer"
+                onClick={handleImage}
+              /> */}
               {showRoles && (
                 <text className="mt-4 bg-gray-200 p-4 rounded shadow-md absolute">
                   <ul className="list-disc list-inside">
@@ -391,6 +401,8 @@ export default function Day({
         {startRoleVisible && <StartRoleAnimation playersData={playersData} position={position} />}
       </div>
 
+      {/* <audio src="/music/day.mp3" autoPlay loop></audio> */}
+
       {/* main component */}
       <div
         className={`flex flex-row justify-between h-screen
@@ -398,11 +410,11 @@ export default function Day({
         `}
       >
         {/* left component */}
-        <div className="w-1/4 h-full">
-          <div className="h-1/2 w-full gameBorderDaySmall">
+        <div className="w-1/4 h-full border-white border-r-0">
+          <div className="h-1/2 w-full  bg-black bg-opacity-20">
             <RoleCard playersData={playersData} position={position} />
           </div>
-          <div className="h-1/2 ">
+          <div className="h-1/2 border-3 border-dangerRed rounded-lg shadow-lg bg-black bg-opacity-20">
             {/*day chat room in here*/}
             <AllChatRoom
               show={{
@@ -447,8 +459,9 @@ export default function Day({
             )} */}
           </div>
         </div>
+
         {/* middle component*/}
-        <div className="w-1/2 flex flex-col items-center justify-center relative p-5 gameBorderDayBig">
+        <div className="w-1/2 flex flex-col items-center justify-center relative p-5 shadow-md ">
           <div className="flex flex-col h-full w-full">
             <div className="h-[5%]">
               <div className="text-3xl font-semibold text-center">{timer}</div>
@@ -542,8 +555,8 @@ export default function Day({
           </div>
         </div>
         {/* right component */}
-        <div className="w-1/4 flex flex-col justify-between rounded-lg shadow-md relative ">
-          <div className="h-1/2 gameBorderDaySmall p-5">
+        <div className="w-1/4 flex flex-col justify-between shadow-md relative border-l-0 border-white">
+          <div className="h-1/2 p-5 bg-black bg-opacity-20 test after:bg-gray-600">
             <DeadPlayerList
               playersData={playersData}
               position={position}
@@ -553,7 +566,7 @@ export default function Day({
             />
           </div>
 
-          <div className="h-1/2 gameBorderDaySmall">
+          <div className="h-1/2 bg-black bg-opacity-20">
             <AliveChatAndTarget
               playersData={playerDataRef.current}
               position={position}

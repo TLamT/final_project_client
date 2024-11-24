@@ -10,7 +10,7 @@ const condition = {
   12: { town: 7, witch: 3, neutral: 2 },
 };
 export default function playerRoleList(playerCount) {
-  return ["joker", "reaper", "police"];
+  return ["joker", "conspirator", "reaper", "police", "jailor"];
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
 

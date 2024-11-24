@@ -186,7 +186,7 @@ export default function Night({
   function handleNightAction(actions, nightTimeAction) {
     if (actions.action === "kill") {
       const townFaction = Object.keys(characterData.town);
-      if (playersData[actions.target].linked === true && !playersData[actions.target].jailed) {
+      if (playersData[actions.target]?.linked === true && !playersData[actions.target].jailed) {
         const linkedArr = [];
         playersData.forEach((player, index) => {
           if (player.linked === true) {
@@ -327,12 +327,13 @@ export default function Night({
           fade ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div className="w-1/4">
-          <div className="h-1/2 w-full gameBorderDaySmall">
+        <div className="w-1/4 border-r-2 border-gray-300">
+          <div className="h-1/2 w-full bg-black bg-opacity-30">
             <RoleCard playersData={playersData} position={position} />
           </div>
+          <audio src="/music/night.mp3" autoPlay loop></audio>
 
-          <div className="h-1/2">
+          <div className="h-1/2 bg-black bg-opacity-30">
             <AllChatRoom
               show={{
                 day: true,
@@ -358,7 +359,7 @@ export default function Night({
             />
           </div>
         </div>
-        <div className="w-1/2 flex flex-col items-center justify-center relative gameBorderDayBig p-5">
+        <div className="w-1/2 flex flex-col items-center justify-center relative p-5">
           <div className="flex flex-col h-full w-full">
             <div className="h-[5%]">
               <div className="text-3xl font-semibold text-center">{timer}</div>
@@ -452,8 +453,8 @@ export default function Night({
             </div>
           </div>
         </div>
-        <div className="w-1/4 h-full flex flex-col justify-between rounded-lg shadow-md">
-          <div className="h-1/2 gameBorderDaySmall p-5">
+        <div className="w-1/4 h-full flex flex-col justify-between relative border-l-2 border-gray-400">
+          <div className="h-1/2 p-5 bg-black bg-opacity-30 test after:bg-slate-600">
             <DeadPlayerList
               setTarget={setTarget}
               playersData={playersData}
@@ -462,7 +463,7 @@ export default function Night({
               target={target}
             />
           </div>
-          <div className="h-1/2 gameBorderDaySmall">
+          <div className="h-1/2 bg-black bg-opacity-30">
             <AliveChatAndTarget
               playersData={playersData}
               position={position}

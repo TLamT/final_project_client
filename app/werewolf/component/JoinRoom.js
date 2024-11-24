@@ -47,7 +47,7 @@ export function JoinRoom() {
           className="text-white font-bold py-4 px-8 rounded hover:scale-110 transition duration-300 flex flex-row justify-center w-full"
           href={{ pathname: `/werewolf/${roomId}`, query: { roomId: roomId } }}
         >
-          <LogIn className="mr-2 h-4 w-4 mt-2" />
+          <LogIn className="mr-4 h-6 w-6 mt-[5px]" />
           {language ? "Join Room" : "加入房間"}
         </Link>
       </div>

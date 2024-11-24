@@ -4,6 +4,8 @@ import localFont from "next/font/local";
 import { useEffect } from "react";
 import { K2D } from "next/font/google";
 import { Edu_AU_VIC_WA_NT_Hand } from "next/font/google";
+import { Cinzel } from "next/font/google";
+import { Cormorant_Garamond } from "next/font/google";
 import { io } from "socket.io-client";
 import { useStore } from "./werewolf/store";
 import "./globals.css";
@@ -28,6 +30,16 @@ const eduFont = Edu_AU_VIC_WA_NT_Hand({
   weight: "700",
   variable: "--font-eduFont",
 });
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--font-cinzel",
+});
+const cormorant_Garamond = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: "700",
+  variable: "--font-cormorant_Garamond",
+});
 
 export default function RootLayout({ children }) {
   const { socket, setSocket } = useStore();
@@ -42,7 +54,9 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${k2d.variable} ${eduFont.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${k2d.variable} ${eduFont.variable} ${cinzel.variable} ${cormorant_Garamond.variable}antialiased`}
+      >
         {children}
       </body>
     </html>

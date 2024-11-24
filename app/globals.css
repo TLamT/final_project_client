@@ -96,11 +96,30 @@
 }
 
 .gameBorderDayBig {
-  border-image-slice: 58 66 56 69;
+  border-image-slice: 58 58 58 58;
   border-image-width: 20px 20px 20px 20px;
   border-image-outset: 0px 0px 0px 0px;
   border-image-repeat: repeat repeat;
   /* border-image-source: url(../public/borderImg/border1.png); */
   border-style: solid;
   border-image-source: url(../public/borderImg/border4.png);
+}
+.gameBorderDeadList {
+  border-image-slice: 55 56 55 56;
+  border-image-width: 20px 20px 20px 20px;
+  border-image-outset: 0px 0px 0px 0px;
+  border-image-repeat: round;
+  /* border-image-source: url(../public/borderImg/border1.png); */
+  border-style: solid;
+  border-image-source: url(../public/borderImg/skullBorder.png);
+}
+
+.test::after {
+  position: absolute;
+  content: "";
+  width: 75%;
+  height: 2px;
+  display: block;
+  left: 50%;
+  transform: translateX(-50%);
 }

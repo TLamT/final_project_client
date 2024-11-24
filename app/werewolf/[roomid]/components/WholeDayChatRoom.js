@@ -4,15 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useStore } from "@/app/werewolf/store";
 import EmojiPicker from "emoji-picker-react";
 
-function WholeDayChatRoom({
-  message,
-  setMessage,
-  sentDeadMessage,
-  role,
-  deadChat,
-  playersData,
-  position,
-}) {
+function WholeDayChatRoom({ message, setMessage, sentDeadMessage, role, deadChat, playersData, position }) {
   const scrollRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -32,10 +24,7 @@ function WholeDayChatRoom({
   };
 
   const handleClickOutside = (event) => {
-    if (
-      emojiPickerRef.current &&
-      !emojiPickerRef.current.contains(event.target)
-    ) {
+    if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
       setShowEmojiPicker(false); // Close the emoji picker
     }
   };
@@ -62,27 +51,18 @@ function WholeDayChatRoom({
     <div className="flex flex-col justify-between h-full">
       {/* Scrollable Chat Messages Section */}
       <div
-        className="border-2 border-blue-300 w-full h-4/5 overflow-y-scroll bg-gray-900 rounded-lg shadow-inner custom-scrollbar"
+        className="border-2 border-gray-500 w-full h-4/5 overflow-y-scroll bg-gray-900 rounded-lg shadow-inner custom-scrollbar"
         ref={scrollRef}
       >
         {deadChat.length > 0 ? (
           deadChat.map((allDeadMessage, index) => (
-            <div
-              key={index}
-              className={`p-1 ${
-                index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"
-              }`}
-            >
-              <span className="font-semibold text-blue-300">
-                {language ? "Unknown" : "不記名玩家"}
-              </span>
-              <span className="text-gray-100">{allDeadMessage.message}</span>
+            <div key={index} className={`p-1 ${index % 2 === 0 ? "bg-gray-800" : "bg-gray-700"}`}>
+              <span className="font-semibold text-indigo-300">{language ? "Unknown: " : "無名玩家: "}</span>
+              <span className="text-white ">{allDeadMessage.message}</span>
             </div>
           ))
         ) : (
-          <p className="text-gray-400">
-            {language ? "No messages yet." : "仲未有訊息"}
-          </p>
+          <p className="text-gray-400">{language ? "No messages yet." : "仲未有訊息"}</p>
         )}
       </div>
 
@@ -92,13 +72,10 @@ function WholeDayChatRoom({
           onClick={() => setShowEmojiPicker((prev) => !prev)}
           className="px-4 py-2 rounded-lg font-semibold text-white bg-gray-700 hover:bg-gray-600 transition duration-150 ease-in-out"
         >
-          😊
+          😘
         </button>
         {showEmojiPicker && (
-          <div
-            ref={emojiPickerRef}
-            className="absolute bottom-14 left-0 z-50 bg-white rounded-lg shadow-lg"
-          >
+          <div ref={emojiPickerRef} className="absolute bottom-14 left-0 z-50 bg-gray-400 rounded-lg shadow-lg">
             <EmojiPicker onEmojiClick={onEmojiClick} />
           </div>
         )}
@@ -123,7 +100,7 @@ function WholeDayChatRoom({
             ${
               isMedium && playersData[position]?.alive
                 ? "bg-gray-500 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
+                : "bg-gray-700 hover:bg-gray-500"
             }`}
           disabled={isMedium && playersData[position]?.alive}
         >

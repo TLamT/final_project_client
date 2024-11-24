@@ -138,7 +138,7 @@ export default function () {
 
     playersData.map((player) => {
       if (player.role === "joker" && player.votedOut === true) {
-        setGameEndMessage((prev) => [...prev, `${player.name} is joker! Joker Win`]);
+        setGameEndMessage((prev) => [...prev, `${player.name} joker has been voted! Joker Win`]);
       }
       if (player.role === "conspirator" && playersData[chooseSomeone]?.votedOut === true) {
         setGameEndMessage((prev) => [
@@ -166,14 +166,14 @@ export default function () {
   useSocket(() => {
     socket.on("gameStarted", ({ gameJoin, roomId }) => {
       if (gameJoin) {
-        console.log(roomId);
+        // console.log(roomId);
       }
       if (!gameJoin) {
         router.push(`/werewolf`);
       }
     });
     socket.on("playerList", (list) => {
-      console.log(list);
+      // console.log(list);
       setPlayers(list);
     });
     socket.on("returnGameStart", (data) => {
@@ -234,7 +234,7 @@ export default function () {
       {!gameEnd && !gameStart && (
         <>
           <LobbyScreen roomId={roomId} playersData={playersData} position={position} socket={socket} />
-          <div className="fixed bottom-6 right-6 flex gap-4">
+          <div className="fixed bottom-6 right-6 flex gap-4 text-white ">
             {/* language */}
             <div className="flex flex-row justify-center items-center cursor-pointer" onClick={changeLanguage}>
               {language ? "中文" : "English"}
@@ -324,11 +324,7 @@ export default function () {
         />
       )}
       {/* when the game end */}
-      {gameEnd && (
-        <div className="flex h-screen justify-center items-center z-50">
-          <GameEnd gameEndMessage={gameEndMessage} playersData={playersData} />
-        </div>
-      )}
+      {gameEnd && <GameEnd gameEndMessage={gameEndMessage} playersData={playersData} />}
     </div>
   );
 }

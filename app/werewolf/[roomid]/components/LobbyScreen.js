@@ -9,6 +9,7 @@ const isSSR = typeof window === "undefined";
 
 const LobbyScreen = ({ roomId, playersData, position, socket }) => {
   const { language, changeLanguage } = useStore();
+  const [stars, setStars] = useState([]);
   const [radiusX, setRadiusX] = useState(300); // Default radiusX
   const [radiusY, setRadiusY] = useState(150); // Default radiusY
   // Update radii based on screen size
@@ -49,14 +50,7 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
     const centerY = radiusY * 2.4; // Y coordinate of the oval center
     return (
       <svg width="100%" height="100%" className="absolute">
-        <ellipse
-          cx={centerX}
-          cy={centerY}
-          rx={radiusX}
-          ry={radiusY}
-          opacity="0.2"
-          fill={"white"}
-        />
+        <ellipse cx={centerX} cy={centerY} rx={radiusX} ry={radiusY} opacity="0.2" fill={"white"} />
 
         {items.map((item, index) => {
           const angle = (index / items.length) * 2 * Math.PI; // angle in radians
@@ -64,24 +58,12 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
           const y = centerY + radiusY * Math.sin(angle); // Y position
 
           return (
-            <g
-              key={item.id}
-              transform={`translate(${x}, ${y})`}
-              className="relative"
-            >
-              <text
-                x="0"
-                y="60"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fill="white"
-              >
+            <g key={item.id} transform={`translate(${x}, ${y})`} className="relative">
+              <text x="0" y="60" textAnchor="middle" dominantBaseline="middle" fill="white">
                 {item.name}
               </text>
               <image
-                href={
-                  "https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"
-                }
+                href={"https://static.tvtropes.org/pmwiki/pub/images/plaguebearer.png"}
                 width="100"
                 height="100"
                 x="-50" // Center the image
@@ -94,24 +76,37 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
       </svg>
     );
   };
+  useEffect(() => {
+    const newStars = [...Array(100)].map((_, i) => ({
+      id: i,
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      width: `${Math.random() * 2 + 1}px`,
+      height: `${Math.random() * 2 + 1}px`,
+      animationDuration: `${Math.random() * 5 + 5}s`,
+      animationDelay: `${Math.random() * 5}s`,
+    }));
+    setStars(newStars);
+  }, []);
 
   return (
     // Game Content
     <div className="flex-1 p-2 h-screen w-screen">
       {/* star Background */}
+
       <div className="fixed inset-0 bg-black overflow-hidden">
         <div className="absolute inset-0">
-          {[...Array(100)].map((_, i) => (
+          {stars.map((star) => (
             <div
-              key={i}
+              key={star.id}
               className="absolute rounded-full bg-white"
               style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                width: `${Math.random() * 2 + 1}px`,
-                height: `${Math.random() * 2 + 1}px`,
-                animation: `twinkle ${Math.random() * 5 + 5}s linear infinite`,
-                animationDelay: `${Math.random() * 5}s`,
+                top: star.top,
+                left: star.left,
+                width: star.width,
+                height: star.height,
+                animation: `twinkle ${star.animationDuration} linear infinite`,
+                animationDelay: star.animationDelay,
               }}
             />
           ))}
@@ -130,33 +125,29 @@ const LobbyScreen = ({ roomId, playersData, position, socket }) => {
           }
         `}</style>
       </div>
-      <div className="flex flex-col items-center h-full w-full relative z-0 border-2">
+      <div className="flex flex-col items-center h-full w-full relative z-0">
         {/* Room Title */}
-        <h1 className="flex justify-center text-xl text-white h-[8%] w-full border-2 z-10">
+        <h1 className="flex justify-center text-xl text-white h-[8%] w-full z-10 mt-4">
           {language ? "Room ID: " : "目前房間: "}
           {roomId}
         </h1>
 
-        <div className="h-[82%] w-full border-2 flex justify-center items-center">
-          <OvalWithItems
-            items={playersData}
-            radiusX={radiusX}
-            radiusY={radiusY}
-          />
+        <div className="h-[82%] w-full flex justify-center items-center">
+          <OvalWithItems items={playersData} radiusX={radiusX} radiusY={radiusY} />
         </div>
 
         {/* Game Controls */}
-        <div className="flex justify-center gap-2 h-[10%] w-full border-2 relative">
+        <div className="flex justify-center gap-8 w-full relative mb-6">
           {playersData[position]?.id === playersData[0]?.id && (
             <button
-              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded"
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-4 px-6 rounded text-xl"
               onClick={handleGameStart}
             >
               {language ? "Start Game " : "開始遊戲 "}
             </button>
           )}
           <button
-            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded"
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-4 px-6 rounded text-xl"
             onClick={handleLogout}
           >
             {language ? "Leave Room" : "離開房間 "}

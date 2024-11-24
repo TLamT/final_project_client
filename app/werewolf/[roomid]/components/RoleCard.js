@@ -118,19 +118,20 @@ const RoleCard = ({ playersData, position }) => {
       <div className="flex flex-col justify-center items-center text-center overflow-y-scroll h-full w-full p-5">
         <div className="bg-gray-600 text-lg mt-1 mb-4 text-center text-white font-bold py-2 rounded-md relative h-[12%]">
           {language ? (
-            <>
-              Role : {myPlayer.roleName}, Faction : {myPlayer.faction.toUpperCase()}
-            </>
+            <div className="flex flex-row gap-4">
+              <div> Role : {myPlayer.roleName}</div>
+              <div> Faction : {myPlayer.faction.toUpperCase()}</div>
+            </div>
           ) : (
-            <>
-              角色 : {roleNameTC(myPlayer.roleName)}, 陣營 : {factionRoleTC(myPlayer.faction)}
-            </>
+            <div className="flex flex-row gap-4">
+              <div>角色 : {roleNameTC(myPlayer.roleName)} </div> <div>陣營 :{factionRoleTC(myPlayer.faction)}</div>
+            </div>
           )}
         </div>
         <div className="flex h-[60%]">
           <Image src={imageRole(myPlayer.roleName)} alt={`${myPlayer.roleName}`} className="object-contain" />
         </div>
-        <ul className="flex flex-col items-center justify-center mt-4 h-[12%]">
+        <ul className="flex flex-col items-center justify-center mt-16 h-[12%]">
           {language ? (
             <li className="text-xl">Ability : {`${myPlayer.ability}`}</li>
           ) : (

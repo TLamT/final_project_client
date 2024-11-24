@@ -105,7 +105,11 @@ const AllChatRoom = ({
     <div className="h-full flex flex-col">
       <ul className="flex gap-1 h-8">
         {tabs.map((tab, index) => (
-          <li key={index} className="px-2 py-1 bg-sky-400 text-white cursor-pointer" onClick={() => setTab(tab)}>
+          <li
+            key={index}
+            className="px-2 py-1 bg-gray-700 hover:bg-gray-500 hover:scale-110 transition duration-300 font-semibold text-white cursor-pointer"
+            onClick={() => setTab(tab)}
+          >
             {tab}
           </li>
         ))}

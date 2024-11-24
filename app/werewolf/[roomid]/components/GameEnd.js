@@ -9,7 +9,7 @@ import witchWin from "@/public/winningBg/witchWin.jpg";
 import vampireWin from "@/public/winningBg/vampire.jpg";
 import mcDonald from "@/public/gif/mcDonald.gif";
 import townWin from "@/public/gif/winning.gif";
-
+import drawJokerAndConspirator from "@/public/winningBg/drawJokerAndConspirator.png";
 const GameEnd = ({ gameEndMessage, playersData }) => {
   const { language, changeLanguage } = useStore();
 
@@ -66,16 +66,10 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
   const checkConspirator = playersData.find((player) => player.role === "conspirator");
   const checkJoker = playersData.find((player) => player.role === "joker");
   // 設定
-  const isJokerWin = gameEndMessage.includes(`${checkJoker?.name} is joker! Joker Win`);
+  const isJokerWin = gameEndMessage.includes(`${checkJoker?.name} joker has been voted! Joker Win`);
   const isConspiratorWin = gameEndMessage.includes(
     `${checkConspirator?.name} is conspirator. Conspirator has achieved their goal and wins!`
   );
-  const check = () => {
-    if (isJokerWin && isConspiratorWin) {
-      playersData.map(player);
-    }
-  };
-
   const renderPlayerRole = (player) => (
     <div key={player.name} className="mt-1 flex justify-center">
       <span className="mr-2">
@@ -84,13 +78,68 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
       :<span className="ml-2">{language ? player.role : roleNameTC(player.role)}</span>
     </div>
   );
-  const renderLosers = (filterWinner) => playersData.filter(filterWinner).map(renderPlayerRole);
 
+  const renderPlayer = (filterWinner) => playersData.filter(filterWinner).map(renderPlayerRole);
+  const checkWinner = (faction) => {
+    if (isJokerWin && isConspiratorWin) {
+      return renderPlayer((player) => {
+        return (
+          player.role === "joker" ||
+          player.role === "conspirator" ||
+          faction.map((role) => role.name).includes(player.name)
+        );
+      });
+    }
+    if (isJokerWin && !isConspiratorWin) {
+      return renderPlayer((player) => {
+        return player.role === "joker" || faction.map((role) => role.name).includes(player.name);
+      });
+    }
+    if (!isJokerWin && isConspiratorWin) {
+      return renderPlayer((player) => {
+        return player.role === "conspirator" || faction.map((role) => role.name).includes(player.name);
+      });
+    }
+    if (!isJokerWin && !isConspiratorWin) {
+      return renderPlayer((player) => {
+        return faction.map((role) => role.name).includes(player.name);
+      });
+    }
+  };
+  const checkLoser = (faction) => {
+    if (isJokerWin && isConspiratorWin) {
+      return renderPlayer((player) => {
+        return (
+          player.role !== "joker" ||
+          player.role !== "conspirator" ||
+          !faction.map((role) => role.name).includes(player.name)
+        );
+      });
+    }
+    if (isJokerWin && !isConspiratorWin) {
+      return renderPlayer((player) => {
+        return player.role !== "joker" || !faction.map((role) => role.name).includes(player.name);
+      });
+    }
+    if (!isJokerWin && isConspiratorWin) {
+      return renderPlayer((player) => {
+        return player.role !== "conspirator" || !faction.map((role) => role.name).includes(player.name);
+      });
+    }
+    if (!isJokerWin && !isConspiratorWin) {
+      return renderPlayer((player) => {
+        return !faction.map((role) => role.name).includes(player.name);
+      });
+    }
+  };
+  console.log(gameEndMessage.map((condition) => condition).join(","));
   const checkFaction = (faction) => {
     switch (faction) {
       case "town win":
         return (
-          <div className="bg-white bg-opacity-70 w-full">
+          <div>
+            <audio src="/music/TownWin.mp3" autoPlay loop></audio>
+
             <Image
               src={townWin.src}
               alt={"townWin"}
@@ -102,7 +151,10 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             <div>
               <div className="flex justify-center">
                 {language
-                  ? gameEndMessage.map((condition) => condition.toUpperCase())
+                  ? gameEndMessage
+                      .map((condition) => condition)
+                      .join(",")
+                      .toUpperCase()
                   : isJokerWin && isConspiratorWin
                   ? "蘑茹市民陣營,謀略家和小丑勝利。"
                   : isJokerWin
@@ -110,37 +162,20 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                   : "蘑茹市民陣營勝利。"}
               </div>
 
-              {currTown.map((player) => {
-                return <div key={player.name}>{renderPlayerRole(player)}</div>;
-              })}
+              {checkWinner(currTown)}
             </div>
 
             <div>
               <div className="flex justify-center mt-5">{language ? "LOSER" : "輸家"}</div>
 
-              {isJokerWin && isConspiratorWin
-                ? renderLosers(
-                    (player) =>
-                      player.role !== "joker" &&
-                      player.role !== "conspirator" &&
-                      !currTown.map((role) => role.name).includes(player.name)
-                  )
-                : isJokerWin && !isConspiratorWin
-                ? renderLosers(
-                    (player) => player.role !== "joker" && !currTown.map((role) => role.name).includes(player.name)
-                  )
-                : !isJokerWin && !isConspiratorWin
-                ? renderLosers((player) => !currTown.map((role) => role.name).includes(player.name))
-                : renderLosers(
-                    (player) =>
-                      player.role !== "conspirator" && !currTown.map((role) => role.name).includes(player.name)
-                  )}
+              {checkLoser(currTown)}
             </div>
           </div>
         );
       case "witch win":
         return (
-          <div className="bg-white bg-opacity-70 w-full">
+          <div>
+            <audio src="/music/25sonWin.mp3" autoPlay loop></audio>
             <Image
               src={witchWin}
               alt={"witchWin"}
@@ -149,7 +184,10 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             <div>
               <div className="flex justify-center">
                 {language
-                  ? gameEndMessage.map((condition) => condition.toUpperCase())
+                  ? gameEndMessage
+                      .map((condition) => condition)
+                      .join(",")
+                      .toUpperCase()
                   : isJokerWin && isConspiratorWin
                   ? "古惑仔陣營,謀略家和小丑勝利。"
                   : isJokerWin
@@ -157,37 +195,20 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                   : "古惑仔陣營勝利。"}
               </div>
 
-              {currWitch.map((player) => {
-                return <div key={player.name}>{renderPlayerRole(player)}</div>;
-              })}
+              {checkWinner(currWitch)}
             </div>
 
             <div>
               <div className="flex justify-center mt-5">{language ? "LOSER" : "輸家"}</div>
 
-              {isJokerWin && isConspiratorWin
-                ? renderLosers(
-                    (player) =>
-                      player.role !== "joker" &&
-                      player.role !== "conspirator" &&
-                      !currWitch.map((role) => role.name).includes(player.name)
-                  )
-                : isJokerWin && !isConspiratorWin
-                ? renderLosers(
-                    (player) => player.role !== "joker" && !currWitch.map((role) => role.name).includes(player.name)
-                  )
-                : !isJokerWin && !isConspiratorWin
-                ? renderLosers((player) => !currWitch.map((role) => role.name).includes(player.name))
-                : renderLosers(
-                    (player) =>
-                      player.role !== "conspirator" && !currWitch.map((role) => role.name).includes(player.name)
-                  )}
+              {checkLoser(currWitch)}
             </div>
           </div>
         );
       case "vampire win":
         return (
-          <div className="bg-white bg-opacity-70 w-full">
+          <div>
+            <audio src="/music/VampireWin.mp3" autoPlay loop></audio>
             <Image
               src={vampireWin}
               alt={"vampireWin"}
@@ -197,7 +218,10 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             <div>
               <div className="flex justify-center">
                 {language
-                  ? gameEndMessage.map((condition) => condition.toUpperCase())
+                  ? gameEndMessage
+                      .map((condition) => condition)
+                      .join(",")
+                      .toUpperCase()
                   : isJokerWin && isConspiratorWin
                   ? "彊屍陣營,謀略家和小丑勝利。"
                   : isJokerWin
@@ -205,39 +229,22 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                   : "彊屍陣營勝利。"}
               </div>
 
-              {currVampire.map((player) => {
-                return <div key={player.name}>{renderPlayerRole(player)}</div>;
-              })}
+              {checkWinner(currVampire)}
             </div>
 
             <div>
               <div className="flex justify-center mt-5">{language ? "LOSER" : "輸家"}</div>
 
-              {isJokerWin && isConspiratorWin
-                ? renderLosers(
-                    (player) =>
-                      player.role !== "joker" &&
-                      player.role !== "conspirator" &&
-                      !currVampire.map((role) => role.name).includes(player.name)
-                  )
-                : isJokerWin && !isConspiratorWin
-                ? renderLosers(
-                    (player) => player.role !== "joker" && !currVampire.map((role) => role.name).includes(player.name)
-                  )
-                : !isJokerWin && !isConspiratorWin
-                ? renderLosers((player) => !currVampire.map((role) => role.name).includes(player.name))
-                : renderLosers(
-                    (player) =>
-                      player.role !== "conspirator" && !currVampire.map((role) => role.name).includes(player.name)
-                  )}
+              {checkLoser(currVampire)}
             </div>
           </div>
         );
       case "draw":
         return (
-          <div className="bg-white bg-opacity-70 w-full">
+          <div>
             {isJokerWin && !isConspiratorWin && (
-              <div className="bg-white bg-opacity-70 w-full">
+              <div>
+                <audio src="/music/JokerWin.mp3" autoPlay loop></audio>
                 <Image
                   src={mcDonald}
                   alt={"mcDonald"}
@@ -254,16 +261,17 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                   <br />
                   {language
                     ? `${checkJoker.name}: “Is that the best you can do? Losing suits you perfectly—like it was made just for you.” 😏`
-                    : `${checkJoker.name}: 在座各位都係垃圾 😏`}
+                    : `${checkJoker.name}: 在座各位都係垃圾😏`}
                 </div>
 
                 <div className="flex justify-center mt-5">{language ? "LOSER" : "輸家"}</div>
 
-                {renderLosers((player) => player.role !== "joker")}
+                {renderPlayer((player) => player.role !== "joker")}
               </div>
             )}
             {!isJokerWin && isConspiratorWin && (
-              <div className="bg-white bg-opacity-70 w-full">
+              <div>
+                <audio src="/music/ConspiratorWin.mp3" autoPlay loop></audio>
                 <Image
                   src={conspiratorWin}
                   alt={"conspiratorWin"}
@@ -280,15 +288,15 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                 </div>
                 <div className="flex justify-center mt-5">{language ? "LOSER" : "輸家"}</div>
 
-                {renderLosers((player) => player.role !== "conspirator")}
+                {renderPlayer((player) => player.role !== "conspirator")}
               </div>
             )}
             {isJokerWin && isConspiratorWin && (
-              <div className="bg-white bg-opacity-70 w-full">
+              <div>
+                <audio src="/music/draw.mp3" autoPlay loop></audio>
                 <Image
-                  //123
-                  src={conspiratorWin}
-                  alt={"conspiratorWin"}
+                  src={drawJokerAndConspirator}
+                  alt={"drawJokerAndConspirator"}
                   className="absolute inset-0 object-cover w-full h-full z-[-1] opacity-80"
                 />
 
@@ -300,11 +308,11 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                 </div>
                 <div className="flex justify-center mt-5">{language ? "LOSER" : "輸家"}</div>
 
-                {renderLosers((player) => player.role !== "conspirator" && player.role !== "joker")}
+                {renderPlayer((player) => player.role !== "conspirator" && player.role !== "joker")}
               </div>
             )}
             {!isJokerWin && !isConspiratorWin && (
-              <div className="bg-white bg-opacity-70 w-full">
+              <div className="">
                 <Image
                   src={draw}
                   alt={"draw"}
@@ -315,34 +323,34 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                 />
 
                 <div className="flex justify-center">{language ? "DRAW" : "打和"}</div>
-                {renderLosers((player) => player.role)}
+                {renderPlayer((player) => player.role)}
               </div>
             )}
           </div>
         );
     }
   };
-  console.log(...gameEndMessage);
-  console.log(gameFilterEndMessage);
 
   return (
-    <div className="flex flex-col justify-center items-center bg-white p-6 rounded-lg shadow-lg z-150">
-      <div key="key" className="flex justify-center items-center border-2 border-gray-800 w-[350px] z-50">
-        {checkFaction(...gameFilterEndMessage)}
-      </div>
-      <Link
-        href="../werewolf"
-        className="block w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-md text-center transition duration-300 ease-in-out transform hover:scale-105 z-50"
-      >
-        {language ? "Exit" : "回到大廳"}
-      </Link>
-      <div
-        className="flex flex-row justify-center items-center cursor-pointer text-black bg-white bg-opacity-70 z-50 w-full"
-        onClick={changeLanguage}
-      >
-        {language ? "中文" : "English"}
-        <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
-          <Globe2 className="w-6 h-6" />
+    <div className="h-screen flex justify-center items-center">
+      <div className="flex flex-col borderTest bg-opacity-70 w-1/2 bg-slate-200 shadow-lg rounded-3xl">
+        <div key="key" className="flex justify-center items-center">
+          {checkFaction(...gameFilterEndMessage)}
+        </div>
+        <Link
+          href="../werewolf"
+          className="block w-full py-3 px-4 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-md text-center transition duration-300 ease-in-out transform hover:scale-105 z-50"
+        >
+          {language ? "Exit" : "回到大廳"}
+        </Link>
+        <div
+          className="flex flex-row justify-center items-center cursor-pointer text-black  z-50 w-full"
+          onClick={changeLanguage}
+        >
+          {language ? "中文" : "English"}
+          <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
+            <Globe2 className="w-6 h-6" />
+          </div>
         </div>
       </div>
     </div>

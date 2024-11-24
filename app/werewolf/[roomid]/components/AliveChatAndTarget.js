@@ -121,7 +121,7 @@ const AliveChatAndTarget = ({
 
   return (
     <div className="h-full p-4 overflow-y-scroll">
-      <div className="font-bold text-3xl mb-2">{language ? "Alive Player" : "生存玩家"}</div>
+      <div className="font-bold text-2xl text-center mb-4">{language ? "Alive Player" : "生存玩家"}</div>
       <div className="flex flex-col">
         {targetPlayer.map(
           (player, index) =>

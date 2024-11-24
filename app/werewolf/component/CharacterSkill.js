@@ -8,7 +8,7 @@ const CharacterSkill = ({ language }) => {
   const [displayRoleSkill, setDisplayRoleSkill] = useState(null);
   const handleOnChange = () => {
     setlanguag((prevState) => !prevState);
-    console.log(!language);
+    // console.log(!language);
   };
   const chooseFaction = (event) => {
     const value = event?.target.value;

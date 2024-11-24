@@ -83,7 +83,7 @@ function Login({ setAuth }) {
           Login
         </div>
         <input
-          className="w-full px-3 py-2 border-2 border-gray-800 rounded-md shadow-md focus:ring-2  text-gray-800 bg-transparent placeholder-gray-800 transition duration-300"
+          className="w-full px-3 py-2 border-2 border-gray-800 rounded-md shadow-md focus:ring-2 text-gray-800 bg-transparent placeholder-gray-800 transition duration-300"
           type="text"
           value={email}
           placeholder="Enter your email"
