@@ -1,5 +1,6 @@
 import characterData from "../data/character";
 import Image from "next/image";
+import { useState } from "react";
 import { useStore } from "@/app/werewolf/store";
 import Link from "next/link";
 import { Globe2, DoorOpen } from "lucide-react";
@@ -12,7 +13,8 @@ import townWin from "@/public/gif/winning.gif";
 import drawJokerAndConspirator from "@/public/winningBg/drawJokerAndConspirator.png";
 
 const GameEnd = ({ gameEndMessage, playersData }) => {
-  const { language, changeLanguage } = useStore();
+  const { language, changeLanguage } = useStore([]);
+  const [winningFaction, setWinningFaction] = useState();
 
   const roleNameTC = (role) => {
     switch (role) {
