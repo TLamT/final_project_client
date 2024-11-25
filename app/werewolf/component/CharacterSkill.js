@@ -34,12 +34,13 @@ const CharacterSkill = ({ language }) => {
           <div className="border-2 border-sky-500 ">
             <div className="text-center mt-4">Town Faction:</div>
             <div>
-              <span className="font-bold text-lg">Objective:</span> Eliminate all Vampires and Witches to restore peace
-              in the town.
+              <span className="font-bold text-lg">Objective:</span> Eliminate
+              all Vampires and Witches to restore peace in the town.
             </div>
             <div>
-              <span className="font-bold text-lg">Victory Condition: </span> The game is won when no Vampires, Witches,
-              or other harmful roles remain in the game.
+              <span className="font-bold text-lg">Victory Condition: </span> The
+              game is won when no Vampires, Witches, or other harmful roles
+              remain in the game.
             </div>
           </div>
         );
@@ -49,12 +50,14 @@ const CharacterSkill = ({ language }) => {
           <div className="border-2 border-rose-500">
             <div className="text-center mt-4">Witch Faction:</div>
             <div>
-              <span className="font-bold text-lg">Objective: </span> Gain control of the town by eliminating Town
-              members and all other opposing factions.
+              <span className="font-bold text-lg">Objective: </span> Gain
+              control of the town by eliminating Town members and all other
+              opposing factions.
             </div>
             <div>
-              <span className="font-bold text-lg">Victory Condition: </span>The game is won if only the Witch faction
-              remains, or they have achieved town dominance through their influence.
+              <span className="font-bold text-lg">Victory Condition: </span>The
+              game is won if only the Witch faction remains, or they have
+              achieved town dominance through their influence.
             </div>
           </div>
         );
@@ -65,40 +68,45 @@ const CharacterSkill = ({ language }) => {
             <div className="text-center">Neutral Faction </div>
             <div className="mt-4">Vampire:</div>
             <div>
-              <span className="font-bold text-lg">Objective: </span> Convert all surviving players into Vampire Thralls
-              or eliminate all non-Vampire players.
+              <span className="font-bold text-lg">Objective: </span> Convert all
+              surviving players into Vampire Thralls or eliminate all
+              non-Vampire players.
             </div>
             <div>
-              <span className="font-bold text-lg">Victory Condition: </span>The game is won if only Vampires and their
-              Thralls remain in the game.
+              <span className="font-bold text-lg">Victory Condition: </span>The
+              game is won if only Vampires and their Thralls remain in the game.
             </div>
             <div className="mt-4">Joker:</div>
             <div>
-              <span className="font-bold text-lg">Objective: </span> Get voted out by the players to “entertain” the
-              town.
+              <span className="font-bold text-lg">Objective: </span> Get voted
+              out by the players to “entertain” the town.
             </div>
             <div>
-              <span className="font-bold text-lg">Victory Condition: </span>The Joker wins if they are voted out by the
-              players. Upon winning, the Joker may kill one player who voted against them.
+              <span className="font-bold text-lg">Victory Condition: </span>The
+              Joker wins if they are voted out by the players. Upon winning, the
+              Joker may kill one player who voted against them.
             </div>
             <div className="mt-4">Reminiscence (The Inheritor):</div>
             <div>
-              <span className="font-bold text-lg">Objective: </span> Adapts to the victory condition of the faction they
-              inherit after taking on a deceased player’s role.
+              <span className="font-bold text-lg">Objective: </span> Adapts to
+              the victory condition of the faction they inherit after taking on
+              a deceased player’s role.
             </div>
             <div>
               <span className="font-bold text-lg">Victory Condition: </span>
-              Aligned with the new faction’s victory condition once the role is inherited.
+              Aligned with the new faction’s victory condition once the role is
+              inherited.
             </div>
             <div className="mt-4">Conspirator:</div>
             <div>
-              <span className="font-bold text-lg">Objective: </span> Manipulate the voting process to have a specific
-              target player voted out.
+              <span className="font-bold text-lg">Objective: </span> Manipulate
+              the voting process to have a specific target player voted out.
             </div>
             <div>
               <span className="font-bold text-lg">Victory Condition: </span>
-              The Conspirator wins if they successfully orchestrate the voting to get their chosen player eliminated. If
-              they achieve this, they win regardless of which faction ultimately wins the game.
+              The Conspirator wins if they successfully orchestrate the voting
+              to get their chosen player eliminated. If they achieve this, they
+              win regardless of which faction ultimately wins the game.
             </div>
           </div>
         );
@@ -112,7 +120,8 @@ const CharacterSkill = ({ language }) => {
           <div className="border-2 border-sky-500">
             <div className="text-center mt-4">無菇市民陣營:</div>
             <div>
-              <span className="font-bold text-lg">目標:</span> KO囇所有彊屍和古惑仔陣營，恢復香港和平。
+              <span className="font-bold text-lg">目標:</span>{" "}
+              KO囇所有彊屍和古惑仔陣營，恢復香港和平。
             </div>
             <div>
               <span className="font-bold text-lg">勝利條件: </span>{" "}
@@ -126,7 +135,8 @@ const CharacterSkill = ({ language }) => {
           <div className="border-2 border-rose-500 ">
             <div className="text-center mt-4">古惑仔陣營</div>
             <div>
-              <span className="font-bold text-lg">目標: </span> 透過隊冧班香港無菇市民或者其他敵對陣營黎掌控香港。
+              <span className="font-bold text-lg">目標: </span>{" "}
+              透過隊冧班香港無菇市民或者其他敵對陣營黎掌控香港。
             </div>
             <div>
               <span className="font-bold text-lg">勝利條件: </span>
@@ -145,11 +155,13 @@ const CharacterSkill = ({ language }) => {
               將所有存活既玩家轉化做彊屍，或者隊冧囇所有唔係彊屍既玩家。
             </div>
             <div>
-              <span className="font-bold text-lg">勝利條件: </span> 當遊戲入面得番彊屍同佢班𡃁果陣，遊戲獲勝。
+              <span className="font-bold text-lg">勝利條件: </span>{" "}
+              當遊戲入面得番彊屍同佢班𡃁果陣，遊戲獲勝。
             </div>
             <div className="mt-4">小丑:</div>
             <div>
-              <span className="font-bold text-lg">目標: </span> 比玩家投票處刑以“娛樂”香港市民。
+              <span className="font-bold text-lg">目標: </span>{" "}
+              比玩家投票處刑以“娛樂”香港市民。
             </div>
             <div>
               <span className="font-bold text-lg">勝利條件: </span>
@@ -157,7 +169,8 @@ const CharacterSkill = ({ language }) => {
             </div>
             <div className="mt-4">追憶者 (繼承者):</div>
             <div>
-              <span className="font-bold text-lg">目標: </span> 繼承已歸西玩家既角色身分之後，適應所繼承既陣營獲勝條件。
+              <span className="font-bold text-lg">目標: </span>{" "}
+              繼承已歸西玩家既角色身分之後，適應所繼承既陣營獲勝條件。
             </div>
             <div>
               <span className="font-bold text-lg">勝利條件: </span>
@@ -165,7 +178,8 @@ const CharacterSkill = ({ language }) => {
             </div>
             <div className="mt-4">謀略家:</div>
             <div>
-              <span className="font-bold text-lg">目標: </span> 諗盡辦法操縱投票過程，令到果個特定既目標玩家比人票死。
+              <span className="font-bold text-lg">目標: </span>{" "}
+              諗盡辦法操縱投票過程，令到果個特定既目標玩家比人票死。
             </div>
             <div>
               <span className="font-bold text-lg">勝利條件: </span>
@@ -188,15 +202,17 @@ const CharacterSkill = ({ language }) => {
       case "optionA": // Police
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-blue-100 text-blue-800">
-            <strong>Police:</strong> Can kill a player at night. If the target is innocent, the Police loses their
-            ability to kill further. Can shoot twice in total.
+            <strong>Police:</strong> Can kill a player at night. If the target
+            is innocent, the Police loses their ability to kill further. Can
+            shoot twice in total.
           </div>
         );
         break;
       case "optionB": // Detective
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-green-100 text-green-800">
-            <strong>Detective:</strong> Can check the alignment (good or bad) of a player each night.
+            <strong>Detective:</strong> Can check the alignment (good or bad) of
+            a player each night.
           </div>
         );
         break;
@@ -217,56 +233,62 @@ const CharacterSkill = ({ language }) => {
       case "optionE": // Cupid
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-pink-100 text-pink-800">
-            <strong>Cupid:</strong> During the game start, Cupid can link the lives of two players. If one dies, the
-            other dies too, regardless of faction.
+            <strong>Cupid:</strong> During the game start, Cupid can link the
+            lives of two players. If one dies, the other dies too, regardless of
+            faction.
           </div>
         );
         break;
       case "optionF": // Sentinel
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-indigo-100 text-indigo-800">
-            <strong>Sentinel:</strong> Can check on a player each night. If any players visited the target that night,
-            their names will be revealed to the Sentinel.
+            <strong>Sentinel:</strong> Can check on a player each night. If any
+            players visited the target that night, their names will be revealed
+            to the Sentinel.
           </div>
         );
         break;
       case "optionG": // Jailor
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-gray-100 text-gray-800">
-            <strong>Jailor:</strong> Selects a player to imprison, preventing them from using their ability that night.
-            The jailed player cannot be killed while in jail.
+            <strong>Jailor:</strong> Selects a player to imprison, preventing
+            them from using their ability that night. The jailed player cannot
+            be killed while in jail.
           </div>
         );
         break;
       case "optionH": // VampireHunter
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-red-100 text-red-800">
-            <strong>Vampire Hunter:</strong> Can target a player at night. If they target a Vampire, they kill them. If
-            attacked by a Vampire, the Vampire dies instead. If no Vampires exist, they become a Police instead.
+            <strong>Vampire Hunter:</strong> Can target a player at night. If
+            they target a Vampire, they kill them. If attacked by a Vampire, the
+            Vampire dies instead. If no Vampires exist, they become a Police
+            instead.
           </div>
         );
         break;
       case "optionI": // Reaper
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-orange-100 text-orange-800">
-            <strong>Reaper:</strong> Can kill a player each night. If the Reaper dies and there is no Potion Master, a
-            random Witch player will inherit the Reaper role.
+            <strong>Reaper:</strong> Can kill a player each night. If the Reaper
+            dies and there is no Potion Master, a random Witch player will
+            inherit the Reaper role.
           </div>
         );
         break;
       case "optionJ": // Cultist
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-teal-100 text-teal-800">
-            <strong>Cultist:</strong> Appears as “good” if checked by a Detector, but their true alignment is with the
-            Witch faction.
+            <strong>Cultist:</strong> Appears as “good” if checked by a
+            Detector, but their true alignment is with the Witch faction.
           </div>
         );
         break;
       case "optionK": // Scammer
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-blueGray-100 text-blueGray-800">
-            <strong>Scammer:</strong> Can choose a player each night to “frame.” This targeted player will appear as
-            “bad” if checked by a Detector.
+            <strong>Scammer:</strong> Can choose a player each night to “frame.”
+            This targeted player will appear as “bad” if checked by a Detector.
           </div>
         );
         break;
@@ -280,31 +302,33 @@ const CharacterSkill = ({ language }) => {
       case "optionM": // Vampire
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-purple-100 text-purple-800">
-            <strong>Vampire:</strong> Can convert other players into Vampire Thralls. If a Vampire targets a Werewolf,
-            the Werewolf dies.
+            <strong>Vampire:</strong> Can convert other players into Vampire
+            Thralls. If a Vampire targets a Werewolf, the Werewolf dies.
           </div>
         );
         break;
       case "optionN": // Conspirator
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-orange-100 text-orange-800">
-            <strong>Conspirator:</strong> Can manipulate events to get a selected player voted out.
+            <strong>Conspirator:</strong> Can manipulate events to get a
+            selected player voted out.
           </div>
         );
         break;
       case "optionO": // Joker
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-red-100 text-red-800">
-            <strong>Joker:</strong> Tries to get voted out to “entertain” the others. When voted out, can kill one
-            player who voted for them.
+            <strong>Joker:</strong> Tries to get voted out to “entertain” the
+            others. When voted out, can kill one player who voted for them.
           </div>
         );
         break;
       case "optionP": // Reminiscence
         setDisplayRoleSkill(
           <div className="p-4 border rounded-lg bg-blue-100 text-blue-800">
-            <strong>Reminiscence:</strong> Can select a dead player once per game to inherit their role, faction, and
-            mission. Their new identity will be revealed in chat.
+            <strong>Reminiscence:</strong> Can select a dead player once per
+            game to inherit their role, faction, and mission. Their new identity
+            will be revealed in chat.
           </div>
         );
         break;
@@ -324,7 +348,8 @@ const CharacterSkill = ({ language }) => {
       case "optionB": // Detective
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-green-100 text-green-800 shadow">
-            <strong>偵探技能（食花生專家）</strong>: “等我八卦完再update你，頭號花生友一定係我～
+            <strong>偵探技能（食花生專家）</strong>:
+            “等我八卦完再update你，頭號花生友一定係我～
             每晚可以八卦一名玩家既陣營係好人定係衰人。
           </div>
         );
@@ -332,7 +357,8 @@ const CharacterSkill = ({ language }) => {
       case "optionC": // Defender
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-yellow-100 text-yellow-800 shadow">
-            <strong>金槍人技能（鐵布衫）</strong>: “就憑你果招垃圾技就想殺我想保護既人？”
+            <strong>金槍人技能（鐵布衫）</strong>:
+            “就憑你果招垃圾技就想殺我想保護既人？”
             每晚可以保護一名玩家唔會比古惑仔坑害，但無辦法擋住唔係人（吸血鬼）既攻擊。
           </div>
         );
@@ -340,7 +366,8 @@ const CharacterSkill = ({ language }) => {
       case "optionD": // Medium
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-purple-100 text-purple-800 shadow">
-            <strong>龍婆技能（通靈）</strong>: “龍婆既口號：‘死者之言，聲聲入耳。'
+            <strong>龍婆技能（通靈）</strong>:
+            “龍婆既口號：‘死者之言，聲聲入耳。'
             每晚都可以查看已歸西既玩家之間既對話。
           </div>
         );
@@ -348,7 +375,8 @@ const CharacterSkill = ({ language }) => {
       case "optionE": // Cupid
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-pink-100 text-pink-800 shadow">
-            <strong>如花技能（如花似玉）</strong>: “我係黃花閨女黎嫁嘛，唔好曬時間，快啲黎啦！”
+            <strong>如花技能（如花似玉）</strong>:
+            “我係黃花閨女黎嫁嘛，唔好曬時間，快啲黎啦！”
             能夠將一人與其連結。如果其中一個人死左，另一人都會跟住攬炒，唔理係邊個陣營。
           </div>
         );
@@ -364,7 +392,8 @@ const CharacterSkill = ({ language }) => {
       case "optionG": // Jailor
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-gray-100 text-gray-800 shadow">
-            <strong>獄卒技能（畫地為牢）</strong>: “想搞搞震？畫個圈圈詛咒你，拖你入黑房面壁思過！”
+            <strong>獄卒技能（畫地為牢）</strong>:
+            “想搞搞震？畫個圈圈詛咒你，拖你入黑房面壁思過！”
             選擇一名玩家將其關入黑房，阻止果個玩家當晚使用技能。被人困住既玩家係黑房面壁思過期間唔會被殺。
           </div>
         );
@@ -372,7 +401,8 @@ const CharacterSkill = ({ language }) => {
       case "optionH": // VampireHunter
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-red-100 text-red-800 shadow">
-            <strong>茅山道士技能（掌心雷法）</strong>: “但凡係遺禍人間，塗毒生靈既妖孽，都由我黎解決”
+            <strong>茅山道士技能（掌心雷法）</strong>:
+            “但凡係遺禍人間，塗毒生靈既妖孽，都由我黎解決!”
             每晚選擇一名玩家。如果目標係彊屍，可以將佢殺死。如果被彊屍攻擊，會反殺番吸血鬼。假如場上無囇彊屍，道士會轉職做警察。
           </div>
         );
@@ -380,7 +410,8 @@ const CharacterSkill = ({ language }) => {
       case "optionI": // Reaper
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-orange-100 text-orange-800 shadow">
-            <strong>金牌打手技能（收保護費）</strong>: “金牌打手：‘12點之後 ’，呢到我話事”
+            <strong>金牌打手技能（收保護費）</strong>: “金牌打手：‘12點之後
+            ’，呢到我話事!”
             每晚可以殺死一名玩家。如果金牌打手死亡，將會隨機選擇一名古惑仔升級做金牌打手。
           </div>
         );
@@ -388,7 +419,7 @@ const CharacterSkill = ({ language }) => {
       case "optionJ": // Cultist
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-teal-100 text-teal-800 shadow">
-            <strong>二五仔技能（卧底）</strong>: “我係‘好人’，邊個知呀”
+            <strong>二五仔技能（卧底）</strong>: “我係‘好人’，邊個知呀?”
             當被偵探查看時，會顯示為好人，但實際立場隸屬於巫師陣營。
           </div>
         );
@@ -396,7 +427,7 @@ const CharacterSkill = ({ language }) => {
       case "optionK": // Scammer
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-blueGray-100 text-blueGray-800 shadow">
-            <strong>欺詐師技能（完美偽裝）</strong>: “唔好意思，不過我係特登既”
+            <strong>欺詐師技能（完美偽裝）</strong>: “唔好意思，不過我係特登既!”
             每晚可以選擇“陷害”一位玩家。當偵探查看果個玩家果陣，會顯示做“衰人”。
           </div>
         );
@@ -404,7 +435,7 @@ const CharacterSkill = ({ language }) => {
       case "optionL": // TwistedFate
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-rose-100 text-rose-800 shadow">
-            <strong>賭徒技能（賭命）</strong>: “唔係你死就係我死”
+            <strong>賭徒技能（賭命）</strong>: “唔係你死就係我死!”
             每晚可以賭一個人既真實身份，賭中對方出局；賭唔中就會自爆身份比所有人知。
           </div>
         );
@@ -412,7 +443,8 @@ const CharacterSkill = ({ language }) => {
       case "optionM": // Vampire
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-purple-100 text-purple-800 shadow">
-            <strong>彊屍技能（Q親你對唔住）</strong>: “CHU！我咁可愛你地唔係想殺左我下話？”
+            <strong>彊屍技能（Q親你對唔住）</strong>:
+            “CHU！我咁可愛你地唔係想殺左我下話？”
             可以將其他玩家轉化為彊屍。如果彊屍攻擊古惑仔，古惑仔會死亡。
           </div>
         );
@@ -420,7 +452,8 @@ const CharacterSkill = ({ language }) => {
       case "optionN": // Conspirator
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-orange-100 text-orange-800 shadow">
-            <strong>謀略家技能（金手指）</strong>: “呢個世界就係比有權力既人話事架啦” 諗盡計仔將某個特定目標比人票死。
+            <strong>謀略家技能（金手指）</strong>:
+            “呢個世界就係比有權力既人話事架啦” 諗盡計仔將某個特定目標比人票死。
           </div>
         );
         break;
@@ -436,7 +469,8 @@ const CharacterSkill = ({ language }) => {
       case "optionP": // Reminiscence
         setDisplayRoleSkill(
           <div className="p-4 mb-4 border rounded-lg bg-blue-100 text-blue-800 shadow">
-            <strong>白痴技能（回憶）</strong>: “我個頭好痛呀，我個頭好痛呀，我個頭好痛呀.....”
+            <strong>白痴技能（回憶）</strong>:
+            “我個頭好痛呀，我個頭好痛呀，我個頭好痛呀.....”
             係遊戲入面只可以選擇一名已歸西既玩家，繼承佢既角色、陣營同任務。取代左既新身份將會聊天室到公開。
           </div>
         );
@@ -448,7 +482,10 @@ const CharacterSkill = ({ language }) => {
     <>
       <div className=" mt-4 flex flex-row items-center">
         <div className="flex">
-          <select onChange={chooseFaction} className="text-center border-2 border-rose-500">
+          <select
+            onChange={chooseFaction}
+            className="text-center border-2 border-rose-500"
+          >
             {language ? (
               <>
                 <option value="" defaultValue>
@@ -473,7 +510,10 @@ const CharacterSkill = ({ language }) => {
       </div>
 
       <div>
-        <select onChange={chooseRole} className="text-center border-2 border-black">
+        <select
+          onChange={chooseRole}
+          className="text-center border-2 border-black"
+        >
           {language ? (
             <>
               {selectedOption === "option1" && (
@@ -604,7 +644,9 @@ const CharacterSkill = ({ language }) => {
         </select>
       </div>
       <div className="w-[800px] mt-4">{displayContent}</div>
-      <div className="w-[800px] mt-4 border-2 border-rose-500">{displayRoleSkill}</div>
+      <div className="w-[800px] mt-4 border-2 border-rose-500">
+        {displayRoleSkill}
+      </div>
     </>
   );
 };

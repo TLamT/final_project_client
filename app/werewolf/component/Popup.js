@@ -70,7 +70,8 @@ const Popup = ({ isOpen, onClose }) => {
   };
 
   // Helper to get the correct language-based data
-  const getCharacters = () => (language ? characterData[selectedGroup] : characterDataEng[selectedGroup]);
+  const getCharacters = () =>
+    language ? characterData[selectedGroup] : characterDataEng[selectedGroup];
 
   const getFactionName = (group) => (language ? group : factionObj[group]);
 
@@ -91,7 +92,9 @@ const Popup = ({ isOpen, onClose }) => {
         className="bg-white p-4 rounded shadow-lg w-full max-w-3xl h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-3xl text-black text-center">{language ? "Character Skills" : "角色技能"}</div>
+        <div className="text-3xl text-black text-center">
+          {language ? "Character Skills" : "角色技能"}
+        </div>
 
         {/* Group Selection Buttons */}
         <div className="flex justify-center space-x-4 mt-4">
@@ -100,7 +103,9 @@ const Popup = ({ isOpen, onClose }) => {
               key={group}
               onClick={() => setSelectedGroup(group)}
               className={`py-2 px-4 rounded-lg font-semibold transition duration-300 ${
-                selectedGroup === group ? "bg-gray-700 text-white" : "bg-gray-300 hover:bg-gray-400"
+                selectedGroup === group
+                  ? "bg-gray-700 text-white"
+                  : "bg-gray-300 hover:bg-gray-400"
               }`}
             >
               {getFactionName(group)}
@@ -113,11 +118,20 @@ const Popup = ({ isOpen, onClose }) => {
           {getCharacters().map((character, index) => (
             <div key={index} className="mt-4 flex flex-row h-[75px] w-full">
               {/* <div className="h-[75px] mr-4 w-[75px]"> */}
-              <Image src={character.img} width={75} height={75} alt={character} className="rounded-full mr-4" />
+              <Image
+                src={character.img}
+                width={75}
+                height={75}
+                alt={character}
+                className="rounded-full mr-4"
+              />
               {/* </div> */}
 
               <div className="">
-                <strong className="font-semiold text-gray-900 ">{character.name}</strong>: {character.description}
+                <strong className="font-semiold text-gray-900 ">
+                  {character.name}
+                </strong>
+                : {character.description}
               </div>
             </div>
           ))}
@@ -282,7 +296,8 @@ const characterDataEng = {
     },
     {
       name: "欺詐師技能（完美偽裝）",
-      description: "唔好意思，不過我係特登既。每晚可以選擇“陷害”一位玩家。當偵探查看果個玩家果陣，會顯示做“衰人”。",
+      description:
+        "唔好意思，不過我係特登既。每晚可以選擇“陷害”一位玩家。當偵探查看果個玩家果陣，會顯示做“衰人”。",
       img: scammer,
     },
     {
@@ -294,12 +309,12 @@ const characterDataEng = {
   Neutral: [
     {
       name: "彊屍技能(Q親你對唔住)",
-      description: `"呢個世界就係比有權力既人話事架啦。"諗盡計仔將某個特定目標比人票死。`,
+      description: `"CHU!我咁可愛你地唔係想殺左我下話？"可以將其他玩家轉化為彊屍。如果彊屍攻擊古惑仔，古惑仔會死亡。`,
       img: vampire,
     },
     {
       name: "謀略家技能（金手指）",
-      description: `"CHU!我咁可愛你地唔係想殺左我下話？"可以將其他玩家轉化為彊屍。如果彊屍攻擊古惑仔，古惑仔會死亡。`,
+      description: `"呢個世界就係比有權力既人話事架啦。"諗盡計仔將某個特定目標比人票死。`,
       img: conspirator,
     },
     {

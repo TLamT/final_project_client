@@ -57,10 +57,12 @@ export default function () {
   const [canShoot, setCanShoot] = useState(true);
 
   const positionRef = useRef(position);
+  const gameEndMessageRef = useRef(gameEndMessage);
 
   useEffect(() => {
     positionRef.current = position;
-  }, [position]);
+    gameEndMessageRef.current = gameEndMessage;
+  }, [position, gameEndMessage]);
 
   useSocket(() => {
     return () => {
@@ -78,22 +80,31 @@ export default function () {
   const assignNewReaper = () => {
     // 當遊戲開始後才進行
     if (gameStart) {
-      const originReaper = playersData.find((player) => player.role === "reaper");
+      const originReaper = playersData.find(
+        (player) => player.role === "reaper"
+      );
 
       // 設定當reaper死後才進行
 
       if (!originReaper?.alive) {
         // 係現有既玩家篩選反派出來
         const witchCharacterWithoutReaper = playersData.filter(
-          (player) => player.role === "cultist" || player.role === "scammer" || player.role === "twistedFate"
+          (player) =>
+            player.role === "cultist" ||
+            player.role === "scammer" ||
+            player.role === "twistedFate"
         );
         // 當剩下的反派角色數>1 時才進行(不包括reaper)
         if (witchCharacterWithoutReaper.length > 0) {
-          const randomIndex = Math.floor(Math.random() * witchCharacterWithoutReaper.length);
+          const randomIndex = Math.floor(
+            Math.random() * witchCharacterWithoutReaper.length
+          );
           //隨機抽取一個現有反派成為reaper
           const newReaper = witchCharacterWithoutReaper[randomIndex];
 
-          const newReaperIndex = playersData.findIndex((player) => player.role === newReaper.role);
+          const newReaperIndex = playersData.findIndex(
+            (player) => player.role === newReaper.role
+          );
 
           playersData[newReaperIndex].role = "reaper";
         }
@@ -101,52 +112,85 @@ export default function () {
     }
   };
 
-  useEffect(() => {
+  useSocket(() => {
     if (gameStart) {
       assignNewReaper();
-      checkWon();
+      if (roomLeader) {
+        checkWon();
+      }
     }
-  }, [playersData]);
+  }, [day]);
 
   const checkWon = () => {
     const townArr = [...Object.keys(characterData.town)];
     const witchArr = [...Object.keys(characterData.witch)];
 
-    const currTown = playersData.filter((player) => townArr.includes(player.role) && player.alive === true);
-    const currWitch = playersData.filter((player) => witchArr.includes(player.role) && player.alive === true);
-    const currVampire = playersData.filter((player) => player.role === "vampire");
+    const currTown = playersData.filter(
+      (player) => townArr.includes(player.role) && player.alive === true
+    );
+    const currWitch = playersData.filter(
+      (player) => witchArr.includes(player.role) && player.alive === true
+    );
+    const currVampire = playersData.filter(
+      (player) => player.role === "vampire" && player.alive === true
+    );
 
-    if (currWitch.length === 0 && currVampire.length === 0 && currTown.length > 0) {
+    if (
+      currWitch.length === 0 &&
+      currVampire.length === 0 &&
+      currTown.length > 0
+    ) {
       setGameEndMessage((prev) => [...prev, "town win"]);
-      setGameEnd(true);
-    }
-
-    if (currTown.length === 0 && currVampire.length === 0 && currWitch.length > 0) {
+    } else if (
+      currTown.length === 0 &&
+      currVampire.length === 0 &&
+      currWitch.length > 0
+    ) {
       setGameEndMessage((prev) => [...prev, "witch win"]);
-      setGameEnd(true);
-    }
-
-    if (currVampire.length > 0 && currWitch.length === 0 && currTown.length === 0) {
+    } else if (
+      currVampire.length > 0 &&
+      currWitch.length === 0 &&
+      currTown.length === 0
+    ) {
       setGameEndMessage((prev) => [...prev, "vampire win"]);
-      setGameEnd(true);
-    }
-
-    if (currTown.length === 0 && currWitch.length === 0 && currVampire.length === 0) {
+    } else if (
+      currTown.length === 0 &&
+      currWitch.length === 0 &&
+      currVampire.length === 0
+    ) {
       setGameEndMessage((prev) => [...prev, "draw"]);
-      setGameEnd(true);
     }
 
     playersData.map((player) => {
       if (player.role === "joker" && player.votedOut === true) {
-        setGameEndMessage((prev) => [...prev, `${player.name} joker has been voted! Joker Win`]);
+        setGameEndMessage((prev) => [
+          ...prev,
+          `${player.name} joker has been voted! Joker Win`,
+        ]);
       }
-      if (player.role === "conspirator" && playersData[chooseSomeone]?.votedOut === true) {
+      if (
+        player.role === "conspirator" &&
+        playersData[chooseSomeone]?.votedOut === true
+      ) {
         setGameEndMessage((prev) => [
           ...prev,
           `${player.name} is conspirator. Conspirator has achieved their goal and wins!`,
         ]);
       }
     });
+
+    if (
+      gameEndMessage.includes("town win") ||
+      gameEndMessage.includes("witch win") ||
+      gameEndMessage.includes("vampire win") ||
+      gameEndMessage.includes("draw")
+    ) {
+      socket.emit("gameEnd", {
+        gameEnd: true,
+        gameEndMessage: gameEndMessage,
+        roomId: roomId,
+      });
+    }
   };
 
   useSocket(() => {
@@ -184,11 +228,20 @@ export default function () {
       setRole(
         roleData.filter((idRole) => {
           return idRole.id === email;
-        })[0].role
+        })[0]?.role
       );
     });
     socket.on("quitWhenGameStart", (data) => {
-      setPlayersData((prev) => prev.map((player, index) => (index === data ? { ...player, alive: false } : player)));
+      setPlayersData((prev) =>
+        prev.map((player, index) =>
+          index === data ? { ...player, alive: false } : player
+        )
+      );
+    });
+    socket.on("gameEndAll", ({ gameEndAll, gameEndMessageAll }) => {
+      console.log(gameEndAll, gameEndMessageAll);
+      setGameEndMessage(gameEndMessageAll);
+      setGameEnd(gameEndAll);
     });
   }, [socket]);
 
@@ -233,12 +286,23 @@ export default function () {
       {/* when the game not start */}
       {!gameEnd && !gameStart && (
         <>
-          <LobbyScreen roomId={roomId} playersData={playersData} position={position} socket={socket} />
+          <LobbyScreen
+            roomId={roomId}
+            playersData={playersData}
+            position={position}
+            socket={socket}
+          />
           <div className="fixed bottom-6 right-6 flex gap-4 text-white ">
             {/* language */}
-            <div className="flex flex-row justify-center items-center cursor-pointer" onClick={changeLanguage}>
+            <div
+              className="flex flex-row justify-center items-center cursor-pointer"
+              onClick={changeLanguage}
+            >
               {language ? "中文" : "English"}
-              <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
+              <div
+                variant="outline"
+                className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
+              >
                 <Globe2 className="w-6 h-6" />
               </div>
             </div>
@@ -248,10 +312,17 @@ export default function () {
               onClick={() => setIsPopupOpen(!isPopupOpen)}
             >
               {language ? "Character Info" : "角色說明"}
-              <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
+              <div
+                variant="outline"
+                className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
+              >
                 <HelpCircle className="w-6 h-6" />
               </div>
-              <Popup isOpen={isPopupOpen} onClose={togglePopup} language={language} />
+              <Popup
+                isOpen={isPopupOpen}
+                onClose={togglePopup}
+                language={language}
+              />
             </div>
           </div>
         </>
@@ -324,7 +395,12 @@ export default function () {
         />
       )}
       {/* when the game end */}
-      {gameEnd && <GameEnd gameEndMessage={gameEndMessage} playersData={playersData} />}
+      {gameEnd && (
+        <GameEnd
+          gameEndMessage={gameEndMessageRef.current}
+          playersData={playersData}
+        />
+      )}
     </div>
   );
 }
