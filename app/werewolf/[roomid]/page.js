@@ -42,6 +42,7 @@ export default function () {
   const [initialVampire, setInitialVampire] = useState(null);
   const [position, setPosition] = useState(-1);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [endGameList, setGameEndList] = useState([]);
   // const position = players.findIndex((x) => x.id === email);
 
   // day data
@@ -185,6 +186,7 @@ export default function () {
       gameEndMessage.includes("vampire win") ||
       gameEndMessage.includes("draw")
     ) {
+      setGameEndList(playersData);
       socket.emit("gameEnd", {
         gameEnd: true,
         gameEndMessage: gameEndMessage,
@@ -239,7 +241,6 @@ export default function () {
       );
     });
     socket.on("gameEndAll", ({ gameEndAll, gameEndMessageAll }) => {
-      console.log(gameEndAll, gameEndMessageAll);
       setGameEndMessage(gameEndMessageAll);
       setGameEnd(gameEndAll);
     });
@@ -398,7 +399,7 @@ export default function () {
       {gameEnd && (
         <GameEnd
           gameEndMessage={gameEndMessageRef.current}
-          playersData={playersData}
+          playersData={endGameList}
         />
       )}
     </div>

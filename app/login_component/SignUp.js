@@ -31,7 +31,9 @@ function SignUp({ setLogin }) {
   function validateEmail(email) {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-      setEmailError("Invalid email format. Please use a correct email address.");
+      setEmailError(
+        "Invalid email format. Please use a correct email address."
+      );
       return false;
     }
     setEmailError("");
@@ -39,8 +41,8 @@ function SignUp({ setLogin }) {
   }
 
   function validatePassword(password) {
-    if (!password || password.length < 6) {
-      setPasswordError("Password must be at least 6 characters long.");
+    if (!password || password.length < 8) {
+      setPasswordError("Password must be at least 8 characters long.");
       return false;
     }
     setPasswordError("");
@@ -48,7 +50,11 @@ function SignUp({ setLogin }) {
   }
 
   async function signUp() {
-    if (!validateUsername(user.username) || !validateEmail(user.email) || !validatePassword(user.password)) {
+    if (
+      !validateUsername(user.username) ||
+      !validateEmail(user.email) ||
+      !validatePassword(user.password)
+    ) {
       setComment("Please correct the errors before submitting.");
       return;
     }
@@ -91,7 +97,10 @@ function SignUp({ setLogin }) {
         className="shadow-lg rounded-lg p-6 max-w-full z-50 border-2 borderTest h-auto w-1/4 bg-slate-200 opacity-65"
         onKeyDown={handleKeyDown} // Add the keydown event handler
       >
-        <h1 className="text-2xl font-bold text-center mb-6 text-gray-900" id="title">
+        <h1
+          className="text-2xl font-bold text-center mb-6 text-gray-900"
+          id="title"
+        >
           Register
         </h1>
         <div className="space-y-4">
@@ -107,7 +116,9 @@ function SignUp({ setLogin }) {
                 }
               }}
             />
-            {usernameError && <p className="text-sm text-red-500 mt-1">{usernameError}</p>}
+            {usernameError && (
+              <p className="text-sm text-red-500 mt-1">{usernameError}</p>
+            )}
           </div>
 
           {/* Email Input */}
@@ -122,7 +133,9 @@ function SignUp({ setLogin }) {
                 }
               }}
             />
-            {emailError && <p className="text-sm text-red-500 mt-1">{emailError}</p>}
+            {emailError && (
+              <p className="text-sm text-red-500 mt-1">{emailError}</p>
+            )}
           </div>
 
           {/* Password Input */}
@@ -137,7 +150,9 @@ function SignUp({ setLogin }) {
                 validatePassword(password);
               }}
             />
-            {passwordError && <p className="text-sm text-red-500 mt-1">{passwordError}</p>}
+            {passwordError && (
+              <p className="text-sm text-red-500 mt-1">{passwordError}</p>
+            )}
           </div>
         </div>
 
