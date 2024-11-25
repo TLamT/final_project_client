@@ -61,33 +61,17 @@ const AliveChatAndTarget = ({
         return;
     }
   };
-  let myPlayer = fungPlayerData.find(
-    (player) => player.roleName === playersData[position].role
-  );
+  let myPlayer = fungPlayerData.find((player) => player.roleName === playersData[position].role);
   myPlayer = { ...myPlayer, ...playersData[position] };
   // find vampire leader
 
-  const firstVampire = playersData.find(
-    (player) => player.id === initialVampire?.id
-  );
+  const firstVampire = playersData.find((player) => player.id === initialVampire?.id);
 
   const otherAliveVampire = playersData.filter(
-    (player) =>
-      player.id !== firstVampire?.id &&
-      player.role === "vampire" &&
-      player.alive
+    (player) => player.id !== firstVampire?.id && player.role === "vampire" && player.alive
   );
 
-  const vampireLeader = firstVampire?.alive
-    ? firstVampire
-    : otherAliveVampire[0];
-
-  // JSX
-  // x && y => if x work then run y => if
-  // x || y => if x not work run y => else
-  // condition ? x(true) : y(false)
-  // not ok => dont use if else
-
+  const vampireLeader = firstVampire?.alive ? firstVampire : otherAliveVampire[0];
   //查找所有已死既玩家
   const deadPlayer = playersData.filter((player) => player.alive);
   //設定可睇到target既玩家
@@ -98,26 +82,14 @@ const AliveChatAndTarget = ({
         canTarget = player.role !== myPlayer.roleName;
       }
       if (myPlayer.targetGroup === "nonWitch") {
-        canTarget =
-          fungPlayerData.find((role) => role.roleName === player.role)
-            ?.faction !== "witch";
+        canTarget = fungPlayerData.find((role) => role.roleName === player.role)?.faction !== "witch";
       }
       if (myPlayer.role === "reminsence") {
         canTarget = deadPlayer;
       }
       if (myPlayer.targetGroup === "nonWitch") {
-        canTarget =
-          fungPlayerData.find((role) => role.roleName === player.role)
-            ?.faction !== "witch";
+        canTarget = fungPlayerData.find((role) => role.roleName === player.role)?.faction !== "witch";
       }
-      // if (myPlayer.role === "vampireHunter") {
-      //   canTarget = playersData.filter(
-      //     (player) => player.role !== myPlayer.role
-      //   );
-      // }
-      // if (myPlayer.targetGroup === "dead") {
-      //   canTarget = deadPlayer;
-      // }
     }
     if (day) {
       if (myPlayer.role === "jailor" || myPlayer.role === "cupid") {
@@ -128,9 +100,7 @@ const AliveChatAndTarget = ({
       ...player,
       canTarget,
       showRole:
-        myPlayer.faction === "witch" &&
-        fungPlayerData.find((e) => e.roleName === player.role)?.faction ===
-          "witch",
+        myPlayer.faction === "witch" && fungPlayerData.find((e) => e.roleName === player.role)?.faction === "witch",
     };
   });
 
@@ -150,31 +120,20 @@ const AliveChatAndTarget = ({
 
   return (
     <div className="h-full p-4 overflow-y-scroll ">
-      <div className="font-bold text-2xl text-center mb-4">
-        {language ? "Alive Player" : "生存玩家"}
-      </div>
+      <div className="font-bold text-2xl text-center mb-4">{language ? "Alive Player" : "生存玩家"}</div>
       <div className="flex flex-col">
         {targetPlayer.map(
           (player, index) =>
             player.alive && (
-              <div
-                key={index}
-                className="flex flex-row items-center justify-between mb-2"
-              >
+              <div key={index} className="flex flex-row items-center justify-between mb-2">
                 <div className="flex flex-row">
                   <div className="mr-2">{`${index + 1} ${player.name} `}</div>
                   {player.showRole && (
                     <span className="text-sm italic mr-2">
-                      {language
-                        ? `[${player.role}]`
-                        : `[${roleNameTC(player.role)}]`}
+                      {language ? `[${player.role}]` : `[${roleNameTC(player.role)}]`}
                     </span>
                   )}
-                  {days > 1 && day && (
-                    <span className="ml-2">{`${language ? "Vote" : "票數"}: ${
-                      player.vote
-                    }`}</span>
-                  )}
+                  {days > 1 && day && <span className="ml-2">{`${language ? "Vote" : "票數"}: ${player.vote}`}</span>}
                 </div>
                 <div className="flex flex-row">
                   {player.canTarget &&
@@ -190,6 +149,11 @@ const AliveChatAndTarget = ({
                     playersData[position].role === "jailor" &&
                     playersData[position].alive &&
                     day && <TargetButton index={index} />}
+                  {player.canTarget &&
+                    days < 2 &&
+                    playersData[position].role === "cupid" &&
+                    playersData[position].alive &&
+                    day && <TargetButton index={index} />}
 
                   {playersData[position].role === "joker" &&
                     !playersData[position].alive &&
@@ -201,22 +165,17 @@ const AliveChatAndTarget = ({
                     !playersData[position].jailed &&
                     playersData[position].role === "vampire" &&
                     vampireLeader?.id === playersData[position].id &&
-                    playersData[position].alive && (
-                      <TargetButton index={index} />
-                    )}
+                    playersData[position].alive && <TargetButton index={index} />}
 
-                  {days > 1 &&
-                    day &&
-                    !!player.alive &&
-                    !!playersData[position].alive && (
-                      <button
-                        onClick={() => handleVote(index)}
-                        className="flex flex-row text-black border-slate-300 font-bold py-[2px] px-[4px] rounded transition-transform transform hover:scale-110 active:scale-95"
-                      >
-                        <Vote className="mr-2 size-5 mt-[2px]" />
-                        {language ? "Vote" : "投票"}
-                      </button>
-                    )}
+                  {days > 1 && day && !!player.alive && !!playersData[position].alive && (
+                    <button
+                      onClick={() => handleVote(index)}
+                      className="flex flex-row text-black border-slate-300 font-bold py-[2px] px-[4px] rounded transition-transform transform hover:scale-110 active:scale-95"
+                    >
+                      <Vote className="mr-2 size-5 mt-[2px]" />
+                      {language ? "Vote" : "投票"}
+                    </button>
+                  )}
                 </div>
               </div>
             )

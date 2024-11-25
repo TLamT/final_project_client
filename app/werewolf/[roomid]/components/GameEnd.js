@@ -13,7 +13,7 @@ import townWin from "@/public/gif/winning.gif";
 import drawJokerAndConspirator from "@/public/winningBg/drawJokerAndConspirator.png";
 
 const GameEnd = ({ gameEndMessage, playersData }) => {
-  const { language, changeLanguage } = useStore([]);
+  const { language, changeLanguage } = useStore();
   const [winningFaction, setWinningFaction] = useState();
 
   const roleNameTC = (role) => {
@@ -59,10 +59,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
   gameEndMessage = [...new Set(gameEndMessage)];
   const gameFilterEndMessage = gameEndMessage.filter(
     (condition) =>
-      condition === "town win" ||
-      condition === "witch win" ||
-      condition === "vampire win" ||
-      condition === "draw"
+      condition === "town win" || condition === "witch win" || condition === "vampire win" || condition === "draw"
   );
   console.log(gameEndMessage);
   console.log(gameFilterEndMessage);
@@ -70,22 +67,14 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
   // Player grouping
   const townArr = [...Object.keys(characterData.town)];
   const witchArr = [...Object.keys(characterData.witch)];
-  const currTown = playersData.filter(
-    (player) => townArr.includes(player.role) && player.alive === true
-  );
-  const currWitch = playersData.filter(
-    (player) => witchArr.includes(player.role) && player.alive === true
-  );
+  const currTown = playersData.filter((player) => townArr.includes(player.role) && player.alive === true);
+  const currWitch = playersData.filter((player) => witchArr.includes(player.role) && player.alive === true);
   const currVampire = playersData.filter((player) => player.role === "vampire");
-  const checkConspirator = playersData.find(
-    (player) => player.role === "conspirator"
-  );
+  const checkConspirator = playersData.find((player) => player.role === "conspirator");
   const checkJoker = playersData.find((player) => player.role === "joker");
 
   // Win conditions
-  const isJokerWin = gameEndMessage.includes(
-    `${checkJoker?.name} joker has been voted! Joker Win`
-  );
+  const isJokerWin = gameEndMessage.includes(`${checkJoker?.name} joker has been voted! Joker Win`);
   const isConspiratorWin = gameEndMessage.includes(
     `${checkConspirator?.name} is conspirator. Conspirator has achieved their goal and wins!`
   );
@@ -95,31 +84,20 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
       <span className="mr-2">
         <strong>{player.name}</strong>
       </span>
-      :
-      <span className="ml-2">
-        {language ? player.role : roleNameTC(player.role)}
-      </span>
+      :<span className="ml-2">{language ? player.role : roleNameTC(player.role)}</span>
     </div>
   );
 
-  const renderPlayer = (filterWinner) =>
-    playersData.filter(filterWinner).map(renderPlayerRole);
+  const renderPlayer = (filterWinner) => playersData.filter(filterWinner).map(renderPlayerRole);
 
   const checkWinner = (faction) => {
     const filterCondition = (player) => {
-      const isFactionPlayer = faction
-        .map((role) => role.name)
-        .includes(player.name);
+      const isFactionPlayer = faction.map((role) => role.name).includes(player.name);
       if (isJokerWin && isConspiratorWin) {
-        return (
-          player.role === "joker" ||
-          player.role === "conspirator" ||
-          isFactionPlayer
-        );
+        return player.role === "joker" || player.role === "conspirator" || isFactionPlayer;
       }
       if (isJokerWin) return player.role === "joker" || isFactionPlayer;
-      if (isConspiratorWin)
-        return player.role === "conspirator" || isFactionPlayer;
+      if (isConspiratorWin) return player.role === "conspirator" || isFactionPlayer;
       return isFactionPlayer;
     };
     return renderPlayer(filterCondition);
@@ -127,19 +105,12 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
 
   const checkLoser = (faction) => {
     const filterCondition = (player) => {
-      const isFactionPlayer = faction
-        .map((role) => role.name)
-        .includes(player.name);
+      const isFactionPlayer = faction.map((role) => role.name).includes(player.name);
       if (isJokerWin && isConspiratorWin) {
-        return (
-          player.role !== "joker" &&
-          player.role !== "conspirator" &&
-          !isFactionPlayer
-        );
+        return player.role !== "joker" && player.role !== "conspirator" && !isFactionPlayer;
       }
       if (isJokerWin) return player.role !== "joker" && !isFactionPlayer;
-      if (isConspiratorWin)
-        return player.role !== "conspirator" && !isFactionPlayer;
+      if (isConspiratorWin) return player.role !== "conspirator" && !isFactionPlayer;
       return !isFactionPlayer;
     };
     return renderPlayer(filterCondition);
@@ -152,9 +123,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
           townWin,
           "/music/TownWin.mp3",
           language
-            ? gameEndMessage.map((condition, index) => (
-                <div key={index}>{condition.toUpperCase()}</div>
-              ))
+            ? gameEndMessage.map((condition, index) => <div key={index}>{condition.toUpperCase()}</div>)
             : isJokerWin && isConspiratorWin
             ? "蘑茹市民陣營🍄、謀略家🎭和小丑🤡勝利"
             : isJokerWin
@@ -168,9 +137,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
           witchWin,
           "/music/25sonWin.mp3",
           language
-            ? gameEndMessage.map((condition, index) => (
-                <div key={index}>{condition.toUpperCase()}</div>
-              ))
+            ? gameEndMessage.map((condition, index) => <div key={index}>{condition.toUpperCase()}</div>)
             : isJokerWin && isConspiratorWin
             ? "古惑仔陣營🪓、謀略家🎭和小丑🤡勝利"
             : isJokerWin
@@ -184,9 +151,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
           vampireWin,
           "/music/VampireWin.mp3",
           language
-            ? gameEndMessage.map((condition, index) => (
-                <div key={index}>{condition.toUpperCase()}</div>
-              ))
+            ? gameEndMessage.map((condition, index) => <div key={index}>{condition.toUpperCase()}</div>)
             : isJokerWin && isConspiratorWin
             ? "彊屍陣營🧟‍♂️、謀略家🎭和小丑🤡勝利"
             : isJokerWin
@@ -208,9 +173,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
         alt="winning background"
         className="absolute inset-0 object-cover w-full h-full z-[-1] opacity-80"
       />
-      <div className="flex flex-col text-center text-2xl font-semibold justify-center mb-5">
-        {message}
-      </div>
+      <div className="flex flex-col text-center text-2xl font-semibold justify-center mb-5">{message}</div>
       <div className="flex justify-center mt-5 text-2xl font-semibold mb-2">
         {language ? "🏆Winner🏆" : "🏆勝利者🏆"}
       </div>
@@ -237,23 +200,17 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             sizes="100vw"
           />
 
-          <div className="flex justify-center">
-            {language ? "🤡Joker Win🤡" : "🤡小丑勝利🤡"}
-          </div>
+          <div className="flex justify-center">{language ? "🤡Joker Win🤡" : "🤡小丑勝利🤡"}</div>
 
           <div>
-            {language
-              ? `${checkJoker.name} is a Joker.`
-              : `${checkJoker.name}係小丑🤡`}
+            {language ? `${checkJoker.name} is a Joker.` : `${checkJoker.name}係小丑🤡`}
             <br />
             {language
               ? `${checkJoker.name}: “Is that the best you can do? Losing suits you perfectly—like it was made just for you.” 😏`
               : `${checkJoker.name}: 在座各位都係垃圾😏`}
           </div>
 
-          <div className="flex justify-center mt-5">
-            {language ? "🧎🏻LOSER🧎🏻" : "🧎🏻失敗者🧎🏻"}
-          </div>
+          <div className="flex justify-center mt-5">{language ? "🧎🏻LOSER🧎🏻" : "🧎🏻失敗者🧎🏻"}</div>
 
           {renderPlayer((player) => player.role !== "joker")}
         </div>
@@ -268,21 +225,15 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             className="absolute inset-0 object-cover w-full h-full z-[-1] opacity-80"
           />
 
-          <div className="flex justify-center">
-            {language ? "🎭Conspirator Win🎭" : "🎭謀略家勝利🎭"}
-          </div>
+          <div className="flex justify-center">{language ? "🎭Conspirator Win🎭" : "🎭謀略家勝利🎭"}</div>
           <div>
-            {language
-              ? `${checkConspirator?.name} is a Conspirator.`
-              : `${checkConspirator.name}係謀略家🎭`}
+            {language ? `${checkConspirator?.name} is a Conspirator.` : `${checkConspirator.name}係謀略家🎭`}
             <br />
             {language
               ? `${checkConspirator.name}: “Pathetic. You’re all just pieces on my board, and I’ve already won before you even realized you were playing.” 😏`
               : `${checkConspirator.name}: 「天幕就係我，我就係天幕」😏`}
           </div>
-          <div className="flex justify-center mt-5">
-            {language ? "🧎🏻LOSER🧎🏻" : "🧎🏻失敗者🧎🏻"}
-          </div>
+          <div className="flex justify-center mt-5">{language ? "🧎🏻LOSER🧎🏻" : "🧎🏻失敗者🧎🏻"}</div>
 
           {renderPlayer((player) => player.role !== "conspirator")}
         </div>
@@ -296,25 +247,15 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             alt={"drawJokerAndConspirator"}
             className="absolute inset-0 object-cover w-full h-full z-[-1] opacity-80"
           />
-          <div className="flex justify-center">
-            {language ? "🎭Conspirator Win🎭" : "🎭謀略家勝利🎭"}
-          </div>
+          <div className="flex justify-center">{language ? "🎭Conspirator Win🎭" : "🎭謀略家勝利🎭"}</div>
           <div>
-            {language
-              ? `${checkConspirator?.name} is a Conspirator.`
-              : `${checkConspirator.name}係謀略家🎭`}
+            {language ? `${checkConspirator?.name} is a Conspirator.` : `${checkConspirator.name}係謀略家🎭`}
             <br />
-            {language
-              ? `${checkJoker.name} is a Joker.`
-              : `${checkJoker.name}係小丑🤡`}
+            {language ? `${checkJoker.name} is a Joker.` : `${checkJoker.name}係小丑🤡`}
           </div>
-          <div className="flex justify-center mt-5">
-            {language ? "🧎🏻LOSER🧎🏻" : "🧎🏻失敗者🧎🏻"}
-          </div>
+          <div className="flex justify-center mt-5">{language ? "🧎🏻LOSER🧎🏻" : "🧎🏻失敗者🧎🏻"}</div>
 
-          {renderPlayer(
-            (player) => player.role !== "conspirator" && player.role !== "joker"
-          )}
+          {renderPlayer((player) => player.role !== "conspirator" && player.role !== "joker")}
         </div>
       );
     } else if (!isJokerWin && !isConspiratorWin) {
@@ -328,9 +269,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
             height={0}
             sizes="100vw"
           />
-          <div className="flex justify-center">
-            {language ? "🐧DRAW🐧" : "🐧打和🐧"}
-          </div>
+          <div className="flex justify-center">{language ? "🐧DRAW🐧" : "🐧打和🐧"}</div>
           {renderPlayer((player) => player.role)}
         </div>
       );
@@ -340,9 +279,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="flex flex-col borderTest bg-opacity-70 w-1/2 bg-slate-200 shadow-lg rounded-3xl justify-center items-center p-4">
-        <div className="flex justify-center items-center text-black">
-          {checkFaction(...gameFilterEndMessage)}
-        </div>
+        <div className="flex justify-center items-center text-black">{checkFaction(...gameFilterEndMessage)}</div>
         <Link
           href="../werewolf"
           // className="block w-full py-3 px-4 mt-6 bg-gray-600 hover:bg-gray-500 text-white font-semibold rounded-md text-center transition duration-300 ease-in-out transform hover:scale-105 z-50"
@@ -356,10 +293,7 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
           onClick={changeLanguage}
         >
           {language ? "中文" : "English"}
-          <div
-            variant="outline"
-            className="rounded-full w-12 h-12 p-0 ml-2 flex items-center"
-          >
+          <div variant="outline" className="rounded-full w-12 h-12 p-0 ml-2 flex items-center">
             <Globe2 className="w-6 h-6" />
           </div>
         </div>
