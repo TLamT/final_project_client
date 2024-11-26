@@ -13,7 +13,6 @@ export default function playerRoleList(playerCount, roomId) {
   if (roomId === "123" || roomId === "1234") {
     return ["reaper", "detective", "scammer", "defender", "sentinel", "medium"];
   }
-  return ["defender", "reaper", "medium", "police", "sentinel", "medium"];
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
 
@@ -36,8 +35,7 @@ export default function playerRoleList(playerCount, roomId) {
 
     while (groupSelected.length < conditions[group]) {
       // create a random number which exclude the must index
-      const randomIndex =
-        Math.floor(Math.random() * (array.length - mustCount)) + mustCount;
+      const randomIndex = Math.floor(Math.random() * (array.length - mustCount)) + mustCount;
 
       // no duplicate and not VampireHunter or Vampire
       if (
