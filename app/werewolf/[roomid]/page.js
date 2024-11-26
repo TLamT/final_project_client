@@ -247,7 +247,7 @@ export default function () {
   }, [socket]);
 
   useEffect(() => {
-    let roles = playerRoleList(players.length);
+    let roles = playerRoleList(players.length, roomId);
 
     const goodBad = roles.map((role) => {
       return fungPlayerData.find((char) => char.roleName === role)?.detected;

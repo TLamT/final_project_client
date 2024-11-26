@@ -1,7 +1,7 @@
 import characterData from "../data/character";
 
 const condition = {
-  6: { town: 4, witch: 1, neutral: 1 },
+  6: { town: 4, witch: 2 },
   7: { town: 4, witch: 2, neutral: 1 },
   8: { town: 5, witch: 2, neutral: 1 },
   9: { town: 5, witch: 2, neutral: 2 },
@@ -9,8 +9,10 @@ const condition = {
   11: { town: 6, witch: 3, neutral: 2 },
   12: { town: 7, witch: 3, neutral: 2 },
 };
-export default function playerRoleList(playerCount) {
-  return ["reaper", "detective", "jailor", "joker", "cupid", "defender"];
+export default function playerRoleList(playerCount, roomId) {
+  if (roomId === "123" || roomId === "1234") {
+    return ["reaper", "detective", "scammer", "defender", "sentinel", "medium"];
+  }
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
 
@@ -33,7 +35,8 @@ export default function playerRoleList(playerCount) {
 
     while (groupSelected.length < conditions[group]) {
       // create a random number which exclude the must index
-      const randomIndex = Math.floor(Math.random() * (array.length - mustCount)) + mustCount;
+      const randomIndex =
+        Math.floor(Math.random() * (array.length - mustCount)) + mustCount;
 
       // no duplicate and not VampireHunter or Vampire
       if (
