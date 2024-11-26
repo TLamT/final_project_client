@@ -48,7 +48,7 @@ export default function Day({
   const { language, changeLanguage } = useStore();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(40);
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
   const [message, setMessage] = useState("");
@@ -138,7 +138,7 @@ export default function Day({
         clearTimeout(animationTimeout);
       };
     } else {
-      setTimer(30);
+      setTimer(40);
 
       setPlayersData((prev) => prev.map((player) => ({ ...player, jailed: false })));
 
