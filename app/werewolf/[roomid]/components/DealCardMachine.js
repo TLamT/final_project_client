@@ -1,7 +1,7 @@
 import characterData from "../data/character";
 
 const condition = {
-  6: { town: 4, witch: 2 },
+  6: { town: 4, witch: 1, neutral: 1 },
   7: { town: 4, witch: 2, neutral: 1 },
   8: { town: 5, witch: 2, neutral: 1 },
   9: { town: 5, witch: 2, neutral: 2 },
