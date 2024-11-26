@@ -13,6 +13,7 @@ export default function playerRoleList(playerCount, roomId) {
   if (roomId === "123" || roomId === "1234") {
     return ["reaper", "detective", "scammer", "defender", "sentinel", "medium"];
   }
+  return ["defender", "reaper", "medium", "police", "sentinel", "medium"];
   // if (playerCount < 6) return "playerCount must be higher than six";
   if (playerCount < 6) playerCount = 6;
 

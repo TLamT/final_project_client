@@ -51,7 +51,7 @@ export default function Night({
 }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(10);
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState(null);
   const [currAction, setCurrAction] = useState(null);
@@ -67,7 +67,7 @@ export default function Night({
   );
 
   useEffect(() => {
-    setTimer(30);
+    setTimer(10);
     setFade(true);
     setCurrAction(actions[role]);
 
@@ -151,6 +151,7 @@ export default function Night({
   };
 
   useEffect(() => {
+    "";
     socket.on("allNightChat", (data) => {
       setNightTimeChat(data);
     });
@@ -254,6 +255,9 @@ export default function Night({
         prev.map((player, index) =>
           index === actions.target ? { ...player, alive: true } : player
         )
+      );
+      setPlayerDiedLastNight((prev) =>
+        prev.filter((player) => player !== actions.target)
       );
     }
 

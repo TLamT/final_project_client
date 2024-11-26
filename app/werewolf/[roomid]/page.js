@@ -116,11 +116,9 @@ export default function () {
   useSocket(() => {
     if (gameStart) {
       assignNewReaper();
-      if (roomLeader) {
-        checkWon();
-      }
+      checkWon();
     }
-  }, [day]);
+  }, [day, days, nights]);
 
   const checkWon = () => {
     const townArr = [...Object.keys(characterData.town)];
@@ -241,6 +239,7 @@ export default function () {
       );
     });
     socket.on("gameEndAll", ({ gameEndAll, gameEndMessageAll }) => {
+      console.log(gameEndMessageAll);
       setGameEndMessage(gameEndMessageAll);
       setGameEnd(gameEndAll);
     });
