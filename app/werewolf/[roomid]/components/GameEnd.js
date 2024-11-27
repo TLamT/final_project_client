@@ -156,10 +156,10 @@ const GameEnd = ({ gameEndMessage, playersData }) => {
                 <div key={index}>{condition.toUpperCase()}</div>
               ))
             : isJokerWin && isConspiratorWin
-            ? "蘑茹市民陣營🍄、謀略家🎭和小丑🤡勝利"
+            ? "蘑菇市民陣營🍄、謀略家🎭和小丑🤡勝利"
             : isJokerWin
-            ? "蘑茹市民陣營🍄和小丑🤡勝利"
-            : "蘑茹市民陣營🍄勝利",
+            ? "蘑菇市民陣營🍄和小丑🤡勝利"
+            : "蘑菇市民陣營🍄勝利",
           checkWinner(currTown),
           checkLoser(currTown)
         );
